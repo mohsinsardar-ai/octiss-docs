@@ -91,10 +91,11 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 | # | Issue | Severity | Status |
 |---|---|---|---|
 | 1 | Sidebar phase tracker routes to old `/projects/{id}/prepare` instead of `/phase/prepare` | 🔴 Critical | Fix sent to Codex — commit 16794ab |
-| 2 | Daily Briefing pulls from DEMO risks/actions data instead of Agent 12 daily_briefings table | 🟡 Medium | Fix sent to Codex — commit 16794ab |
-| 3 | Task Screen CTA buttons and agent panel need live verification after fix 1 | 🟡 Medium | Pending test |
-| 4 | Phase View showing all tasks as "Ungrouped Deliverable" | 🟡 Medium | Pending fix |
-| 5 | DEMO project has legacy data — new projects will look different | ℹ️ Info | By design |
+| 2 | Daily Briefing pulls from Project Alpha risks/actions data instead of Agent 12 daily_briefings table | 🟡 Medium | Fix sent to Codex — commit 16794ab |
+| 3 | Task Screen CTA buttons and agent panel need live verification after fix 1 | ✅ Fixed | Commit 82f09d5 |
+| 4 | Phase View showing all tasks as "Ungrouped Deliverable" | ✅ Fixed | Commit 82f09d5 |
+| 5 | Project Alpha has legacy data — new projects will look different | ℹ️ Info | By design |
+| 6 | Playwright fixtures updated to real production project_tasks UUIDs | ✅ Info | Commit 3f6718f |
 
 ---
 
@@ -254,7 +255,7 @@ RIGHT (40%) — CTA Panel:
 
 ### Key Legacy Tables
 - projects
-- roadmap_tasks (legacy — DEMO project uses these)
+- roadmap_tasks (legacy — Project Alpha uses these)
 - project_templates, project_documents
 - project_action_items, risks
 - workspace_profiles
@@ -348,6 +349,10 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| 3f6718f | Frontend | Update Playwright fixtures to real production UUIDs |
+| 82f09d5 | Frontend | Fix Task Screen + Phase View deliverable grouping |
+| f0c8b88 | Backend | Deliverable enrichment + task detail consistency |
+| 7e03eee | Docs | Initial public docs repo |
 | 16794ab | Frontend | Fix sidebar routing + Daily Briefing source |
 | a39e52b | Frontend | Enforce 6-section Command Center |
 | baeab4b | Frontend | Task-led Command Center rebuild |
@@ -367,13 +372,15 @@ Conditional task activation:
 
 | Item | Status |
 |---|---|
-| Fix sidebar routing → /phase/:phaseCode | ✅ Commit 16794ab |
-| Fix Daily Briefing data source | ✅ Commit 16794ab |
-| Verify Phase View loads with real tasks | ⏳ Test needed |
-| Verify Task Screen CTAs render correctly | ⏳ Test needed |
+| Fix sidebar routing | ✅ 16794ab |
+| Fix Daily Briefing data source | ✅ 16794ab |
+| Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
+| Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
 | Verify Agent Panel fires and responds | ⏳ Test needed |
-| Fix Phase View "Ungrouped Deliverable" | ⏳ Fix needed |
-| M10b-6c BF Conversion Module | 📋 Post bug fixes |
+| Public docs repo created | ✅ 7e03eee |
+| Playwright fixtures use real UUIDs | ✅ 3f6718f |
+| CLI capabilities documented in Handoff | ✅ Task 0A |
+| M10b-6c BF Conversion Module | 🔄 In progress |
 | User Manual | 📋 Post stable UI |
 | Update Welcome Packs | 📋 Post User Manual |
 | Send beta tester credentials | 🔒 On hold |
@@ -382,42 +389,60 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-**Step 1 — Test the product after commit 16794ab**
-```
-Hard refresh: Ctrl+Shift+R
-Test 1: /dashboard → Command Center clean?
-Test 2: Click Prepare in sidebar → PhaseView?
-Test 3: Click Open Task → Task Screen?
-Test 4: Click agent CTA → Agent Panel?
-Test 5: Upcoming task → clickable, COMPLETE locked?
-```
+Step 1 — Complete M10b-6c BF Conversion Module
+See SUD v1.6 Section 16 for full spec.
+Five components:
+1. Pre-SUM Checklist (per environment)
+2. SUM Execution Tracker
+3. Post-SUM Validation Checklist
+4. Downtime Calculator
+5. Cutover Communication Pack (Agent 11 + 8)
 
-**Step 2 — Fix Phase View deliverable grouping**
-```
-All tasks show as "Ungrouped Deliverable"
-Should group by activate_deliverables.name
-via activate_task_id → deliverable_id join
-```
+Step 2 — Full systematic screen testing
+After M10b-6c complete.
+Every screen, every flow, documented.
 
-**Step 3 — Full systematic screen testing**
-```
-Go through every screen methodically
-Document every issue found
-Fix all issues before beta
-```
+Step 3 — User Manual
+After UI stable.
+Real screenshots, step-by-step guide.
 
-**Step 4 — M10b-6c BF Conversion Module**
-```
-After all bugs fixed
-Pre-SUM/SUM/Post-SUM checklists
-Downtime Calculator
-Based on real project checklists
-```
+---
 
-**Step 5 — User Manual**
-```
-After UI is stable
-Real screenshots
-Step-by-step guide for beta testers
-```
+## 19. Codex Environment — CLI Capabilities
 
+Last verified: 04 June 2026
+
+| CLI | Available | Version | Auth Status |
+|-----|-----------|---------|-------------|
+| gh | YES | 2.92.0 | Authenticated to mohsinsardar-ai |
+| git | YES | 2.53.0.windows.2 | N/A; repo-local author configured |
+| node | YES | v24.14.1 | N/A |
+| npm | YES | 11.11.0 | N/A |
+| python | YES | 3.12.10 | N/A |
+| pip | YES | 26.1.1 | N/A |
+| railway | YES | 4.51.0 | Not auth |
+| vercel | YES | 53.2.0 | Authenticated; Octiss production project visible |
+| supabase | YES | 2.98.2 | Authenticated; project list visible, repo not linked |
+| npx playwright | YES | 1.59.1 | N/A |
+| curl.exe | YES | 8.19.0 | N/A |
+| httpx | YES | 0.28.1 | N/A |
+| jq | NO | N/A | N/A |
+| cat | YES | PowerShell alias | N/A |
+| cp | YES | PowerShell alias | N/A |
+| mkdir | YES | PowerShell function | N/A |
+| ls | YES | PowerShell alias | N/A |
+
+### What Codex Can Automate End-to-End:
+- GitHub repo creation, commit, push, PR creation, and repo inspection via gh.
+- Commits and pushes in backend and frontend repos via repo-local Git identity.
+- Frontend builds and Playwright suites via Node/npm/npx Playwright.
+- Backend Python scripts and pytest suites via Python/pip.
+- Vercel project inspection and production deployment verification.
+- Supabase project listing and direct database reads through configured service-role environment values.
+- HTTP checks with curl.exe and httpx.
+
+### What Requires Mohsin to Act:
+- Railway CLI actions require `railway login`; automatic Railway redeploy from GitHub remains available when configured.
+- Supabase migrations are applied manually through Supabase SQL Editor unless the backend repo is explicitly linked with `supabase link`.
+- `supabase status` in the backend repo is blocked by `.env` parsing until the environment file encoding is cleaned for Supabase CLI compatibility.
+- `jq` is not installed; JSON parsing uses PowerShell, Python, gh `--json`, or Node instead.

@@ -822,6 +822,9 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 04 Jun 2026 | Task Screen and Phase View grouping fixed. Playwright fixtures updated to real production UUIDs. All 61 Project Alpha rows link to legacy roadmap_tasks, which is correct by design. New projects via Project Plan Agent will link to activate_tasks. Commits: 82f09d5 (FE), f0c8b88 (BE), 3f6718f (FE). |
+| 04 Jun 2026 | Public docs repo created: github.com/mohsinsardar-ai/octiss-docs. Both SUD v1.6 and Master Handoff v1.0 now accessible as raw URLs for all Claude and Codex sessions. Commit: 7e03eee. |
+| 04 Jun 2026 | Permanent rule added: every Codex session must end with a doc update to both Handoff and SUD, pushed to both repos. This keeps session continuity current and prevents repeated debugging of already-fixed issues. |
 | 01 Jun 2026 | M10b-5 complete. All 394 active tasks mapped to 12 agents. GF: 9 agents. BF: 10 agents including Agent 11 (19 BF-specific tasks). Zero unmapped. File: Octiss_M10b5_Agent_Mapping_v1.0.xlsx. |
 | 01 Jun 2026 | Key mapping rule: Defining/creating a deliverable = Phase Agent. Getting sign-off/communicating it = Agent 8 (Stakeholder Communication). Applies across all phases. |
 | 01 Jun 2026 | Transport Request management: PM owns TR template and records (Agent 5). Basis executes transport movement (TRACK — Agent 10). |
@@ -832,10 +835,10 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 04 Jun 2026 | M10b-8 complete. Command Center rebuilt to 6-section clean layout. Task Screen with CTA rendering built. Agent Chat Panel with context injection built. Backend agent chat endpoint added. Frontend: baeab4b. Backend: 321c765. |
 | 04 Jun 2026 | MS365 fully configured. Azure App renamed from "EM Intelligence Lab SAP PMO Agent" to "Octiss Production". 7 permissions granted and admin consent applied. Home page URL set to https://octiss.com. Octiss logo uploaded to Azure App. |
 | 04 Jun 2026 | Setup 5/5 READY confirmed in production. MS365 verified connected (OneDrive, Outlook, Calendar). Settings accessible during setup gate. |
-| 04 Jun 2026 | Task names fix: project_tasks for DEMO project use legacy roadmap_task_id. Backend now enriches /api/v1/project-plan/tasks with real task names from activate_tasks or roadmap_tasks. Commits: 6f88948 (backend) + b41176d (frontend). |
+| 04 Jun 2026 | Task names fix: project_tasks for Project Alpha use legacy roadmap_task_id. Backend now enriches /api/v1/project-plan/tasks with real task names from activate_tasks or roadmap_tasks. Commits: 6f88948 (backend) + b41176d (frontend). |
 | 04 Jun 2026 | Reconnect Microsoft button replaced with non-clickable "Microsoft Connected" badge when connected and verified. Run Microsoft Verification remains visible. Commit: 2adc40d. |
 | 04 Jun 2026 | KNOWN ISSUE: Sidebar phase tracker links to old /projects/{id}/prepare route. Should route to /phase/prepare. Fix pending. |
-| 04 Jun 2026 | KNOWN ISSUE: Daily Briefing section pulls from DEMO project risks/action_items data. Should only show Agent 12 daily_briefings table content. Fix pending. |
+| 04 Jun 2026 | KNOWN ISSUE: Daily Briefing section pulls from Project Alpha risks/action_items data. Should only show Agent 12 daily_briefings table content. Fix pending. |
 | 04 Jun 2026 | Beta testers on hold until routing issues resolved, task screen verified, and user manual ready. |
 
 | 03 Jun 2026 | M10b-6a complete — project_escalations, session_attendance, project_meetings additions live in production. Commit: 29f66c49. |
@@ -881,7 +884,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 ## 13. Current Build Status
 
 ### 13.1 What Is Live
-- Backend: FastAPI on Railway — **386 routes**, **1288 tests passing** — HEALTHY
+- Backend: FastAPI on Railway — **386 routes**, **1289 tests passing** — HEALTHY
 - Frontend: React/Vite on Vercel — octiss-production.vercel.app — LIVE
 - Database: Supabase Singapore (Pro) — all tables created, grants applied
 - 12 agents built and live — **Agent #2 Project Plan Agent live**
@@ -893,20 +896,20 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 - **MS365 fully connected** — OneDrive, Outlook, Calendar verified. Azure App renamed to Octiss Production. 7 permissions granted.
 - **Setup 5/5 READY** — all setup steps complete in production
 - **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
-- **Task Screen built** — CTA rendering, agent panel, status updates (commit baeab4b)
+- **Task Screen fixed** — CTA rendering, agent panel, status updates, direct task route loading (commit 82f09d5)
+- **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
+- **Playwright fixtures updated** — real production project_tasks UUIDs used in task route tests (commit 3f6718f)
 - **8 new DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance
 
 ### 13.2 Known Issues (Active — Being Fixed)
 
 | # | Issue | Priority | Status |
 |---|---|---|---|
-| 1 | Sidebar phase tracker links to old `/projects/{id}/prepare` route instead of new `/phase/prepare` | 🔴 Critical | Fix in progress |
-| 2 | Daily Briefing section pulls from old DEMO risks/actions data instead of Agent 12 daily_briefings table | 🟡 Medium | Fix in progress |
-| 3 | "Open Task" CTA on Command Center may route to old project workspace | 🟡 Medium | Needs verification after fix 1 |
+| 1 | Sidebar phase tracker links to old `/projects/{id}/prepare` route instead of new `/phase/prepare` | ✅ Fixed | 16794ab |
+| 2 | Daily Briefing section pulls from old Project Alpha risks/actions data instead of Agent 12 daily_briefings table | ✅ Fixed | 16794ab |
+| 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
 
 ### 13.3 What Is Not Yet Built
-- Sidebar routing fix — phase tracker → `/phase/{phaseCode}` (pending Codex fix)
-- Deliverable grouping in Phase View (all tasks showing as "Ungrouped Deliverable")
 - BF Conversion Module — Pre/Post SUM checklists, Downtime Calculator (M10b-6c)
 - Billing / Paddle integration (post company registration)
 - User Manual (pending stable UI)
@@ -958,7 +961,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 The standard SAP Activate BF library covers system conversion at a high level. Real Brownfield projects run Pre-SUM / SUM / Post-SUM cycles across multiple environments. The BF Conversion Module uses real project checklists as the primary source — not SAP documentation.
 
-**Source:** Al-Tuwairqi Wave 1 System Conversion Project Plan (real project, anonymised)
+**Source:** anonymised Brownfield Wave 1 system conversion project plan
 **Approach:** Conversion checklist-based, not project plan task-based
 
 ### 16.2 Architecture
