@@ -1,5 +1,5 @@
 # Octiss — Solution Understanding Document (SUD)
-**Version:** v1.6 | **Date:** 04 June 2026 | **Status:** LIVE  
+**Version:** v1.6.2 | **Date:** 05 June 2026 | **Status:** LIVE WITH MS365 BLOCKER
 **Owner:** Mohsin Sardar — EM Intelligence Labs  
 **Classification:** Confidential — Internal Use Only  
 **Domains:** octiss.com | emintelligencelab.com
@@ -21,8 +21,9 @@
 | v1.3 | 01 Jun 2026 | M10b-2 complete. Final task library locked: GF 193 active tasks, BF 201 active tasks. Project Plan Agent architecture fully defined — SOW extraction, conditional task activation, WRICEF CR flow, Path A/B setup. Section 4.1 expanded. New section 4.2 added. Section 9 updated with 6 new decisions. |
 | v1.4 | 01 Jun 2026 | M10b-5 complete — 394 tasks mapped to 12 agents. Three new sections added: Change Request workflow (Section 5), Escalation workflow (Section 6), Session Attendance and No-Show Escalation (Section 7). New DB tables documented: project_escalations, session_attendance, meetings attendance fields. Section 9 updated with 7 new decisions. |
 | v1.5 | 03 Jun 2026 | M10b-6b, M10b-6a, Seed, M10b-7 all confirmed complete. |
-| v1.6 | 04 Jun 2026 | M10b-8 complete. MS365 fully configured. Azure App renamed to Octiss Production. Command Center rebuilt (6 sections). M10b-6c BF Conversion Module code complete. Backend now has 393 routes and 1294 tests passing. Frontend has 103 Playwright tests passing / 48 skipped. Production BF migration still requires manual Supabase SQL Editor apply. |
+| v1.6 | 04 Jun 2026 | M10b-8 complete. Command Center rebuilt (6 sections). M10b-6c BF Conversion Module code complete. Backend had 393 routes and 1294 tests passing. Frontend had 103 Playwright tests passing / 48 skipped. Production BF migration still required manual Supabase SQL Editor apply. Microsoft was believed connected at the UI level, later corrected by v1.6.2 API verification. |
 | v1.6.1 | 05 Jun 2026 | CLI environment update: Supabase CLI linked to production and dry-run reaches remote DB; jq installed and verified; Railway CLI v5.0.0 authenticated and linked to octiss-production / sap-pmo-agent. BF migration remains pending until migration filenames are normalized to Supabase timestamp format. |
+| v1.6.2 | 05 Jun 2026 | Production verification update: backend 394 routes / 1302 tests passing; frontend 107 Playwright tests passing / 48 skipped; GF/BF production test projects verified; BF migration and `service_role` grants applied; GF task save/readback and BF checklist/SUM/downtime flows verified. Microsoft 365 production API remains blocked (`configured=false`, `connected=false`, `verified=false`) until Railway MS365 env/OAuth are configured. |
 
 ---
 
@@ -823,9 +824,11 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | Production verification corrected the Microsoft state: UI/settings text is not sufficient proof. The source of truth is `/api/v1/integrations/microsoft/status`; current production API reports `configured=false`, `connected=false`, `verified=false`. Beta remains blocked until Railway MS365 env/OAuth setup is complete and the API reports true. |
+| 05 Jun 2026 | BF Conversion Module is production verified. Migration was applied through the production pooler, `service_role` grants were added to `bf_sum_checklists` and `bf_sum_executions`, and GF/BF production screens were tested against dedicated production test projects. |
 | 05 Jun 2026 | Railway CLI v5.0.0 fully authenticated and linked to octiss-production / sap-pmo-agent. Auth via interactive `railway login` on local Windows Terminal - inherited by Codex automatically. Link requires flag form with project/env/service IDs because positional ID form is not supported in v5. Link command and all IDs documented in Handoff Section 20. All Railway operations now automated: logs, status, env vars, redeploy. Final CLI gap closed. |
 | 05 Jun 2026 | CLI environment partially automated. Supabase CLI linked to production project qrxfprybbpqugptakeke; `supabase db push --dry-run` reaches the remote database and reports it up to date, but current migration filenames are skipped because they do not match Supabase's `<timestamp>_name.sql` pattern. jq installed at 1.8.1 and JSON parsing test passed. Railway CLI login is blocked in the Codex non-interactive shell until `RAILWAY_API_TOKEN` / `RAILWAY_TOKEN` or interactive `railway login` is provided. |
-| 04 Jun 2026 | M10b-6c BF Conversion Module code complete. Backend commit 44d00df adds BF endpoints, `bf_sum_checklists`, `bf_sum_executions`, downtime estimate fields, migration SQL, and route tests. Frontend commit a5e04cc adds BF screen, Task Screen CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA. Production migration still requires manual Supabase SQL Editor apply. Backend: 1294 tests passing. Frontend: 103 Playwright tests passing / 48 skipped. |
+| 04 Jun 2026 | M10b-6c BF Conversion Module code complete. Backend commit 44d00df adds BF endpoints, `bf_sum_checklists`, `bf_sum_executions`, downtime estimate fields, migration SQL, and route tests. Frontend commit a5e04cc adds BF screen, Task Screen CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA. This was superseded by the 05 Jun 2026 production migration/grant verification. Backend: 1294 tests passing. Frontend: 103 Playwright tests passing / 48 skipped. |
 | 04 Jun 2026 | Task Screen and Phase View grouping fixed. Playwright fixtures updated to real production UUIDs. All 61 Project Alpha rows link to legacy roadmap_tasks, which is correct by design. New projects via Project Plan Agent will link to activate_tasks. Commits: 82f09d5 (FE), f0c8b88 (BE), 3f6718f (FE). |
 | 04 Jun 2026 | Public docs repo created: github.com/mohsinsardar-ai/octiss-docs. Both SUD v1.6 and Master Handoff v1.0 now accessible as raw URLs for all Claude and Codex sessions. Commit: 7e03eee. |
 | 04 Jun 2026 | Permanent rule added: every Codex session must end with a doc update to both Handoff and SUD, pushed to both repos. This keeps session continuity current and prevents repeated debugging of already-fixed issues. |
@@ -837,12 +840,12 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 01 Jun 2026 | Session attendance and no-show escalation: T-5/T-3/T-1 cycle, attendance recording, post-session escalation. Recurring pattern at 2+ absences triggers programme escalation. New table: session_attendance. |
 | 01 Jun 2026 | Custom Code Analysis (BF): Agent 11 primary + Agent 10 CTA for timeline + Agent 8 CTA for escalation. |
 | 04 Jun 2026 | M10b-8 complete. Command Center rebuilt to 6-section clean layout. Task Screen with CTA rendering built. Agent Chat Panel with context injection built. Backend agent chat endpoint added. Frontend: baeab4b. Backend: 321c765. |
-| 04 Jun 2026 | MS365 fully configured. Azure App renamed from "EM Intelligence Lab SAP PMO Agent" to "Octiss Production". 7 permissions granted and admin consent applied. Home page URL set to https://octiss.com. Octiss logo uploaded to Azure App. |
-| 04 Jun 2026 | Setup 5/5 READY confirmed in production. MS365 verified connected (OneDrive, Outlook, Calendar). Settings accessible during setup gate. |
+| 04 Jun 2026 | Azure App metadata was prepared for Octiss Production. Later API verification on 05 Jun 2026 showed Railway MS365 env/OAuth is still not configured/connected/verified in production. |
+| 04 Jun 2026 | Setup 5/5 READY confirmed in production after safe settings configuration. Microsoft connection itself remains blocked until the status API reports configured/connected/verified true. |
 | 04 Jun 2026 | Task names fix: project_tasks for Project Alpha use legacy roadmap_task_id. Backend now enriches /api/v1/project-plan/tasks with real task names from activate_tasks or roadmap_tasks. Commits: 6f88948 (backend) + b41176d (frontend). |
 | 04 Jun 2026 | Reconnect Microsoft button replaced with non-clickable "Microsoft Connected" badge when connected and verified. Run Microsoft Verification remains visible. Commit: 2adc40d. |
 | 04 Jun 2026 | Sidebar phase tracker fixed to route to `/phase/{phaseCode}` and Daily Briefing fixed to use only Agent 12 daily_briefings table output. Commit: 16794ab. |
-| 04 Jun 2026 | Beta testers remain on hold until BF production migration is applied, live validation is complete, and the User Manual is ready. |
+| 04 Jun 2026 | Beta testers remain on hold until Microsoft 365 production verification, User Manual completion, and Welcome Pack refresh are complete. |
 
 | 03 Jun 2026 | M10b-6a complete — project_escalations, session_attendance, project_meetings additions live in production. Commit: 29f66c49. |
 | 03 Jun 2026 | M10b-6b complete — Project Plan Agent built. 5 endpoints live. 1285 tests passing. Commit: c51f8f8. |
@@ -887,23 +890,24 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 ## 13. Current Build Status
 
 ### 13.1 What Is Live
-- Backend: FastAPI on Railway — **393 routes**, **1294 tests passing** — HEALTHY
+- Backend: FastAPI on Railway — **394 routes**, **1302 tests passing** — HEALTHY
 - Frontend: React/Vite on Vercel — octiss-production.vercel.app — LIVE
 - Database: Supabase Singapore (Pro) — all tables created, grants applied
 - 12 agents built and live — **Agent #2 Project Plan Agent live**
 - WhatsApp interface live
 - n8n Daily PM Briefing trigger at 8AM — live
 - 5 beta tester accounts created (tester1-5@octiss.com) — Portfolio tier
-- **484 tasks seeded in production Supabase** (GF 193+54 merge, BF 201+36 merge)
+- **Production test projects verified**: GF Test Project `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` with 244 Activate-backed tasks; BF Test Project `e9cec48e-01f4-4506-a212-a9037ed76db9` with 235 Activate-backed tasks
+- Legacy demo `Sample Project Alpha` is not the production verification baseline
 - **Sidebar rebuilt** — phase tracker, project selector, setup gate live
-- **MS365 fully connected** — OneDrive, Outlook, Calendar verified. Azure App renamed to Octiss Production. 7 permissions granted.
-- **Setup 5/5 READY** — all setup steps complete in production
+- **Setup 5/5 READY** — all setup steps complete for the production tester workspace after safe settings configuration
+- **Microsoft 365 is NOT production-verified** — `/api/v1/integrations/microsoft/status` returns `configured=false`, `connected=false`, `verified=false` until Railway MS365 env/OAuth are added
 - **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
-- **Task Screen fixed** — CTA rendering, agent panel, status updates, direct task route loading (commit 82f09d5)
+- **Task Screen fixed and production-verified** — CTA rendering, agent panel, status updates, direct task route loading, stable detail save/readback, and text assignee labels
 - **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
 - **Playwright fixtures updated** — real production project_tasks UUIDs used in task route tests (commit 3f6718f)
-- **8 new DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance
-- **BF Conversion Module code complete** — backend commit 44d00df, frontend commit a5e04cc. Production migration pending Supabase migration filename normalization before CLI apply.
+- **10 M10b DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance, bf_sum_checklists, bf_sum_executions
+- **BF Conversion Module production-verified** — backend commit 44d00df, frontend commit a5e04cc, grants commit a36553e. QAS BF checklist, SUM tracker, downtime calculator, and Agent 8 cutover CTA path verified.
 
 ### 13.2 Known Issues (Active — Being Fixed)
 
@@ -912,10 +916,11 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 1 | Sidebar phase tracker links to old `/projects/{id}/prepare` route instead of new `/phase/prepare` | ✅ Fixed | 16794ab |
 | 2 | Daily Briefing section pulls from old Project Alpha risks/actions data instead of Agent 12 daily_briefings table | ✅ Fixed | 16794ab |
 | 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
-| 4 | BF Conversion Module database migration not yet applied in production | Pending | Rename migration files to Supabase timestamp format, then run `supabase db push` |
+| 4 | BF Conversion Module production migration/grants | ✅ Fixed | Applied through production pooler; `service_role` grants committed in a36553e |
+| 5 | Microsoft 365 production connector not configured/connected/verified | Blocker | Requires Railway MS365 env/OAuth values; do not mark complete until API reports true |
 
 ### 13.3 What Is Not Yet Built
-- BF Conversion Module production migration and live production validation
+- Microsoft 365 production connector verification
 - Billing / Paddle integration (post company registration)
 - User Manual (pending stable UI)
 - Welcome Packs update with User Manual
@@ -935,7 +940,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | Seed | Load 484 tasks to production Supabase | Mohsin | ✅ Complete | 03 Jun 2026 |
 | M10b-7 | Rebuild sidebar as phase-progress tracker | Codex | ✅ Complete | `828cee7` |
 | M10b-8 | Task screen + Command Center rebuild | Codex | ✅ Complete | `baeab4b` + `321c765` |
-| M10b-6c | BF Conversion Module | Mohsin + Codex | ✅ Code complete; production migration pending | `44d00df` + `a5e04cc` |
+| M10b-6c | BF Conversion Module | Mohsin + Codex | ✅ Production verified | `44d00df` + `a5e04cc` + `a36553e` |
 
 ---
 
@@ -960,7 +965,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 ---
 
-## 16. BF Conversion Module — M10b-6c (Code Complete; Production Migration Pending)
+## 16. BF Conversion Module — M10b-6c (Production Verified)
 
 ### 16.1 Overview
 
@@ -1064,6 +1069,7 @@ When PM selects BF methodology, Project Plan Agent asks:
 
 **Backend commit:** 44d00df  
 **Frontend commit:** a5e04cc  
+**Production grant commit:** a36553e
 **Migration SQL:** `supabase/migrations/m10b6c_bf_conversion_module.sql`
 
 Backend delivered:
@@ -1082,8 +1088,13 @@ Frontend delivered:
 
 Production status:
 - Code is pushed to `main`
-- Supabase CLI is linked to production, but current migration filenames are skipped by `supabase db push` until renamed to Supabase timestamp format
-- Migration must still be applied before production BF checklist/SUM records are available
+- Production migration was applied through the production pooler
+- `bf_sum_checklists` and `bf_sum_executions` have `service_role` grants in production and in source SQL
+- BF task environment inference opens QAS conversion path from the production-like conversion task
+- Pre-SUM checklist renders and accepts PM review updates
+- SUM tracker starts and shows an active execution
+- Downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
+- Microsoft 365 remains unrelated but blocking for beta readiness: API status is `configured=false`, `connected=false`, `verified=false`
 
-*End of Document — Octiss SUD v1.6 — 04 June 2026*  
-*Next update: v1.7 after BF production migration, live BF validation, and User Manual completion*
+*End of Document — Octiss SUD v1.6.2 — 05 June 2026*
+*Next update: v1.7 after Microsoft 365 production verification and User Manual completion*

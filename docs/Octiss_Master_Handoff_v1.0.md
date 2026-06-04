@@ -69,35 +69,35 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 
 ---
 
-## 4. Current Build State (04 June 2026)
+## 4. Current Build State (04 June 2026 UTC / 05 June 2026 PKT)
 
 ### What Is Live and Working
-- Backend: 393 routes, 1294 tests passing
-- Frontend: Deployed Vercel, 103 Playwright tests passing / 48 skipped
-- Setup 5/5 READY — all setup steps complete
-- MS365 fully connected — OneDrive, Outlook, Calendar verified
-- Azure App: "Octiss Production" — 7 permissions granted
-- 484 tasks seeded in production (GF 193+54, BF 201+36)
-- 8 new DB tables live in production
+- Backend: 394 routes, 1302 tests passing
+- Frontend: Vercel production, 107 Playwright tests passing / 48 skipped
+- Production URLs: `https://octiss-production.vercel.app` -> `https://sap-pmo-agent-production-3f52.up.railway.app`
+- Setup 5/5 READY for the production tester workspace after safe integration settings were configured
+- Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
+- Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
+- Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
+- 10 M10b DB tables live in production, including BF checklist/SUM tables with `service_role` grants
 - Sidebar: Clean 7-item layout
 - Command Center: 6-section clean layout (REBUILT)
-- Task Screen: Built with CTA rendering and agent panel
+- Task Screen: Built with CTA rendering, PM Review Agent panel, stable detail save/readback, and text assignee compatibility
+- BF Conversion Module: production DB migration applied; QAS task CTA, Pre-SUM checklist, SUM tracker, downtime calculator, and Agent 8 cutover pack path verified
+- BF downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
 - SAP Knowledge Base: Built in M8D with SAP official content
 - Voice Copilot: Built in M10
 - 12 specialist agents built and live
-- BF Conversion Module: code complete for backend and frontend; production DB migration pending Supabase CLI filename normalization before `supabase db push`
+- PM-review-only and dry-run safety remain the default for generated content and automation outputs
 
 ### Known Issues (Fix These First)
 
 | # | Issue | Severity | Status |
 |---|---|---|---|
-| 1 | Sidebar phase tracker routes to old `/projects/{id}/prepare` instead of `/phase/prepare` | Fixed | Commit 16794ab |
-| 2 | Daily Briefing pulls from Project Alpha risks/actions data instead of Agent 12 daily_briefings table | Fixed | Commit 16794ab |
-| 3 | Task Screen CTA buttons and agent panel need live verification after fix 1 | ✅ Fixed | Commit 82f09d5 |
-| 4 | Phase View showing all tasks as "Ungrouped Deliverable" | ✅ Fixed | Commit 82f09d5 |
-| 5 | Project Alpha has legacy data — new projects will look different | ℹ️ Info | By design |
-| 6 | Playwright fixtures updated to real production project_tasks UUIDs | ✅ Info | Commit 3f6718f |
-| 7 | BF Conversion Module migration not yet applied to production Supabase | Pending | Rename migration files to Supabase timestamp format, then run `supabase db push` |
+| 1 | Microsoft 365 production integration status is not connected/verified | Blocker | API reports `configured=false`, `connected=false`, `verified=false`; requires Railway MS365 env/OAuth setup |
+| 2 | Project Alpha has legacy demo data | Info | Use GF/BF test projects above for production verification |
+| 3 | Beta tester onboarding | On hold | Resume after Microsoft connector is genuinely verified |
+| 4 | User Manual and Welcome Packs | Pending | Start after the production UI remains stable |
 
 ---
 
@@ -351,6 +351,13 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| a36553e | Backend | BF conversion migration grants for production `service_role` access |
+| 724bf0f | Backend | Project task text assignees stored safely in `agent_context.assigned_to_label` |
+| 2599cf4 | Frontend | Task detail autosave race fixed so status refreshes do not wipe unsaved edits |
+| ad6d809 | Backend | Workspace setup status endpoint and Activate-backed production task filtering |
+| 3c40b91 | Frontend | Production backend URL corrected and BF task environment inference added |
+| 44472fa | Frontend Docs | Railway CLI automation status |
+| 3da6017 | Public Docs | Railway CLI automation status |
 | 5d59571 | Public Docs | Handoff + SUD updated after BF Conversion Module |
 | a49f7ab | Frontend Docs | Handoff + SUD updated after BF Conversion Module |
 | a5e04cc | Frontend | BF Conversion Module screen, task CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA |
@@ -384,13 +391,22 @@ Conditional task activation:
 | Fix Daily Briefing data source | ✅ 16794ab |
 | Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
 | Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
-| Verify Agent Panel fires and responds | ✅ a5e04cc |
+| Verify Agent Panel fires and responds | ✅ Production GF task verified |
 | Public docs repo created | ✅ 7e03eee |
 | Playwright fixtures use real UUIDs | ✅ 3f6718f |
 | CLI capabilities documented in Handoff | ✅ Task 0A |
-| M10b-6c BF Conversion Module | ✅ Code complete: backend 44d00df, frontend a5e04cc |
-| Apply BF Conversion Module migration in production | Pending Supabase migration filename fix before CLI push |
-| User Manual | 📋 Post stable UI |
+| Production backend URL points to Railway `-3f52` service | ✅ 3c40b91 |
+| Workspace setup endpoint reports 5/5 | ✅ ad6d809 + production settings verification |
+| Production task counts filtered to Activate-backed rows | ✅ GF 244 / BF 235 |
+| Task detail save/readback survives status autosave | ✅ 2599cf4 + production GF verification |
+| Text assignee labels do not 500 against UUID DB column | ✅ 724bf0f + production readback |
+| M10b-6c BF Conversion Module code | ✅ Backend 44d00df, frontend a5e04cc |
+| Apply BF Conversion Module migration in production | ✅ Applied through production pooler; grants committed in a36553e |
+| Verify BF checklist / SUM / downtime in production | ✅ QAS BF task path verified; SUM active; downtime 11.73h result |
+| Frontend Playwright regression suite | ✅ 107 passed / 48 skipped |
+| Backend pytest suite | ✅ 1302 passed |
+| Microsoft 365 production connector | 🔒 Blocked until Railway MS365 env/OAuth are configured and API verifies true |
+| User Manual | 📋 Post stable UI and MS365 verification |
 | Update Welcome Packs | 📋 Post User Manual |
 | Send beta tester credentials | 🔒 On hold |
 
@@ -398,24 +414,17 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-Step 1 — Apply M10b-6c production migration
-Rename `supabase/migrations/m10b6c_bf_conversion_module.sql` to Supabase timestamp format, then apply with `supabase db push`.
-This creates `bf_sum_checklists`, `bf_sum_executions`, BF downtime fields, indexes, grants, and BF cutover task CTA updates.
+Step 1 — Configure and verify Microsoft 365 production connector
+Add the missing Railway MS365 environment/OAuth values, then verify `/api/v1/integrations/microsoft/status` returns `configured=true`, `connected=true`, and `verified=true`.
 
-Step 2 — Verify BF Conversion Module in production
-Open a BF task that triggers Agent 11 and confirm `/bf/{project_id}` loads:
-1. Pre-SUM Checklist
-2. SUM Execution Tracker
-3. Post-SUM Validation Checklist
-4. Downtime Calculator
-5. Cutover Communication Pack CTA
+Step 2 — Keep using the dedicated production test projects
+Use `GF Test Project` (`b82f0d75-bdc6-41ea-8387-1f48ff7d5afd`) and `BF Test Project` (`e9cec48e-01f4-4506-a212-a9037ed76db9`) for all production regression checks. Do not use legacy `Sample Project Alpha` as a baseline.
 
-Step 3 — Full systematic screen testing
-Every screen, every flow, documented.
+Step 3 — User Manual
+Create the User Manual after Microsoft is verified and the stable production UI has one more clean pass.
 
-Step 4 — User Manual
-After UI stable.
-Real screenshots, step-by-step guide.
+Step 4 — Welcome Packs and beta onboarding
+Update Welcome Packs and send beta tester credentials only after the User Manual and Microsoft connector are complete.
 
 ---
 
