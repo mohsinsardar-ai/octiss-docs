@@ -72,8 +72,8 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 ## 4. Current Build State (04 June 2026)
 
 ### What Is Live and Working
-- Backend: 386 routes, 1288 tests passing
-- Frontend: Deployed Vercel, 100 Playwright tests passing
+- Backend: 393 routes, 1294 tests passing
+- Frontend: Deployed Vercel, 103 Playwright tests passing / 48 skipped
 - Setup 5/5 READY — all setup steps complete
 - MS365 fully connected — OneDrive, Outlook, Calendar verified
 - Azure App: "Octiss Production" — 7 permissions granted
@@ -85,17 +85,19 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - SAP Knowledge Base: Built in M8D with SAP official content
 - Voice Copilot: Built in M10
 - 12 specialist agents built and live
+- BF Conversion Module: code complete for backend and frontend; production DB migration pending manual Supabase SQL Editor apply
 
 ### Known Issues (Fix These First)
 
 | # | Issue | Severity | Status |
 |---|---|---|---|
-| 1 | Sidebar phase tracker routes to old `/projects/{id}/prepare` instead of `/phase/prepare` | 🔴 Critical | Fix sent to Codex — commit 16794ab |
-| 2 | Daily Briefing pulls from Project Alpha risks/actions data instead of Agent 12 daily_briefings table | 🟡 Medium | Fix sent to Codex — commit 16794ab |
+| 1 | Sidebar phase tracker routes to old `/projects/{id}/prepare` instead of `/phase/prepare` | Fixed | Commit 16794ab |
+| 2 | Daily Briefing pulls from Project Alpha risks/actions data instead of Agent 12 daily_briefings table | Fixed | Commit 16794ab |
 | 3 | Task Screen CTA buttons and agent panel need live verification after fix 1 | ✅ Fixed | Commit 82f09d5 |
 | 4 | Phase View showing all tasks as "Ungrouped Deliverable" | ✅ Fixed | Commit 82f09d5 |
 | 5 | Project Alpha has legacy data — new projects will look different | ℹ️ Info | By design |
 | 6 | Playwright fixtures updated to real production project_tasks UUIDs | ✅ Info | Commit 3f6718f |
+| 7 | BF Conversion Module migration not yet applied to production Supabase | Manual | Apply `supabase/migrations/m10b6c_bf_conversion_module.sql` in Supabase SQL Editor |
 
 ---
 
@@ -349,6 +351,10 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| a5e04cc | Frontend | BF Conversion Module screen, task CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA |
+| 44d00df | Backend | BF Conversion Module endpoints, service, migration SQL, and route tests |
+| ccfcb17 | Public Docs | CLI inventory and permanent docs update rule baseline |
+| cdb4885 | Frontend Docs | Handoff + SUD CLI inventory and permanent docs update rule baseline |
 | 3f6718f | Frontend | Update Playwright fixtures to real production UUIDs |
 | 82f09d5 | Frontend | Fix Task Screen + Phase View deliverable grouping |
 | f0c8b88 | Backend | Deliverable enrichment + task detail consistency |
@@ -376,11 +382,12 @@ Conditional task activation:
 | Fix Daily Briefing data source | ✅ 16794ab |
 | Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
 | Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
-| Verify Agent Panel fires and responds | ⏳ Test needed |
+| Verify Agent Panel fires and responds | ✅ a5e04cc |
 | Public docs repo created | ✅ 7e03eee |
 | Playwright fixtures use real UUIDs | ✅ 3f6718f |
 | CLI capabilities documented in Handoff | ✅ Task 0A |
-| M10b-6c BF Conversion Module | 🔄 In progress |
+| M10b-6c BF Conversion Module | ✅ Code complete: backend 44d00df, frontend a5e04cc |
+| Apply BF Conversion Module migration in production | 🔒 Manual Supabase SQL Editor |
 | User Manual | 📋 Post stable UI |
 | Update Welcome Packs | 📋 Post User Manual |
 | Send beta tester credentials | 🔒 On hold |
@@ -389,20 +396,22 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-Step 1 — Complete M10b-6c BF Conversion Module
-See SUD v1.6 Section 16 for full spec.
-Five components:
-1. Pre-SUM Checklist (per environment)
+Step 1 — Apply M10b-6c production migration
+Apply `supabase/migrations/m10b6c_bf_conversion_module.sql` manually in Supabase SQL Editor.
+This creates `bf_sum_checklists`, `bf_sum_executions`, BF downtime fields, indexes, grants, and BF cutover task CTA updates.
+
+Step 2 — Verify BF Conversion Module in production
+Open a BF task that triggers Agent 11 and confirm `/bf/{project_id}` loads:
+1. Pre-SUM Checklist
 2. SUM Execution Tracker
 3. Post-SUM Validation Checklist
 4. Downtime Calculator
-5. Cutover Communication Pack (Agent 11 + 8)
+5. Cutover Communication Pack CTA
 
-Step 2 — Full systematic screen testing
-After M10b-6c complete.
+Step 3 — Full systematic screen testing
 Every screen, every flow, documented.
 
-Step 3 — User Manual
+Step 4 — User Manual
 After UI stable.
 Real screenshots, step-by-step guide.
 
