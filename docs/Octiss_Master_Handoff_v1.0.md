@@ -351,6 +351,8 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| 5d59571 | Public Docs | Handoff + SUD updated after BF Conversion Module |
+| a49f7ab | Frontend Docs | Handoff + SUD updated after BF Conversion Module |
 | a5e04cc | Frontend | BF Conversion Module screen, task CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA |
 | 44d00df | Backend | BF Conversion Module endpoints, service, migration SQL, and route tests |
 | ccfcb17 | Public Docs | CLI inventory and permanent docs update rule baseline |
