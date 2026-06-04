@@ -254,6 +254,8 @@ RIGHT (40%) — CTA Panel:
 - project_wricef
 - project_escalations
 - session_attendance
+- bf_sum_checklists
+- bf_sum_executions
 
 ### Key Legacy Tables
 - projects
@@ -325,9 +327,10 @@ Conditional task activation:
 |---|---|
 | Azure App | Octiss Production |
 | Client ID | 3a027ac4-a5f3-452c-b283-42a29c8be118 |
-| Redirect URI | https://sap-pmo-agent-production.up.railway.app/api/v1/integrations/microsoft/callback |
+| Redirect URI | https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/microsoft/callback |
 | Permissions | User.Read, Files.ReadWrite, Files.Read.All, Sites.Read.All, Mail.Send, Calendars.ReadWrite, offline_access |
-| Status | All granted + admin consent applied |
+| Production API Status | `configured=false`, `connected=false`, `verified=false` |
+| Next Step | Add Railway MS365 env/OAuth values and verify the backend status endpoint returns true |
 | Home page | https://octiss.com |
 
 ---
