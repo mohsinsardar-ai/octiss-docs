@@ -85,7 +85,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - SAP Knowledge Base: Built in M8D with SAP official content
 - Voice Copilot: Built in M10
 - 12 specialist agents built and live
-- BF Conversion Module: code complete for backend and frontend; production DB migration pending manual Supabase SQL Editor apply
+- BF Conversion Module: code complete for backend and frontend; production DB migration pending Supabase CLI filename normalization before `supabase db push`
 
 ### Known Issues (Fix These First)
 
@@ -97,7 +97,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 | 4 | Phase View showing all tasks as "Ungrouped Deliverable" | ✅ Fixed | Commit 82f09d5 |
 | 5 | Project Alpha has legacy data — new projects will look different | ℹ️ Info | By design |
 | 6 | Playwright fixtures updated to real production project_tasks UUIDs | ✅ Info | Commit 3f6718f |
-| 7 | BF Conversion Module migration not yet applied to production Supabase | Manual | Apply `supabase/migrations/m10b6c_bf_conversion_module.sql` in Supabase SQL Editor |
+| 7 | BF Conversion Module migration not yet applied to production Supabase | Pending | Rename migration files to Supabase timestamp format, then run `supabase db push` |
 
 ---
 
@@ -389,7 +389,7 @@ Conditional task activation:
 | Playwright fixtures use real UUIDs | ✅ 3f6718f |
 | CLI capabilities documented in Handoff | ✅ Task 0A |
 | M10b-6c BF Conversion Module | ✅ Code complete: backend 44d00df, frontend a5e04cc |
-| Apply BF Conversion Module migration in production | 🔒 Manual Supabase SQL Editor |
+| Apply BF Conversion Module migration in production | Pending Supabase migration filename fix before CLI push |
 | User Manual | 📋 Post stable UI |
 | Update Welcome Packs | 📋 Post User Manual |
 | Send beta tester credentials | 🔒 On hold |
@@ -399,7 +399,7 @@ Conditional task activation:
 ## 18. What To Do In Next Session
 
 Step 1 — Apply M10b-6c production migration
-Apply `supabase/migrations/m10b6c_bf_conversion_module.sql` manually in Supabase SQL Editor.
+Rename `supabase/migrations/m10b6c_bf_conversion_module.sql` to Supabase timestamp format, then apply with `supabase db push`.
 This creates `bf_sum_checklists`, `bf_sum_executions`, BF downtime fields, indexes, grants, and BF cutover task CTA updates.
 
 Step 2 — Verify BF Conversion Module in production
@@ -421,39 +421,54 @@ Real screenshots, step-by-step guide.
 
 ## 19. Codex Environment — CLI Capabilities
 
-Last verified: 04 June 2026
+Last verified: 05 June 2026
 
 | CLI | Available | Version | Auth Status |
 |-----|-----------|---------|-------------|
-| gh | YES | 2.92.0 | Authenticated to mohsinsardar-ai |
-| git | YES | 2.53.0.windows.2 | N/A; repo-local author configured |
+| gh | YES | 2.92.0 | Authenticated - mohsinsardar-ai |
+| git | YES | 2.53.0.windows.2 | Configured |
 | node | YES | v24.14.1 | N/A |
 | npm | YES | 11.11.0 | N/A |
 | python | YES | 3.12.10 | N/A |
 | pip | YES | 26.1.1 | N/A |
-| railway | YES | 4.51.0 | Not auth |
+| railway | YES | 4.51.0 | Not authenticated - non-interactive login blocked; requires `RAILWAY_API_TOKEN`, `RAILWAY_TOKEN`, or interactive `railway login` |
 | vercel | YES | 53.2.0 | Authenticated; Octiss production project visible |
-| supabase | YES | 2.98.2 | Authenticated; project list visible, repo not linked |
-| npx playwright | YES | 1.59.1 | N/A |
-| curl.exe | YES | 8.19.0 | N/A |
+| supabase CLI | YES | 2.98.2 | Authenticated + linked to qrxfprybbpqugptakeke |
+| playwright | YES | 1.59.0 | N/A |
+| curl | YES | 8.19.0 | N/A |
 | httpx | YES | 0.28.1 | N/A |
-| jq | NO | N/A | N/A |
-| cat | YES | PowerShell alias | N/A |
-| cp | YES | PowerShell alias | N/A |
-| mkdir | YES | PowerShell function | N/A |
-| ls | YES | PowerShell alias | N/A |
+| jq | YES | 1.8.1 | N/A |
 
-### What Codex Can Automate End-to-End:
-- GitHub repo creation, commit, push, PR creation, and repo inspection via gh.
-- Commits and pushes in backend and frontend repos via repo-local Git identity.
-- Frontend builds and Playwright suites via Node/npm/npx Playwright.
-- Backend Python scripts and pytest suites via Python/pip.
-- Vercel project inspection and production deployment verification.
-- Supabase project listing and direct database reads through configured service-role environment values.
-- HTTP checks with curl.exe and httpx.
+### What Codex Can Automate End-to-End
+(Zero manual steps from Mohsin in the current CLI auth state):
+- Create and push to GitHub repos
+- Commit and push all code changes
+- Frontend deploys - auto via Vercel on push
+- Backend deploys - auto via Railway on push
+- Run Supabase CLI dry-runs and push timestamped migrations through `supabase db push`
+- Run full Playwright test suite
+- Parse JSON API responses with jq
+- Sync public octiss-docs repo
+- Inspect Vercel production project state
+- Run HTTP checks with curl and httpx
 
-### What Requires Mohsin to Act:
-- Railway CLI actions require `railway login`; automatic Railway redeploy from GitHub remains available when configured.
-- Supabase migrations are applied manually through Supabase SQL Editor unless the backend repo is explicitly linked with `supabase link`.
-- `supabase status` in the backend repo is blocked by `.env` parsing until the environment file encoding is cleaned for Supabase CLI compatibility.
-- `jq` is not installed; JSON parsing uses PowerShell, Python, gh `--json`, or Node instead.
+### What Requires Mohsin to Act
+(Manual steps that cannot be automated from this non-interactive shell):
+- Approve any external send - email, WhatsApp, calendar invite. Dry-run is default. Nothing sends without PM approval.
+- Railway CLI authentication - provide `RAILWAY_API_TOKEN` / `RAILWAY_TOKEN`, or run `railway login` in an interactive terminal.
+- Railway logs and environment-variable inspection remain blocked until Railway CLI authentication is completed.
+- Existing Supabase migration files need Supabase timestamp prefixes before `supabase db push` can apply them; the backend repo is already linked.
+- Anthropic API key rotation - if key expires.
+- Supabase DB password rotation - if changed.
+- Azure app permission changes - via Azure portal.
+- New paid service signup - requires Mohsin decision per bootstrap philosophy.
+
+---
+
+## 20. Founder Context
+
+### What Still Requires Mohsin to Act
+- External sends remain PM-approval-only. Codex can draft and dry-run, but cannot send email, WhatsApp, or calendar invites without explicit approval.
+- Supabase migrations: PARTIALLY AUTOMATED. Supabase CLI is linked to qrxfprybbpqugptakeke, and Codex can run `supabase db push`. Current migration filenames are skipped until renamed to Supabase timestamp format.
+- Railway: NOT AUTHENTICATED in the Codex non-interactive shell. Codex needs `RAILWAY_API_TOKEN` / `RAILWAY_TOKEN` or an interactive `railway login`. Deploys remain automatic via git push.
+- Anthropic API key rotation, Supabase DB password rotation, Azure app permission changes, and new paid service signups still require Mohsin.

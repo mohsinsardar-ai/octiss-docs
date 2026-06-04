@@ -22,6 +22,7 @@
 | v1.4 | 01 Jun 2026 | M10b-5 complete — 394 tasks mapped to 12 agents. Three new sections added: Change Request workflow (Section 5), Escalation workflow (Section 6), Session Attendance and No-Show Escalation (Section 7). New DB tables documented: project_escalations, session_attendance, meetings attendance fields. Section 9 updated with 7 new decisions. |
 | v1.5 | 03 Jun 2026 | M10b-6b, M10b-6a, Seed, M10b-7 all confirmed complete. |
 | v1.6 | 04 Jun 2026 | M10b-8 complete. MS365 fully configured. Azure App renamed to Octiss Production. Command Center rebuilt (6 sections). M10b-6c BF Conversion Module code complete. Backend now has 393 routes and 1294 tests passing. Frontend has 103 Playwright tests passing / 48 skipped. Production BF migration still requires manual Supabase SQL Editor apply. |
+| v1.6.1 | 05 Jun 2026 | CLI environment update: Supabase CLI linked to production and dry-run reaches remote DB; jq installed and verified; Railway CLI auth blocked in non-interactive Codex shell until token or interactive login. BF migration remains pending until migration filenames are normalized to Supabase timestamp format. |
 
 ---
 
@@ -822,6 +823,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | CLI environment partially automated. Supabase CLI linked to production project qrxfprybbpqugptakeke; `supabase db push --dry-run` reaches the remote database and reports it up to date, but current migration filenames are skipped because they do not match Supabase's `<timestamp>_name.sql` pattern. jq installed at 1.8.1 and JSON parsing test passed. Railway CLI login is blocked in the Codex non-interactive shell until `RAILWAY_API_TOKEN` / `RAILWAY_TOKEN` or interactive `railway login` is provided. |
 | 04 Jun 2026 | M10b-6c BF Conversion Module code complete. Backend commit 44d00df adds BF endpoints, `bf_sum_checklists`, `bf_sum_executions`, downtime estimate fields, migration SQL, and route tests. Frontend commit a5e04cc adds BF screen, Task Screen CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA. Production migration still requires manual Supabase SQL Editor apply. Backend: 1294 tests passing. Frontend: 103 Playwright tests passing / 48 skipped. |
 | 04 Jun 2026 | Task Screen and Phase View grouping fixed. Playwright fixtures updated to real production UUIDs. All 61 Project Alpha rows link to legacy roadmap_tasks, which is correct by design. New projects via Project Plan Agent will link to activate_tasks. Commits: 82f09d5 (FE), f0c8b88 (BE), 3f6718f (FE). |
 | 04 Jun 2026 | Public docs repo created: github.com/mohsinsardar-ai/octiss-docs. Both SUD v1.6 and Master Handoff v1.0 now accessible as raw URLs for all Claude and Codex sessions. Commit: 7e03eee. |
@@ -900,7 +902,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 - **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
 - **Playwright fixtures updated** — real production project_tasks UUIDs used in task route tests (commit 3f6718f)
 - **8 new DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance
-- **BF Conversion Module code complete** — backend commit 44d00df, frontend commit a5e04cc. Production migration pending manual Supabase SQL Editor apply.
+- **BF Conversion Module code complete** — backend commit 44d00df, frontend commit a5e04cc. Production migration pending Supabase migration filename normalization before CLI apply.
 
 ### 13.2 Known Issues (Active — Being Fixed)
 
@@ -909,7 +911,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 1 | Sidebar phase tracker links to old `/projects/{id}/prepare` route instead of new `/phase/prepare` | ✅ Fixed | 16794ab |
 | 2 | Daily Briefing section pulls from old Project Alpha risks/actions data instead of Agent 12 daily_briefings table | ✅ Fixed | 16794ab |
 | 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
-| 4 | BF Conversion Module database migration not yet applied in production | Manual | Apply `supabase/migrations/m10b6c_bf_conversion_module.sql` in Supabase SQL Editor |
+| 4 | BF Conversion Module database migration not yet applied in production | Pending | Rename migration files to Supabase timestamp format, then run `supabase db push` |
 
 ### 13.3 What Is Not Yet Built
 - BF Conversion Module production migration and live production validation
@@ -1079,7 +1081,8 @@ Frontend delivered:
 
 Production status:
 - Code is pushed to `main`
-- Migration must be applied manually in Supabase SQL Editor before production BF checklist/SUM records are available
+- Supabase CLI is linked to production, but current migration filenames are skipped by `supabase db push` until renamed to Supabase timestamp format
+- Migration must still be applied before production BF checklist/SUM records are available
 
 *End of Document — Octiss SUD v1.6 — 04 June 2026*  
 *Next update: v1.7 after BF production migration, live BF validation, and User Manual completion*
