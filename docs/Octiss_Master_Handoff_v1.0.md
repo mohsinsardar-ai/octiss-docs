@@ -354,6 +354,7 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| current docs update | Frontend/Public Docs | End-of-session Handoff/SUD update for production verification and MS365 blocker; final docs commit hashes live in git history because the file cannot self-reference its own final hash |
 | a36553e | Backend | BF conversion migration grants for production `service_role` access |
 | 724bf0f | Backend | Project task text assignees stored safely in `agent_context.assigned_to_label` |
 | 2599cf4 | Frontend | Task detail autosave race fixed so status refreshes do not wipe unsaved edits |
