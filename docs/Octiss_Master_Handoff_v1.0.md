@@ -44,7 +44,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 | Item | URL / Path |
 |---|---|
 | Frontend | https://octiss-production.vercel.app |
-| Backend | https://sap-pmo-agent-production.up.railway.app |
+| Backend | https://sap-pmo-agent-production-3f52.up.railway.app |
 | Frontend Repo | mohsinsardar-ai/em-intelligence-labs-dashboard |
 | Backend Repo | mohsinsardar-ai/sap-pmo-agent |
 | Database | Supabase Singapore — qrxfprybbpqugptakeke |
@@ -431,7 +431,7 @@ Last verified: 05 June 2026
 | npm | YES | 11.11.0 | N/A |
 | python | YES | 3.12.10 | N/A |
 | pip | YES | 26.1.1 | N/A |
-| railway | YES | 4.51.0 | Not authenticated - non-interactive login blocked; requires `RAILWAY_API_TOKEN`, `RAILWAY_TOKEN`, or interactive `railway login` |
+| railway | YES | v5.0.0 | Authenticated - mohsin.sardar@gmail.com. Linked to octiss-production / sap-pmo-agent. Use flag form to link (see Section 20). |
 | vercel | YES | 53.2.0 | Authenticated; Octiss production project visible |
 | supabase CLI | YES | 2.98.2 | Authenticated + linked to qrxfprybbpqugptakeke |
 | playwright | YES | 1.59.0 | N/A |
@@ -445,6 +445,10 @@ Last verified: 05 June 2026
 - Commit and push all code changes
 - Frontend deploys - auto via Vercel on push
 - Backend deploys - auto via Railway on push
+- Check Railway logs: `railway logs --tail 20`
+- Check service status: `railway status`
+- Check env vars: `railway variables`
+- Redeploy service: `railway redeploy`
 - Run Supabase CLI dry-runs and push timestamped migrations through `supabase db push`
 - Run full Playwright test suite
 - Parse JSON API responses with jq
@@ -455,8 +459,6 @@ Last verified: 05 June 2026
 ### What Requires Mohsin to Act
 (Manual steps that cannot be automated from this non-interactive shell):
 - Approve any external send - email, WhatsApp, calendar invite. Dry-run is default. Nothing sends without PM approval.
-- Railway CLI authentication - provide `RAILWAY_API_TOKEN` / `RAILWAY_TOKEN`, or run `railway login` in an interactive terminal.
-- Railway logs and environment-variable inspection remain blocked until Railway CLI authentication is completed.
 - Existing Supabase migration files need Supabase timestamp prefixes before `supabase db push` can apply them; the backend repo is already linked.
 - Anthropic API key rotation - if key expires.
 - Supabase DB password rotation - if changed.
@@ -470,5 +472,35 @@ Last verified: 05 June 2026
 ### What Still Requires Mohsin to Act
 - External sends remain PM-approval-only. Codex can draft and dry-run, but cannot send email, WhatsApp, or calendar invites without explicit approval.
 - Supabase migrations: PARTIALLY AUTOMATED. Supabase CLI is linked to qrxfprybbpqugptakeke, and Codex can run `supabase db push`. Current migration filenames are skipped until renamed to Supabase timestamp format.
-- Railway: NOT AUTHENTICATED in the Codex non-interactive shell. Codex needs `RAILWAY_API_TOKEN` / `RAILWAY_TOKEN` or an interactive `railway login`. Deploys remain automatic via git push.
+- Railway first-time auth: run `railway login` once from local Windows Terminal. After that, Codex inherits auth automatically. If auth expires, repeat this step.
 - Anthropic API key rotation, Supabase DB password rotation, Azure app permission changes, and new paid service signups still require Mohsin.
+
+### Railway Production Link
+
+| Item | Value |
+|---|---|
+| CLI | railway |
+| Available | YES |
+| Version | v5.0.0 |
+| Auth Status | Authenticated + linked to sap-pmo-agent |
+| Workspace | mohsinsardar-ai's Projects |
+| Project | octiss-production |
+| Project ID | 6a04c677-c1ef-46bf-8ec4-fd1cba153b70 |
+| Environment | production |
+| Environment ID | 7ec35ab1-fd55-46f9-8dc5-0a4474351882 |
+| Service | sap-pmo-agent |
+| Service ID | 195ffd46-d9af-4556-bd98-d9b4aea83e1c |
+| Backend URL | https://sap-pmo-agent-production-3f52.up.railway.app |
+
+### Railway Link Command (Future Sessions)
+
+If `railway status` shows "No linked project", run this exact command to relink:
+
+```bash
+railway link \
+  --project 6a04c677-c1ef-46bf-8ec4-fd1cba153b70 \
+  --environment 7ec35ab1-fd55-46f9-8dc5-0a4474351882 \
+  --service 195ffd46-d9af-4556-bd98-d9b4aea83e1c
+```
+
+Note: `railway login` must be run once from local Windows Terminal, not the Codex shell, before this link command will work. Auth persists across sessions after that.
