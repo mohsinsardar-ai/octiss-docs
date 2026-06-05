@@ -830,6 +830,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 06 Jun 2026 | FULL BUILD QUEUE TASKS 1-9 COMPLETE<br>Project creation now offers SOW-first and Q&A fallback paths; `creation_path` is saved per project.<br>Task exclude/restore/delete is built for Phase View and Task Screen, with excluded tasks hidden from default progress.<br>Automation Setup is now part of Project Initiation, backed by `project_automation_preferences`.<br>Settings has left-sidebar navigation, Automation Safety workflow scheduling, and Octiss-only AI Roadmap content.<br>CTA workflows 7-16 are built as PM-review-only workflow drafts and outbox contracts; nothing sends or saves externally without PM approval.<br>Google ecosystem backend contract is built: OAuth, status/connect, Drive, Gmail, and Calendar route contracts. Google Cloud credentials, Railway env vars, and Supabase provider setup still require Mohsin manual configuration.<br>Board and Calendar views are built. Microsoft and Google SSO buttons are built using Supabase OAuth, with email/password retained as fallback.<br>Backend commit: `cd317a3`. Frontend commit: `dbfcf8c`. Validation: frontend build passed, backend syntax check passed, Playwright full suite 110 passed / 48 skipped. |
 | 06 Jun 2026 | N8N SETUP COMPLETE<br>All 6 module8 workflow JSON files updated with production backend URL and API key. Commit: `54f5b0f`.<br>All 6 imported and published in n8n:<br>- Octiss — Daily Briefing (daily 8AM)<br>- Octiss — Weekly Report (Monday 8AM)<br>- Octiss — RAID Check (daily 7AM)<br>- Octiss — OneDrive Sync (every 2hrs)<br>- Octiss — Backlog Summary (daily 8:30AM)<br>- Octiss — Hypercare Summary (daily 8:30AM)<br>Old broken workflows archived.<br>n8n instance: n8n-production-c148.up.railway.app<br>No manual n8n login required going forward for normal operations. |
 | 05 Jun 2026 | PROJECT CREATION FLOW<br>Two options must be presented to the PM on the project creation screen:<br>A) Create Project with SOW: upload SOW upfront, Agent 2 extracts scope, PM confirms extraction, and the plan is generated from real SOW data.<br>B) Create Project without SOW: PM answers 12 fallback questions, the plan is generated from answers, and SOW can be uploaded later via Project Initiation.<br>Both options are valid. A is recommended. B is for PMs who do not yet have SOW. Current build has SOW as an optional separate screen and must be corrected to show both options at project creation. |
 | 05 Jun 2026 | TASK EXCLUDE / DELETE<br>PM must be able to exclude or delete any task from the project plan directly from Phase View or Task Screen.<br>[Exclude Task] hides the task from Phase View, removes it from progress metrics, logs it in the project audit trail, and remains recoverable so the PM can restore excluded tasks.<br>[Delete Task] permanently removes the task, requires a confirmation dialog, and cannot be recovered.<br>Not yet built and required before beta. |
@@ -914,30 +915,30 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 ---
 
-## 13. Current Build Status (05 Jun 2026)
+## 13. Current Build Status (06 Jun 2026)
 
 | Component | Status | Notes |
 |---|---|---|
-| Backend | ✅ Live | 393+ routes, 1302+ tests |
-| Frontend | ✅ Live | Vercel, 110 Playwright |
+| Backend | ✅ Live | 393+ routes, 1302+ baseline tests; full-build API/schema contracts in `cd317a3` |
+| Frontend | ✅ Live | Vercel, production build passed, 110 Playwright passed / 48 skipped |
 | MS365 Integration | ✅ Live | OneDrive, Outlook, Calendar configured |
-| Project Initiation Module | ✅ Built | Needs SOW mandatory fix |
+| Project Initiation Module | ✅ Built | SOW/Q&A creation paths, team, task mapping, automation setup |
 | Agent Context | ✅ Fixed | SOW + team + SAP chunks injected |
 | BF Conversion Module | ✅ Live | Checklist, SUM, Calculator |
-| Active Project Resolver | ✅ Fixed | Global — all pages |
+| Active Project Resolver | ✅ Fixed | Global - all pages |
 | Notes Timestamped Log | ✅ Live | |
 | Dates DD-MMM-YYYY | ✅ Live | |
 | Login Copyright Footer | ✅ Live | |
 | n8n Workflows 1-6 | ✅ Live | Imported, configured, published 06 Jun |
-| n8n Workflows 7-16 | ❌ Not built | Document automation workflows |
-| Automation Settings Screen | ❌ Not built | PM schedule control |
-| Task Exclude/Delete | ❌ Not built | Required before beta |
-| SOW mandatory at creation | ❌ Not fixed | Two-option screen needed |
-| Google Ecosystem | ❌ Not built | Drive, Gmail, Calendar |
-| Kanban Board View | ❌ Not built | |
-| Calendar View | ❌ Not built | |
+| n8n Workflows 7-16 | ✅ Built | CTA document workflows as PM-review-only drafts/outbox contracts |
+| Automation Settings Screen | ✅ Built | Active-project workflow schedule controls |
+| Task Exclude/Delete | ✅ Built | Exclude/restore/delete with default hidden excluded tasks |
+| SOW mandatory at creation | ✅ Built | PM chooses SOW recommended path or Q&A fallback |
+| Google Ecosystem | ✅ Built | OAuth + Drive/Gmail/Calendar route contracts; Google Cloud/Railway setup pending |
+| Kanban Board View | ✅ Built | `/board` with status columns, filters, drag status update |
+| Calendar View | ✅ Built | `/calendar` with Month/Week/Day task schedule views |
+| Social Login | ✅ Built | Microsoft + Google Supabase OAuth buttons; provider setup pending |
 | Gantt View | ❌ Not built | Post-beta |
-| Social Login | ❌ Not built | Microsoft + Google OAuth |
 | Premium UI/UX Overhaul | ❌ Not started | Waiting for design reference |
 | User Manual | ❌ Not started | After Test Round 2 |
 | Beta Onboarding | 🔒 On hold | After Test Round 2 |
