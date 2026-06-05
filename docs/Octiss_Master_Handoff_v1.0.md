@@ -84,7 +84,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
 - Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
 - Tester1 production `/api/v1/projects` verified: BF Test Project and GF Test Project are both returned and linked to the tester1 organization
-- Phase View active project restoration fixed: `/phase/{phase}` now uses the shared project resolver and loads an active/fallback project instead of showing "Select a project" after sidebar context selection
+- Phase View active project restoration fixed: `/phase/{phase}` now uses the shared project resolver, prioritizes the project list before phase detail calls, and loads an active/fallback project instead of showing "Select a project" after sidebar context selection
 - Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
 - 10 M10b DB tables live in production, including BF checklist/SUM tables with `service_role` grants
 - Sidebar: Clean 7-item layout
@@ -405,7 +405,7 @@ Conditional task activation:
 | Fix Daily Briefing data source | ✅ 16794ab |
 | Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
 | Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
-| Fix Phase View active project restore + GF/BF selector visibility | ✅ 5ccd18f |
+| Fix Phase View active project restore + GF/BF selector visibility | ✅ 5ccd18f + ef425b5 |
 | Verify Agent Panel fires and responds | ✅ Production GF task verified |
 | Public docs repo created | ✅ 7e03eee |
 | Playwright fixtures use real UUIDs | ✅ 3f6718f |
