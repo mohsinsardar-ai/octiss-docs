@@ -1,5 +1,5 @@
 # Octiss — Solution Understanding Document (SUD)
-**Version:** v1.6.5 | **Date:** 05 June 2026 | **Status:** LIVE — BETA UNBLOCKED
+**Version:** v1.6.6 | **Date:** 05 June 2026 | **Status:** LIVE — BETA UNBLOCKED
 **Owner:** Mohsin Sardar — EM Intelligence Labs  
 **Classification:** Confidential — Internal Use Only  
 **Domains:** octiss.com | emintelligencelab.com
@@ -27,6 +27,7 @@
 | v1.6.3 | 05 Jun 2026 | MS365 Railway env vars added in Railway production. Tester workspace status endpoint now reports `configured=true`, while OAuth account connection/verification remains pending (`connected=false`, `verified=false`). |
 | v1.6.4 | 05 Jun 2026 | Microsoft OAuth Network Error fixed in backend `8f1ecfb`: MSAL-reserved `offline_access` removed from runtime request scopes, `/microsoft/auth` alias added, and production auth URLs verified to use the `-3f52` callback. |
 | v1.6.5 | 05 Jun 2026 | MS365 fully connected in production. OneDrive, Outlook, Calendar, and Project Document Folders are configured/connected. SharePoint is N/A for the personal Hotmail account and is not required for beta. Beta is now unblocked. |
+| v1.6.6 | 05 Jun 2026 | Phase View active project restoration fixed in frontend `5ccd18f`. `/phase/{phase}` now resolves from the shared project list and auto-restores only on routes that require an active project. Tester1 production projects endpoint returns both BF Test Project and GF Test Project. Frontend Playwright suite: 108 passed / 48 skipped. |
 
 ---
 
@@ -827,6 +828,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | Phase View active-project resolution fixed. The project selector stores selected project IDs in shared AuthContext/localStorage; Phase View now uses a shared resolver from the projects API and auto-restores only on routes that require an active project. Production `/api/v1/projects` for tester1 returns BF Test Project and GF Test Project, so GF is linked to the tester1 organization. |
 | 05 Jun 2026 | MS365 fully connected in production. OneDrive, Outlook, Calendar all configured. SharePoint unavailable — personal Hotmail account has no SPO license. Decision: SharePoint is not required for beta. Personal OneDrive is sufficient for document storage. Beta is now unblocked. |
 | 05 Jun 2026 | Microsoft OAuth URL generation must keep `offline_access` as a required/display permission but must not pass it directly to MSAL runtime request scopes. MSAL treats it as reserved and returns a backend 500, which browsers surface as Network Error. Backend commit `8f1ecfb` fixed this and added `/api/v1/integrations/microsoft/auth` as a compatibility alias for `/connect`. |
 | 05 Jun 2026 | MS365 Railway env vars added — production Microsoft integration now configured. Tester workspace API reports `configured=true`, `connected=false`, `verified=false`; OAuth connect/verification remains the next step. |
@@ -911,6 +913,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 - **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
 - **Task Screen fixed and production-verified** — CTA rendering, agent panel, status updates, direct task route loading, stable detail save/readback, and text assignee labels
 - **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
+- **Phase View active project restore fixed** — `/phase/{phase}` resolves active/fallback project from the shared project list, and the sidebar selector lists both GF Test Project and BF Test Project (commit 5ccd18f)
 - **Playwright fixtures updated** — real production project_tasks UUIDs used in task route tests (commit 3f6718f)
 - **10 M10b DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance, bf_sum_checklists, bf_sum_executions
 - **BF Conversion Module production-verified** — backend commit 44d00df, frontend commit a5e04cc, grants commit a36553e. QAS BF checklist, SUM tracker, downtime calculator, and Agent 8 cutover CTA path verified.
@@ -923,6 +926,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 2 | Daily Briefing section pulls from old Project Alpha risks/actions data instead of Agent 12 daily_briefings table | ✅ Fixed | 16794ab |
 | 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
 | 4 | BF Conversion Module production migration/grants | ✅ Fixed | Applied through production pooler; `service_role` grants committed in a36553e |
+| 5 | Phase View shows "Select a project" even while sidebar visually has project context | ✅ Fixed | 5ccd18f |
 
 ### 13.3 What Is Not Yet Built
 - Billing / Paddle integration (post company registration)
@@ -1101,5 +1105,5 @@ Production status:
 - Downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
 - Microsoft 365 is no longer a beta blocker: connected=true, OneDrive/Outlook/Calendar configured, Project Document Folders connected, SharePoint N/A for personal Hotmail account
 
-*End of Document — Octiss SUD v1.6.5 — 05 June 2026*
+*End of Document — Octiss SUD v1.6.6 — 05 June 2026*
 *Next update: v1.7 after Premium UI/UX overhaul and User Manual completion*

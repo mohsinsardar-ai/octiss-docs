@@ -74,7 +74,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 
 ### What Is Live and Working
 - Backend: 394 routes, 1302 tests passing
-- Frontend: Vercel production, 107 Playwright tests passing / 48 skipped
+- Frontend: Vercel production, 108 Playwright tests passing / 48 skipped
 - Production URLs: `https://octiss-production.vercel.app` -> `https://sap-pmo-agent-production-3f52.up.railway.app`
 - Setup 5/5 READY for the production tester workspace after safe integration settings were configured
 - Microsoft 365 Railway env vars are present in production; tester workspace status endpoint reports `configured=true`
@@ -83,6 +83,8 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Project Document Folders connected through personal OneDrive
 - Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
 - Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
+- Tester1 production `/api/v1/projects` verified: BF Test Project and GF Test Project are both returned and linked to the tester1 organization
+- Phase View active project restoration fixed: `/phase/{phase}` now uses the shared project resolver and loads an active/fallback project instead of showing "Select a project" after sidebar context selection
 - Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
 - 10 M10b DB tables live in production, including BF checklist/SUM tables with `service_role` grants
 - Sidebar: Clean 7-item layout
@@ -403,6 +405,7 @@ Conditional task activation:
 | Fix Daily Briefing data source | ✅ 16794ab |
 | Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
 | Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
+| Fix Phase View active project restore + GF/BF selector visibility | ✅ 5ccd18f |
 | Verify Agent Panel fires and responds | ✅ Production GF task verified |
 | Public docs repo created | ✅ 7e03eee |
 | Playwright fixtures use real UUIDs | ✅ 3f6718f |
@@ -415,7 +418,7 @@ Conditional task activation:
 | M10b-6c BF Conversion Module code | ✅ Backend 44d00df, frontend a5e04cc |
 | Apply BF Conversion Module migration in production | ✅ Applied through production pooler; grants committed in a36553e |
 | Verify BF checklist / SUM / downtime in production | ✅ QAS BF task path verified; SUM active; downtime 11.73h result |
-| Frontend Playwright regression suite | ✅ 107 passed / 48 skipped |
+| Frontend Playwright regression suite | ✅ 108 passed / 48 skipped |
 | Backend pytest suite | ✅ 1302 passed |
 | MS365 Railway env vars added | ✅ 8f1ecfb |
 | MS365 OAuth connected | ✅ |
