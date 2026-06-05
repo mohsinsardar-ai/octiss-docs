@@ -45,6 +45,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 |---|---|
 | Frontend | https://octiss-production.vercel.app |
 | Backend | https://sap-pmo-agent-production-3f52.up.railway.app |
+| MS365 Redirect URI | https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/microsoft/callback |
 | Frontend Repo | mohsinsardar-ai/em-intelligence-labs-dashboard |
 | Backend Repo | mohsinsardar-ai/sap-pmo-agent |
 | Database | Supabase Singapore — qrxfprybbpqugptakeke |
@@ -77,6 +78,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Production URLs: `https://octiss-production.vercel.app` -> `https://sap-pmo-agent-production-3f52.up.railway.app`
 - Setup 5/5 READY for the production tester workspace after safe integration settings were configured
 - Microsoft 365 Railway env vars are present in production; tester workspace status endpoint reports `configured=true`
+- Microsoft OAuth URL generation is fixed in production: frontend calls the `-3f52` backend, backend `/connect` and `/auth` return 200, and generated auth URLs use the `-3f52` callback
 - Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
 - Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
 - Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
@@ -95,7 +97,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 
 | # | Issue | Severity | Status |
 |---|---|---|---|
-| 1 | Microsoft 365 production integration status is configured but not connected/verified | Blocker | API reports `configured=true`, `connected=false`, `verified=false`; OAuth connect/verification still required |
+| 1 | Microsoft 365 production integration status is configured but not connected/verified | Blocker | OAuth URL generation fixed in backend `8f1ecfb`; API still reports `configured=true`, `connected=false`, `verified=false` until PM completes Microsoft consent and verification |
 | 2 | Project Alpha has legacy demo data | Info | Use GF/BF test projects above for production verification |
 | 3 | Beta tester onboarding | On hold | Resume after Microsoft connector is genuinely verified |
 | 4 | User Manual and Welcome Packs | Pending | Start after the production UI remains stable |
@@ -331,7 +333,8 @@ Conditional task activation:
 | Redirect URI | https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/microsoft/callback |
 | Permissions | User.Read, Files.ReadWrite, Files.Read.All, Sites.Read.All, Mail.Send, Calendars.ReadWrite, offline_access |
 | Production API Status | `configured=true`, `connected=false`, `verified=false` |
-| Next Step | Complete Microsoft OAuth connect/verification so the backend status endpoint returns `connected=true` and `verified=true` |
+| OAuth URL Route | `/api/v1/integrations/microsoft/connect` and `/api/v1/integrations/microsoft/auth` both return auth URLs |
+| Next Step | Confirm Azure App has the exact `-3f52` redirect URI, then complete Microsoft OAuth connect/verification so the backend status endpoint returns `connected=true` and `verified=true` |
 | Home page | https://octiss.com |
 
 ---
@@ -356,6 +359,7 @@ Conditional task activation:
 | Commit | Repo | Description |
 |---|---|---|
 | current docs update | Frontend/Public Docs | End-of-session Handoff/SUD update for production verification and MS365 blocker; final docs commit hashes live in git history because the file cannot self-reference its own final hash |
+| 8f1ecfb | Backend | Microsoft OAuth Network Error fixed by removing MSAL-reserved `offline_access` from runtime request scopes and adding `/microsoft/auth` alias |
 | a36553e | Backend | BF conversion migration grants for production `service_role` access |
 | 724bf0f | Backend | Project task text assignees stored safely in `agent_context.assigned_to_label` |
 | 2599cf4 | Frontend | Task detail autosave race fixed so status refreshes do not wipe unsaved edits |
@@ -410,7 +414,7 @@ Conditional task activation:
 | Verify BF checklist / SUM / downtime in production | ✅ QAS BF task path verified; SUM active; downtime 11.73h result |
 | Frontend Playwright regression suite | ✅ 107 passed / 48 skipped |
 | Backend pytest suite | ✅ 1302 passed |
-| Microsoft 365 production connector | Railway MS365 env vars present; API `configured=true`; OAuth connect/verification still pending (`connected=false`, `verified=false`) |
+| Microsoft 365 production connector | OAuth URL generation fixed (`8f1ecfb`); Railway MS365 env vars present; API `configured=true`; OAuth connect/verification still pending (`connected=false`, `verified=false`) |
 | User Manual | 📋 Post stable UI and MS365 verification |
 | Update Welcome Packs | 📋 Post User Manual |
 | Send beta tester credentials | 🔒 On hold |
@@ -420,7 +424,7 @@ Conditional task activation:
 ## 18. What To Do In Next Session
 
 Step 1 — Connect and verify Microsoft 365 production connector
-Railway MS365 environment/OAuth values are present and `/api/v1/integrations/microsoft/status` returns `configured=true`. Complete OAuth connect/verification, then verify `connected=true` and `verified=true`.
+Railway MS365 environment/OAuth values are present and `/api/v1/integrations/microsoft/status` returns `configured=true`. OAuth URL generation is fixed and uses the `-3f52` callback. Mohsin must confirm the Azure App redirect URI exactly matches `https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/microsoft/callback`, then complete OAuth connect/verification and verify `connected=true` and `verified=true`.
 
 Step 2 — Keep using the dedicated production test projects
 Use `GF Test Project` (`b82f0d75-bdc6-41ea-8387-1f48ff7d5afd`) and `BF Test Project` (`e9cec48e-01f4-4506-a212-a9037ed76db9`) for all production regression checks. Do not use legacy `Sample Project Alpha` as a baseline.

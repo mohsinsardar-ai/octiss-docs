@@ -1,5 +1,5 @@
 # Octiss — Solution Understanding Document (SUD)
-**Version:** v1.6.3 | **Date:** 05 June 2026 | **Status:** LIVE WITH MS365 BLOCKER
+**Version:** v1.6.4 | **Date:** 05 June 2026 | **Status:** LIVE WITH MS365 BLOCKER
 **Owner:** Mohsin Sardar — EM Intelligence Labs  
 **Classification:** Confidential — Internal Use Only  
 **Domains:** octiss.com | emintelligencelab.com
@@ -25,6 +25,7 @@
 | v1.6.1 | 05 Jun 2026 | CLI environment update: Supabase CLI linked to production and dry-run reaches remote DB; jq installed and verified; Railway CLI v5.0.0 authenticated and linked to octiss-production / sap-pmo-agent. BF migration remains pending until migration filenames are normalized to Supabase timestamp format. |
 | v1.6.2 | 05 Jun 2026 | Production verification update: backend 394 routes / 1302 tests passing; frontend 107 Playwright tests passing / 48 skipped; GF/BF production test projects verified; BF migration and `service_role` grants applied; GF task save/readback and BF checklist/SUM/downtime flows verified. Microsoft 365 production API remains blocked (`configured=false`, `connected=false`, `verified=false`) until Railway MS365 env/OAuth are configured. |
 | v1.6.3 | 05 Jun 2026 | MS365 Railway env vars added in Railway production. Tester workspace status endpoint now reports `configured=true`, while OAuth account connection/verification remains pending (`connected=false`, `verified=false`). |
+| v1.6.4 | 05 Jun 2026 | Microsoft OAuth Network Error fixed in backend `8f1ecfb`: MSAL-reserved `offline_access` removed from runtime request scopes, `/microsoft/auth` alias added, and production auth URLs verified to use the `-3f52` callback. |
 
 ---
 
@@ -825,6 +826,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | Microsoft OAuth URL generation must keep `offline_access` as a required/display permission but must not pass it directly to MSAL runtime request scopes. MSAL treats it as reserved and returns a backend 500, which browsers surface as Network Error. Backend commit `8f1ecfb` fixed this and added `/api/v1/integrations/microsoft/auth` as a compatibility alias for `/connect`. |
 | 05 Jun 2026 | MS365 Railway env vars added — production Microsoft integration now configured. Tester workspace API reports `configured=true`, `connected=false`, `verified=false`; OAuth connect/verification remains the next step. |
 | 05 Jun 2026 | Earlier production verification corrected the Microsoft state: UI/settings text is not sufficient proof. The source of truth is `/api/v1/integrations/microsoft/status`; at that time production API reported `configured=false`, `connected=false`, `verified=false`. |
 | 05 Jun 2026 | BF Conversion Module is production verified. Migration was applied through the production pooler, `service_role` grants were added to `bf_sum_checklists` and `bf_sum_executions`, and GF/BF production screens were tested against dedicated production test projects. |
@@ -903,7 +905,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 - Legacy demo `Sample Project Alpha` is not the production verification baseline
 - **Sidebar rebuilt** — phase tracker, project selector, setup gate live
 - **Setup 5/5 READY** — all setup steps complete for the production tester workspace after safe settings configuration
-- **Microsoft 365 is configured but NOT production-verified** — `/api/v1/integrations/microsoft/status` returns `configured=true`, `connected=false`, `verified=false`; OAuth connect/verification remains pending
+- **Microsoft 365 is configured but NOT production-verified** — OAuth URL generation fixed in `8f1ecfb`; `/api/v1/integrations/microsoft/status` returns `configured=true`, `connected=false`, `verified=false`; Azure redirect URI confirmation plus OAuth connect/verification remain pending
 - **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
 - **Task Screen fixed and production-verified** — CTA rendering, agent panel, status updates, direct task route loading, stable detail save/readback, and text assignee labels
 - **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
@@ -919,10 +921,10 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 2 | Daily Briefing section pulls from old Project Alpha risks/actions data instead of Agent 12 daily_briefings table | ✅ Fixed | 16794ab |
 | 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
 | 4 | BF Conversion Module production migration/grants | ✅ Fixed | Applied through production pooler; `service_role` grants committed in a36553e |
-| 5 | Microsoft 365 production connector configured but not connected/verified | Blocker | Railway MS365 env vars are present; do not mark complete until API reports `connected=true` and `verified=true` |
+| 5 | Microsoft 365 production connector configured but not connected/verified | Blocker | OAuth URL generation fixed in `8f1ecfb`; Railway MS365 env vars are present; do not mark complete until Azure redirect URI is confirmed and API reports `connected=true` and `verified=true` |
 
 ### 13.3 What Is Not Yet Built
-- Microsoft 365 OAuth connection and production connector verification
+- Microsoft 365 Azure redirect URI confirmation, OAuth connection, and production connector verification
 - Billing / Paddle integration (post company registration)
 - User Manual (pending stable UI)
 - Welcome Packs update with User Manual
@@ -1096,7 +1098,7 @@ Production status:
 - Pre-SUM checklist renders and accepts PM review updates
 - SUM tracker starts and shows an active execution
 - Downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
-- Microsoft 365 remains unrelated but blocking for beta readiness: API status is `configured=true`, `connected=false`, `verified=false`
+- Microsoft 365 remains unrelated but blocking for beta readiness: OAuth URL generation is fixed, but API status is `configured=true`, `connected=false`, `verified=false`
 
-*End of Document — Octiss SUD v1.6.3 — 05 June 2026*
+*End of Document — Octiss SUD v1.6.4 — 05 June 2026*
 *Next update: v1.7 after Microsoft 365 production verification and User Manual completion*
