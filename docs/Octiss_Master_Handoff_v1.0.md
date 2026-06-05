@@ -88,6 +88,10 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Agent context: SOW + team + SAP chunks ✅
 - BF phase tracker: FIXED ✅
 - Login copyright footer: ADDED ✅
+- n8n: 6 workflows published and active ✅
+  Daily Briefing, Weekly Report, RAID Check,
+  OneDrive Sync, Backlog Summary,
+  Hypercare Summary
 
 ### Known Issues
 | # | Issue | Status |
@@ -395,6 +399,8 @@ Conditional task activation:
 | Project Initiation Module | ✅ fb67edf |
 | GF + BF test projects seeded | ✅ fb67edf |
 | Login copyright footer | ✅ eefa8e3 |
+| n8n workflow files updated with real URLs | ✅ 54f5b0f |
+| n8n 6 workflows imported and published | ✅ 06 Jun 2026 |
 | Playwright 110 passed | ✅ |
 | BF manual tests G1-H9 | ⏳ Next session |
 | Premium UI/UX overhaul | 📋 After Q1 answer |
@@ -425,59 +431,50 @@ Add to Phase View and Task Screen:
 logged in audit trail.
 [Delete Task] = permanent + confirmation.
 
-### Priority 3 — n8n Setup
-Step by step (Mohsin does manually):
-1. Open https://n8n-production-c148.up.railway.app
-2. Import workflow files from
-   n8n/workflows/module8/
-3. Replace {BACKEND_URL} and
-   {N8N_INTERNAL_API_KEY} placeholders
-4. Activate all 6 workflows
-
-### Priority 4 — Automation Setup in Initiation
+### Priority 3 — Automation Setup in Initiation
 Add Step 4 to Project Initiation flow.
 PM sets schedule per workflow.
 PM sets delivery preferences.
 
-### Priority 5 — Automation Settings Screen
+### Priority 4 — Automation Settings Screen
 Settings → Automation section.
 Left sidebar nav (Claude console style).
 Per-workflow cards with schedule control.
 
-### Priority 6 — CTA Workflows 7-16
+### Priority 5 — CTA Workflows 7-16
 Build all document automation workflows.
 All CTA-triggered, PM-approved.
 Fit-Gap, BPML, Sign-off, MOM,
 SteerCo, Phase Gate, CR, Attendance.
 
-### Priority 7 — Google Ecosystem
+### Priority 6 — Google Ecosystem
 Google Drive, Gmail, Google Calendar.
 Same pattern as Microsoft.
 PM chooses ecosystem at initiation.
 
-### Priority 8 — Kanban Board View
+### Priority 7 — Kanban Board View
 New view — status columns or phase swimlanes.
 Task cards with WBS, owner, due date.
 Drag to change status.
 
-### Priority 9 — Calendar View
+### Priority 8 — Calendar View
 Monthly/weekly/daily calendar.
 Tasks on planned due dates.
 Colour coded by phase.
 
-### Priority 10 — Premium UI/UX Overhaul
+### Priority 9 — Premium UI/UX Overhaul
 Waiting for Mohsin Q1 design reference.
 Covers all GF test feedback items.
 Includes: social login, Agent Assist,
 WBS numbering, Settings restructure,
 dates, task descriptions, Kanban styling.
 
-### Priority 11 — Test Round 2
+### Priority 10 — Test Round 2
 Full end-to-end test of everything.
 Every workflow from SOW to MOM.
 User Manual written from this test.
 
-### Priority 12 — Beta Onboarding
+### Priority 11 — Beta Onboarding
 After Test Round 2 clean.
 5 testers. Welcome packs sent.
 
