@@ -830,6 +830,16 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | PROJECT CREATION FLOW<br>Two options must be presented to the PM on the project creation screen:<br>A) Create Project with SOW: upload SOW upfront, Agent 2 extracts scope, PM confirms extraction, and the plan is generated from real SOW data.<br>B) Create Project without SOW: PM answers 12 fallback questions, the plan is generated from answers, and SOW can be uploaded later via Project Initiation.<br>Both options are valid. A is recommended. B is for PMs who do not yet have SOW. Current build has SOW as an optional separate screen and must be corrected to show both options at project creation. |
+| 05 Jun 2026 | TASK EXCLUDE / DELETE<br>PM must be able to exclude or delete any task from the project plan directly from Phase View or Task Screen.<br>[Exclude Task] hides the task from Phase View, removes it from progress metrics, logs it in the project audit trail, and remains recoverable so the PM can restore excluded tasks.<br>[Delete Task] permanently removes the task, requires a confirmation dialog, and cannot be recovered.<br>Not yet built and required before beta. |
+| 05 Jun 2026 | N8N ARCHITECTURE FINAL<br>n8n is the trigger-only scheduling engine. Octiss backend is the execution engine. MS365 / Google is the delivery layer. PM approves all outputs before anything is sent or saved externally.<br>Scheduled workflows 1-6 need n8n: Daily Briefing daily 8AM, Weekly Report Monday 8AM, RAID Check daily 7AM, OneDrive/Drive Sync every 2 hours, Backlog Summary daily 8:30AM, Hypercare Summary daily 8:30AM.<br>CTA-triggered workflows 7-16 do not need n8n: Fit-Gap Session Pack, BPML Session Pack, Internal Review Request, Customer Sign-Off Request, Signed Copy Receipt + Auto-filing, SteerCo Deck Preparation, Phase Gate Pack, CR Documentation, Session Attendance T-5/T-3/T-1, MOM Distribution.<br>Delivery flow for all automations: trigger → agent generates draft → PM reviews in Octiss inbox → PM clicks [Approve & Send] → email sent and document saved to OneDrive or Google Drive simultaneously → task marked complete / RAID closed.<br>PM controls schedule per workflow in Settings → Automation. Each workflow card shows ON/OFF toggle, time picker, and day picker. PM changes update n8n via API. No manual n8n login is required for PMs. |
+| 05 Jun 2026 | PROJECT INITIATION FLOW<br>Mandatory 6-step flow before Prepare begins. Appears after project creation. Cannot skip to Prepare until complete.<br>Step 1: SOW Upload + Extraction if Path A was chosen, or scope confirmation if Path B was chosen.<br>Step 2: Project Team Roster with Name, Role, Workstream, Email, Company; import via Excel/CSV or manual entry; system maps team to task ownership.<br>Step 3: Confirm Scope: modules, go-live date, WRICEF, integrations, special requirements.<br>Step 4: Automation Setup: PM sets schedule for workflows 1-6, sets delivery email + storage folder, and chooses Microsoft or Google ecosystem.<br>Step 5: Integrations Confirmed: Microsoft 365 or Google Workspace connected, folder path set, email route confirmed, calendar linked.<br>Step 6: Ready: all setup complete → Prepare unlocks; warning banner if any step is skipped. |
+| 05 Jun 2026 | ECOSYSTEM CHOICE — MICROSOFT OR GOOGLE<br>Users choose their ecosystem at Project Initiation Step 5. Both are supported. Users can connect both if needed.<br>Microsoft ecosystem: OneDrive / SharePoint storage, Outlook email via MS Graph, Outlook Calendar via MS Graph. Already connected in production.<br>Google ecosystem to be built: Google Drive storage, Gmail via Google APIs, Google Calendar via Google APIs. Requires Google OAuth app setup, Google Drive API, Gmail API, and Google Calendar API.<br>Same approval flow for both: PM approves → sends via configured ecosystem automatically. |
+| 05 Jun 2026 | KANBAN BOARD VIEW<br>New view to be built alongside Phase View. Accessible from sidebar as "Board View" or as a tab toggle on Phase View.<br>Layout option 1 by status: NOT STARTED \| IN PROGRESS \| BLOCKED \| COMPLETED. Each column shows task cards for current active phase.<br>Layout option 2 by phase swimlanes: PREPARE / EXPLORE / REALIZE / DEPLOY / RUN. Each phase row shows tasks by status.<br>Task card shows WBS number, task name, workstream, owner name, due date DD-MMM-YYYY, status chip, and CTA indicator if an agent is mapped. Clicking a card opens Task Screen. Drag changes status with DB save. Filters: workstream, owner, date range. |
+| 05 Jun 2026 | CALENDAR VIEW<br>New view to be built. Accessible from sidebar as "Calendar" or from Command Center.<br>Calendar View to build now: monthly/weekly/daily calendar; tasks appear on planned due date; color coded by phase; clicking task opens Task Screen; populated from project_tasks planned dates; updates automatically when dates change.<br>Gantt View to build later post-beta: horizontal bar chart, tasks as bars from start to end date, phase swimlanes, go-live date marker, critical path highlighted, populated from Project Plan Agent output after Calendar View is stable. |
+| 05 Jun 2026 | GF MANUAL TEST FEEDBACK<br>Full feedback captured in `D:\Mohsin Personal\OneDrive\EM Intelligence Lab\Octiss Beta\Octiss_Manual_Test_Tracker_v1.0.xlsx`.<br>Key UX issues for the UI/UX overhaul: login social login + copyright footer; Command Center progress bar barely visible and Prepare Progress / Current Task too cramped; sidebar items too dull; Phase View needs WBS numbering and less generic task descriptions; Task Screen CTA Panel renamed to Agent Assist, task name more prominent, dates need save button, notes need log entries; Agent Panel response was generic with zero SAP context, fixed in `fb67edf`; TRACK owners not auto-populated; Settings too cramped; AI Roadmap shows third-party content; MS365 account shows raw technical string.<br>All feedback to be addressed in the UI/UX overhaul session. |
+| 05 Jun 2026 | TESTING STRATEGY — TWO ROUNDS<br>Test Round 1 on 05 Jun 2026 was partial: GF Tests + Settings completed, BF Tests G1-H9 pending, multiple bugs found and fixed.<br>Test Round 2 happens after all features are built: full end-to-end test of every workflow from SOW upload → project creation → initiation → tasks → agents → document workflows → automation. User Manual is written from Round 2 test. Test Round 2 is the pre-beta final gate.<br>Rule: no beta onboarding until Test Round 2 is complete and clean. |
+| 05 Jun 2026 | UI/UX DECISIONS CONFIRMED<br>Settings uses left sidebar nav in a console-style layout. Dates use DD-MMM-YYYY everywhere. CTA Panel is renamed to Agent Assist. WBS numbering appears on all tasks in Phase View. Task assignment shows Workstream + Assigned To with hover card showing name, email, and company. Social login includes Microsoft + Google OAuth in the UI/UX overhaul session. Login screen includes copyright footer. AI Roadmap shows only Octiss product roadmap content and removes all third-party content. Task descriptions use real SAP Activate content, not generic placeholders. Kanban Board and Calendar View enter the build queue. Gantt View is a post-beta milestone. |
 | 05 Jun 2026 | Authenticated production smoke after `c214c01`/`fb67edf` deploy passed for tester workspace: fresh login restored BF Test Project in Command Center, switching to GF updated Command Center, and switching back to BF updated Command Center. |
 | 05 Jun 2026 | Project Initiation is now the required bridge between project creation and Prepare. New projects redirect to `/projects/{id}/initiation`; PM can upload/confirm SOW scope, maintain the project team roster, and map task ownership before Prepare begins. Incomplete projects show a Command Center warning. |
 | 05 Jun 2026 | Task Screen saves are separated by intent: PM notes append to a timestamped log, dates save through explicit Save Dates, assignment/track owner saves separately, and status autosave no longer wipes unsaved note/date/owner edits during refetch. Dates display as `DD-MMM-YYYY` on the new task/phase/command-center surfaces. |
@@ -903,68 +913,33 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 ---
 
-## 13. Current Build Status
+## 13. Current Build Status (05 Jun 2026)
 
-### 13.1 What Is Live
-- Backend: FastAPI on Railway — **399 routes**. Local compile and direct project-task route tests passed; previous full backend pytest baseline remains **1302 tests passing**.
-- Frontend: React/Vite on Vercel — octiss-production.vercel.app — LIVE
-- Database: Supabase Singapore (Pro) — all tables created, grants applied
-- 12 agents built and live — **Agent #2 Project Plan Agent live**
-- WhatsApp interface live
-- n8n Daily PM Briefing trigger at 8AM — live
-- 5 beta tester accounts created (tester1-5@octiss.com) — Portfolio tier
-- **Production test projects verified**: GF Test Project `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` with 244 Activate-backed tasks; BF Test Project `e9cec48e-01f4-4506-a212-a9037ed76db9` with 235 Activate-backed tasks
-- **Production test projects re-initialized**: GF has 9 generic team rows, 1 SOW seed, 7 modules, and 18/18 TRACK rows with owners. BF has 9 generic team rows, 1 SOW seed, 8 modules, and 13/13 TRACK rows with owners.
-- Legacy demo `Sample Project Alpha` is not the production verification baseline
-- **Sidebar rebuilt** — phase tracker, project selector, setup gate live
-- **Setup 5/5 READY** — all setup steps complete for the production tester workspace after safe settings configuration
-- **Microsoft 365 production integration live** — connected=true; OneDrive, Outlook, Calendar configured; Project Document Folders connected; dry-run active; SharePoint N/A because the personal Hotmail account has no SPO license
-- **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
-- **Command Center active project restore fixed** — `/dashboard` uses the shared active-project resolver, restores the last active project after fresh login, syncs route project ids before project-scoped pages render, switches GF/BF correctly, and shows a prominent selector when no project was remembered (commits 9050455 + c214c01)
-- **Authenticated production smoke passed** — tester workspace fresh login restored BF Test Project in Command Center; GF and BF selector switches updated Command Center.
-- **Task Screen fixed and production-verified** — Agent Assist CTA rendering, agent panel, independent note/date/assignment saves, timestamped PM note log, status updates, direct task route loading, stable detail save/readback, dirty-field preservation, and text assignee labels
-- **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
-- **Phase View active project restore fixed** — `/phase/{phase}` resolves active/fallback project from the shared project list, project-list loading is prioritized before phase detail calls, and the sidebar selector lists both GF Test Project and BF Test Project (commits 5ccd18f + ef425b5)
-- **Playwright fixtures updated** — real production project_tasks UUIDs used in task route tests (commit 3f6718f)
-- **11 M10b/Project Initiation DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance, bf_sum_checklists, bf_sum_executions, project_team_members
-- **Project Initiation module built** — backend commit fb67edf, frontend commit c214c01. New projects redirect to `/projects/{id}/initiation`; SOW upload/confirmation, team roster CRUD, task ownership mapping, and incomplete setup warning are live in code.
-- **BF Conversion Module production-verified** — backend commit 44d00df, frontend commit a5e04cc, grants commit a36553e. QAS BF checklist, SUM tracker, downtime calculator, and Agent 8 cutover CTA path verified.
-
-### 13.2 Known Issues (Active — Being Fixed)
-
-| # | Issue | Priority | Status |
-|---|---|---|---|
-| 1 | Sidebar phase tracker links to old `/projects/{id}/prepare` route instead of new `/phase/prepare` | ✅ Fixed | 16794ab |
-| 2 | Daily Briefing section pulls from old Project Alpha risks/actions data instead of Agent 12 daily_briefings table | ✅ Fixed | 16794ab |
-| 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
-| 4 | BF Conversion Module production migration/grants | ✅ Fixed | Applied through production pooler; `service_role` grants committed in a36553e |
-| 5 | Phase View shows "Select a project" even while sidebar visually has project context | ✅ Fixed | 5ccd18f + ef425b5 |
-| 6 | Command Center shows "Choose an active project" even while sidebar visually has project context | ✅ Fixed | 9050455 + c214c01 |
-| 7 | Task notes/dates/assignment saves collide or get wiped by status refetch | ✅ Fixed | c214c01 + fb67edf |
-| 8 | Agent responses can lack SAP/project context | ✅ Fixed | fb67edf |
-
-### 13.3 What Is Not Yet Built
-- Billing / Paddle integration (post company registration)
-- Premium UI/UX overhaul
-- User Manual (pending Premium UI/UX overhaul)
-- Welcome Packs update with User Manual
-- Beta tester onboarding (next after Welcome Packs)
-
-### 13.4 Active Module — M10b — M10b: SAP Activate Workflow Engine
-
-| Step | Work | Owner | Status | Commit |
-|---|---|---|---|---|
-| M10b-1 | Verify GF task library against SAP portal | Mohsin | ✅ Complete | SAP portal |
-| M10b-2 | Task review — KEEP / TRACK / MERGE / EXCLUDE | Mohsin + Claude | ✅ Complete | GF 193 + BF 201 |
-| M10b-3 | Module expansion patterns from real project plans | Mohsin + Claude | ✅ Complete | 7 plans analysed |
-| M10b-4 | DB schema — 5-level hierarchy + agent_id + flags | Codex | ✅ Complete | `53bad706` |
-| M10b-5 | Map all 394 tasks to 12 agents | Mohsin + Claude | ✅ Complete | File saved |
-| M10b-6a | project_escalations + session_attendance tables | Codex | ✅ Complete | `29f66c49` |
-| M10b-6b | Project Plan Agent + 5 endpoints + seed script | Codex | ✅ Complete | `c51f8f8` |
-| Seed | Load 484 tasks to production Supabase | Mohsin | ✅ Complete | 03 Jun 2026 |
-| M10b-7 | Rebuild sidebar as phase-progress tracker | Codex | ✅ Complete | `828cee7` |
-| M10b-8 | Task screen + Command Center rebuild | Codex | ✅ Complete | `baeab4b` + `321c765` |
-| M10b-6c | BF Conversion Module | Mohsin + Codex | ✅ Production verified | `44d00df` + `a5e04cc` + `a36553e` |
+| Component | Status | Notes |
+|---|---|---|
+| Backend | ✅ Live | 393+ routes, 1302+ tests |
+| Frontend | ✅ Live | Vercel, 110 Playwright |
+| MS365 Integration | ✅ Live | OneDrive, Outlook, Calendar configured |
+| Project Initiation Module | ✅ Built | Needs SOW mandatory fix |
+| Agent Context | ✅ Fixed | SOW + team + SAP chunks injected |
+| BF Conversion Module | ✅ Live | Checklist, SUM, Calculator |
+| Active Project Resolver | ✅ Fixed | Global — all pages |
+| Notes Timestamped Log | ✅ Live | |
+| Dates DD-MMM-YYYY | ✅ Live | |
+| Login Copyright Footer | ✅ Live | |
+| n8n Workflows 1-6 | ⚠️ Built | NOT imported or configured yet |
+| n8n Workflows 7-16 | ❌ Not built | Document automation workflows |
+| Automation Settings Screen | ❌ Not built | PM schedule control |
+| Task Exclude/Delete | ❌ Not built | Required before beta |
+| SOW mandatory at creation | ❌ Not fixed | Two-option screen needed |
+| Google Ecosystem | ❌ Not built | Drive, Gmail, Calendar |
+| Kanban Board View | ❌ Not built | |
+| Calendar View | ❌ Not built | |
+| Gantt View | ❌ Not built | Post-beta |
+| Social Login | ❌ Not built | Microsoft + Google OAuth |
+| Premium UI/UX Overhaul | ❌ Not started | Waiting for design reference |
+| User Manual | ❌ Not started | After Test Round 2 |
+| Beta Onboarding | 🔒 On hold | After Test Round 2 |
 
 ---
 

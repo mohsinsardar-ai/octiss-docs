@@ -407,27 +407,79 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-Step 1 — Complete BF manual testing
-  Open Octiss_Manual_Test_Tracker_v1.0.xlsx
-  Complete sheets: BF Tests (G1-H9)
-  Then Overall Scores (P1-P5)
-  File: D:\Mohsin Personal\OneDrive\
-        EM Intelligence Lab\Octiss Beta\
-        Octiss_Manual_Test_Tracker_v1.0.xlsx
+RULE: No testing until ALL features built.
+Test Round 2 is the final pre-beta gate.
 
-Step 2 — Fix any bugs found in BF testing
+BUILD QUEUE — execute in this order:
 
-Step 3 — UI/UX Premium Overhaul
-  Waiting for Mohsin Q1 design reference
-  Includes: full design system, social login,
-  Settings restructure, Agent Assist rename,
-  WBS numbering, task descriptions,
-  AI Roadmap content
+### Priority 1 — Fix Project Creation Flow
+Show two options at project creation:
+A) Create with SOW (recommended)
+B) Create without SOW (Q&A fallback)
+Agent 2 handles both paths.
+This is a frontend + backend fix.
 
-Step 4 — User Manual
-  After UI/UX stable
+### Priority 2 — Task Exclude/Delete
+Add to Phase View and Task Screen:
+[Exclude Task] = hidden, recoverable,
+logged in audit trail.
+[Delete Task] = permanent + confirmation.
 
-Step 5 — Beta tester onboarding
+### Priority 3 — n8n Setup
+Step by step (Mohsin does manually):
+1. Open https://n8n-production-c148.up.railway.app
+2. Import workflow files from
+   n8n/workflows/module8/
+3. Replace {BACKEND_URL} and
+   {N8N_INTERNAL_API_KEY} placeholders
+4. Activate all 6 workflows
+
+### Priority 4 — Automation Setup in Initiation
+Add Step 4 to Project Initiation flow.
+PM sets schedule per workflow.
+PM sets delivery preferences.
+
+### Priority 5 — Automation Settings Screen
+Settings → Automation section.
+Left sidebar nav (Claude console style).
+Per-workflow cards with schedule control.
+
+### Priority 6 — CTA Workflows 7-16
+Build all document automation workflows.
+All CTA-triggered, PM-approved.
+Fit-Gap, BPML, Sign-off, MOM,
+SteerCo, Phase Gate, CR, Attendance.
+
+### Priority 7 — Google Ecosystem
+Google Drive, Gmail, Google Calendar.
+Same pattern as Microsoft.
+PM chooses ecosystem at initiation.
+
+### Priority 8 — Kanban Board View
+New view — status columns or phase swimlanes.
+Task cards with WBS, owner, due date.
+Drag to change status.
+
+### Priority 9 — Calendar View
+Monthly/weekly/daily calendar.
+Tasks on planned due dates.
+Colour coded by phase.
+
+### Priority 10 — Premium UI/UX Overhaul
+Waiting for Mohsin Q1 design reference.
+Covers all GF test feedback items.
+Includes: social login, Agent Assist,
+WBS numbering, Settings restructure,
+dates, task descriptions, Kanban styling.
+
+### Priority 11 — Test Round 2
+Full end-to-end test of everything.
+Every workflow from SOW to MOM.
+User Manual written from this test.
+
+### Priority 12 — Beta Onboarding
+After Test Round 2 clean.
+5 testers. Welcome packs sent.
 
 ---
 
