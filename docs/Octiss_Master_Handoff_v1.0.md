@@ -76,6 +76,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Frontend: Vercel production, 107 Playwright tests passing / 48 skipped
 - Production URLs: `https://octiss-production.vercel.app` -> `https://sap-pmo-agent-production-3f52.up.railway.app`
 - Setup 5/5 READY for the production tester workspace after safe integration settings were configured
+- Microsoft 365 Railway env vars are present in production; tester workspace status endpoint reports `configured=true`
 - Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
 - Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
 - Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
@@ -94,7 +95,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 
 | # | Issue | Severity | Status |
 |---|---|---|---|
-| 1 | Microsoft 365 production integration status is not connected/verified | Blocker | API reports `configured=false`, `connected=false`, `verified=false`; requires Railway MS365 env/OAuth setup |
+| 1 | Microsoft 365 production integration status is configured but not connected/verified | Blocker | API reports `configured=true`, `connected=false`, `verified=false`; OAuth connect/verification still required |
 | 2 | Project Alpha has legacy demo data | Info | Use GF/BF test projects above for production verification |
 | 3 | Beta tester onboarding | On hold | Resume after Microsoft connector is genuinely verified |
 | 4 | User Manual and Welcome Packs | Pending | Start after the production UI remains stable |
@@ -329,8 +330,8 @@ Conditional task activation:
 | Client ID | 3a027ac4-a5f3-452c-b283-42a29c8be118 |
 | Redirect URI | https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/microsoft/callback |
 | Permissions | User.Read, Files.ReadWrite, Files.Read.All, Sites.Read.All, Mail.Send, Calendars.ReadWrite, offline_access |
-| Production API Status | `configured=false`, `connected=false`, `verified=false` |
-| Next Step | Add Railway MS365 env/OAuth values and verify the backend status endpoint returns true |
+| Production API Status | `configured=true`, `connected=false`, `verified=false` |
+| Next Step | Complete Microsoft OAuth connect/verification so the backend status endpoint returns `connected=true` and `verified=true` |
 | Home page | https://octiss.com |
 
 ---
@@ -409,7 +410,7 @@ Conditional task activation:
 | Verify BF checklist / SUM / downtime in production | ✅ QAS BF task path verified; SUM active; downtime 11.73h result |
 | Frontend Playwright regression suite | ✅ 107 passed / 48 skipped |
 | Backend pytest suite | ✅ 1302 passed |
-| Microsoft 365 production connector | 🔒 Blocked until Railway MS365 env/OAuth are configured and API verifies true |
+| Microsoft 365 production connector | Railway MS365 env vars present; API `configured=true`; OAuth connect/verification still pending (`connected=false`, `verified=false`) |
 | User Manual | 📋 Post stable UI and MS365 verification |
 | Update Welcome Packs | 📋 Post User Manual |
 | Send beta tester credentials | 🔒 On hold |
@@ -418,8 +419,8 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-Step 1 — Configure and verify Microsoft 365 production connector
-Add the missing Railway MS365 environment/OAuth values, then verify `/api/v1/integrations/microsoft/status` returns `configured=true`, `connected=true`, and `verified=true`.
+Step 1 — Connect and verify Microsoft 365 production connector
+Railway MS365 environment/OAuth values are present and `/api/v1/integrations/microsoft/status` returns `configured=true`. Complete OAuth connect/verification, then verify `connected=true` and `verified=true`.
 
 Step 2 — Keep using the dedicated production test projects
 Use `GF Test Project` (`b82f0d75-bdc6-41ea-8387-1f48ff7d5afd`) and `BF Test Project` (`e9cec48e-01f4-4506-a212-a9037ed76db9`) for all production regression checks. Do not use legacy `Sample Project Alpha` as a baseline.
