@@ -29,6 +29,7 @@
 | v1.6.5 | 05 Jun 2026 | MS365 fully connected in production. OneDrive, Outlook, Calendar, and Project Document Folders are configured/connected. SharePoint is N/A for the personal Hotmail account and is not required for beta. Beta is now unblocked. |
 | v1.6.6 | 05 Jun 2026 | Phase View active project restoration fixed in frontend `5ccd18f` and selector/project-list timing hardened in `ef425b5`. `/phase/{phase}` now resolves from the shared project list and auto-restores only on routes that require an active project. Tester1 production projects endpoint returns both BF Test Project and GF Test Project. Frontend Playwright suite: 108 passed / 48 skipped. |
 | v1.6.7 | 05 Jun 2026 | Command Center and top-level project workspaces now use shared active-project resolution in frontend `9050455`. `/dashboard` restores the last active project after fresh login, GF/BF switching updates Command Center, and no remembered project shows a prominent selector. Frontend Playwright suite: 110 passed / 48 skipped. |
+| v1.6.8 | 05 Jun 2026 | Project Initiation, independent task notes/dates/assignment saves, Project/SAP agent context, TRACK owner defaults, and GF/BF generic production seeding completed. Frontend `c214c01`; backend `fb67edf`. Frontend Playwright suite: 110 passed / 48 skipped. Backend compile + direct project-task route tests passed locally; production Project Initiation migration/seed applied. |
 
 ---
 
@@ -829,6 +830,10 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | Project Initiation is now the required bridge between project creation and Prepare. New projects redirect to `/projects/{id}/initiation`; PM can upload/confirm SOW scope, maintain the project team roster, and map task ownership before Prepare begins. Incomplete projects show a Command Center warning. |
+| 05 Jun 2026 | Task Screen saves are separated by intent: PM notes append to a timestamped log, dates save through explicit Save Dates, assignment/track owner saves separately, and status autosave no longer wipes unsaved note/date/owner edits during refetch. Dates display as `DD-MMM-YYYY` on the new task/phase/command-center surfaces. |
+| 05 Jun 2026 | Agent context must include task name, phase, deliverable, methodology, project SOW scope, modules, team roster, and SAP knowledge. If filtered vector search returns no SAP chunks, retrieval falls back to layer scans so PM-facing agent output does not claim zero SAP context. |
+| 05 Jun 2026 | Production GF/BF test projects were re-initialized with generic SOW scope and team data only. GF has 9 team rows, 1 SOW seed, 7 modules, and 18/18 TRACK rows with owners. BF has 9 team rows, 1 SOW seed, 8 modules, and 13/13 TRACK rows with owners. |
 | 05 Jun 2026 | Active-project context is now centralized for Command Center and top-level project workspaces. AuthContext preserves the last selected project across logout/login, `useActiveProject` resolves against the projects API, and the Layout project-scope gate prevents blank project-scoped pages by restoring a valid project or showing a selector. Settings remains intentionally ungated for account, setup, integration, and access-management flows. |
 | 05 Jun 2026 | Phase View active-project resolution fixed. The project selector stores selected project IDs in shared AuthContext/localStorage; Phase View now uses a shared resolver from the projects API and auto-restores only on routes that require an active project, with project-list loading prioritized before phase detail calls. Production `/api/v1/projects` for tester1 returns BF Test Project and GF Test Project, so GF is linked to the tester1 organization. |
 | 05 Jun 2026 | MS365 fully connected in production. OneDrive, Outlook, Calendar all configured. SharePoint unavailable — personal Hotmail account has no SPO license. Decision: SharePoint is not required for beta. Personal OneDrive is sufficient for document storage. Beta is now unblocked. |
@@ -900,7 +905,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 ## 13. Current Build Status
 
 ### 13.1 What Is Live
-- Backend: FastAPI on Railway — **394 routes**, **1302 tests passing** — HEALTHY
+- Backend: FastAPI on Railway — **399 routes**. Local compile and direct project-task route tests passed; previous full backend pytest baseline remains **1302 tests passing**.
 - Frontend: React/Vite on Vercel — octiss-production.vercel.app — LIVE
 - Database: Supabase Singapore (Pro) — all tables created, grants applied
 - 12 agents built and live — **Agent #2 Project Plan Agent live**
@@ -908,17 +913,19 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 - n8n Daily PM Briefing trigger at 8AM — live
 - 5 beta tester accounts created (tester1-5@octiss.com) — Portfolio tier
 - **Production test projects verified**: GF Test Project `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` with 244 Activate-backed tasks; BF Test Project `e9cec48e-01f4-4506-a212-a9037ed76db9` with 235 Activate-backed tasks
+- **Production test projects re-initialized**: GF has 9 generic team rows, 1 SOW seed, 7 modules, and 18/18 TRACK rows with owners. BF has 9 generic team rows, 1 SOW seed, 8 modules, and 13/13 TRACK rows with owners.
 - Legacy demo `Sample Project Alpha` is not the production verification baseline
 - **Sidebar rebuilt** — phase tracker, project selector, setup gate live
 - **Setup 5/5 READY** — all setup steps complete for the production tester workspace after safe settings configuration
 - **Microsoft 365 production integration live** — connected=true; OneDrive, Outlook, Calendar configured; Project Document Folders connected; dry-run active; SharePoint N/A because the personal Hotmail account has no SPO license
 - **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
-- **Command Center active project restore fixed** — `/dashboard` uses the shared active-project resolver, restores the last active project after fresh login, switches GF/BF correctly, and shows a prominent selector when no project was remembered (commit 9050455)
-- **Task Screen fixed and production-verified** — CTA rendering, agent panel, status updates, direct task route loading, stable detail save/readback, and text assignee labels
+- **Command Center active project restore fixed** — `/dashboard` uses the shared active-project resolver, restores the last active project after fresh login, syncs route project ids before project-scoped pages render, switches GF/BF correctly, and shows a prominent selector when no project was remembered (commits 9050455 + c214c01)
+- **Task Screen fixed and production-verified** — Agent Assist CTA rendering, agent panel, independent note/date/assignment saves, timestamped PM note log, status updates, direct task route loading, stable detail save/readback, dirty-field preservation, and text assignee labels
 - **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
 - **Phase View active project restore fixed** — `/phase/{phase}` resolves active/fallback project from the shared project list, project-list loading is prioritized before phase detail calls, and the sidebar selector lists both GF Test Project and BF Test Project (commits 5ccd18f + ef425b5)
 - **Playwright fixtures updated** — real production project_tasks UUIDs used in task route tests (commit 3f6718f)
-- **10 M10b DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance, bf_sum_checklists, bf_sum_executions
+- **11 M10b/Project Initiation DB tables live in production**: activate_phases, activate_deliverables, activate_tasks, project_tasks, project_sow_extractions, project_wricef, project_escalations, session_attendance, bf_sum_checklists, bf_sum_executions, project_team_members
+- **Project Initiation module built** — backend commit fb67edf, frontend commit c214c01. New projects redirect to `/projects/{id}/initiation`; SOW upload/confirmation, team roster CRUD, task ownership mapping, and incomplete setup warning are live in code.
 - **BF Conversion Module production-verified** — backend commit 44d00df, frontend commit a5e04cc, grants commit a36553e. QAS BF checklist, SUM tracker, downtime calculator, and Agent 8 cutover CTA path verified.
 
 ### 13.2 Known Issues (Active — Being Fixed)
@@ -930,7 +937,9 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 | 3 | "Open Task" CTA on Command Center may route to old project workspace | ✅ Fixed | 82f09d5 |
 | 4 | BF Conversion Module production migration/grants | ✅ Fixed | Applied through production pooler; `service_role` grants committed in a36553e |
 | 5 | Phase View shows "Select a project" even while sidebar visually has project context | ✅ Fixed | 5ccd18f + ef425b5 |
-| 6 | Command Center shows "Choose an active project" even while sidebar visually has project context | ✅ Fixed | 9050455 |
+| 6 | Command Center shows "Choose an active project" even while sidebar visually has project context | ✅ Fixed | 9050455 + c214c01 |
+| 7 | Task notes/dates/assignment saves collide or get wiped by status refetch | ✅ Fixed | c214c01 + fb67edf |
+| 8 | Agent responses can lack SAP/project context | ✅ Fixed | fb67edf |
 
 ### 13.3 What Is Not Yet Built
 - Billing / Paddle integration (post company registration)

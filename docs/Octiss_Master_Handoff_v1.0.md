@@ -70,10 +70,10 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 
 ---
 
-## 4. Current Build State (04 June 2026 UTC / 05 June 2026 PKT)
+## 4. Current Build State (05 June 2026)
 
 ### What Is Live and Working
-- Backend: 394 routes, 1302 tests passing
+- Backend: 399 routes; compile check passed; direct project-task route tests passed. Full backend pytest was not available in the current shell because `pytest` is not installed locally; previous full backend baseline remains 1302 passing.
 - Frontend: Vercel production, 110 Playwright tests passing / 48 skipped
 - Production URLs: `https://octiss-production.vercel.app` -> `https://sap-pmo-agent-production-3f52.up.railway.app`
 - Setup 5/5 READY for the production tester workspace after safe integration settings were configured
@@ -84,13 +84,20 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
 - Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
 - Tester1 production `/api/v1/projects` verified: BF Test Project and GF Test Project are both returned and linked to the tester1 organization
+- Production GF/BF test projects re-initialized with generic SOW scope, team roster, modules, and task ownership mapping. GF has 9 team rows, 1 SOW seed, 7 modules, and 18/18 TRACK rows with owners. BF has 9 team rows, 1 SOW seed, 8 modules, and 13/13 TRACK rows with owners.
 - Phase View active project restoration fixed: `/phase/{phase}` now uses the shared project resolver, prioritizes the project list before phase detail calls, and loads an active/fallback project instead of showing "Select a project" after sidebar context selection
-- Command Center and top-level project workspaces now use the same shared active-project resolver: `/dashboard` restores the last active project after fresh login; if no project was remembered, the page shows a prominent project selector instead of a blank "choose a project" state
+- Command Center and top-level project workspaces now use the same shared active-project resolver: `/dashboard` restores the last active project after fresh login; route project ids are synced before project-scoped pages render; if no project was remembered, the page shows a prominent project selector instead of a blank "choose a project" state
 - Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
-- 10 M10b DB tables live in production, including BF checklist/SUM tables with `service_role` grants
+- Task Screen notes are independent append-only saves with timestamped log entries; Save Notes does not trigger Save Dates, Assignment, or Status.
+- Dates use `DD-MMM-YYYY` display across the new task/phase/command-center surfaces, with explicit Save Dates persistence for planned/actual dates.
+- Task detail dirty-field preservation fixed: status autosave/refetch no longer wipes unsaved PM notes, dates, or owner edits.
+- TRACK task ownership defaults and project-team mapping are live; text labels are stored in `track_owner` and `agent_context.assigned_to_label`, not the UUID `assigned_to` column.
+- Agent context injection is hardened: task name, phase, deliverable, methodology, project SOW scope, modules, team roster, and SAP knowledge chunks are included; SAP knowledge retrieval falls back to layer scans if filtered vector results are empty.
+- Project Initiation module built: `/projects/{id}/initiation` supports SOW upload/extraction, scope confirmation, team roster CRUD, task ownership mapping, and redirects after new project creation.
+- 11 M10b/Project Initiation DB tables live in production, including BF checklist/SUM tables and `project_team_members` with `service_role` grants
 - Sidebar: Clean 7-item layout
 - Command Center: 6-section clean layout (REBUILT)
-- Task Screen: Built with CTA rendering, PM Review Agent panel, stable detail save/readback, and text assignee compatibility
+- Task Screen: Built with Agent Assist CTA rendering, PM Review Agent panel, independent notes/date/assignment saves, stable detail save/readback, WBS context, TRACK ownership display, and text assignee compatibility
 - BF Conversion Module: production DB migration applied; QAS task CTA, Pre-SUM checklist, SUM tracker, downtime calculator, and Agent 8 cutover pack path verified
 - BF downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
 - SAP Knowledge Base: Built in M8D with SAP official content
@@ -263,6 +270,7 @@ RIGHT (40%) — CTA Panel:
 - session_attendance
 - bf_sum_checklists
 - bf_sum_executions
+- project_team_members
 
 ### Key Legacy Tables
 - projects
@@ -364,7 +372,9 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
-| current docs update | Frontend/Public Docs | Handoff/SUD update for MS365 production live state and beta unblocked next steps; final docs commit hashes live in git history because the file cannot self-reference its own final hash |
+| current docs update | Frontend/Public Docs | End-of-session Handoff/SUD update for Project Initiation, task notes/dates, agent context, GF/BF production seed, and active-project restore; final docs commit hashes live in git history because the file cannot self-reference its own final hash |
+| c214c01 | Frontend | Shared active-project gate for Command Center/workspaces; independent Task Screen notes/dates/assignment saves; Project Initiation UI; settings/login UX; full Playwright updates |
+| fb67edf | Backend | Project Initiation endpoints/table SQL; SOW PDF/DOCX/XLSX extraction; task notes endpoint; TRACK owner defaults; project/SAP context injection for agent calls |
 | 8f1ecfb | Backend | Microsoft OAuth Network Error fixed by removing MSAL-reserved `offline_access` from runtime request scopes and adding `/microsoft/auth` alias |
 | a36553e | Backend | BF conversion migration grants for production `service_role` access |
 | 724bf0f | Backend | Project task text assignees stored safely in `agent_context.assigned_to_label` |
@@ -407,7 +417,15 @@ Conditional task activation:
 | Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
 | Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
 | Fix Phase View active project restore + GF/BF selector visibility | ✅ 5ccd18f + ef425b5 |
-| Fix Command Center/global active project restore | ✅ 9050455 |
+| Fix Command Center/global active project restore | ✅ 9050455 + c214c01 |
+| Fix notes save + timestamped note log | ✅ c214c01 + fb67edf |
+| Fix dates save + DD-MMM-YYYY display | ✅ c214c01 + fb67edf |
+| Fix BF Phase Tracker counts | ✅ c214c01 |
+| Fix BF Current Task Activate-backed filtering | ✅ c214c01 |
+| Fix agent SAP/project context injection | ✅ fb67edf |
+| Populate TRACK owners from defaults/team mapping | ✅ fb67edf + production seed |
+| Build Project Initiation module | ✅ c214c01 + fb67edf |
+| Re-initialize GF/BF production test projects | ✅ 05 Jun 2026 production seed |
 | Verify Agent Panel fires and responds | ✅ Production GF task verified |
 | Public docs repo created | ✅ 7e03eee |
 | Playwright fixtures use real UUIDs | ✅ 3f6718f |
@@ -415,13 +433,13 @@ Conditional task activation:
 | Production backend URL points to Railway `-3f52` service | ✅ 3c40b91 |
 | Workspace setup endpoint reports 5/5 | ✅ ad6d809 + production settings verification |
 | Production task counts filtered to Activate-backed rows | ✅ GF 244 / BF 235 |
-| Task detail save/readback survives status autosave | ✅ 2599cf4 + production GF verification |
+| Task detail save/readback survives status autosave | ✅ 2599cf4 + c214c01 + production GF verification |
 | Text assignee labels do not 500 against UUID DB column | ✅ 724bf0f + production readback |
 | M10b-6c BF Conversion Module code | ✅ Backend 44d00df, frontend a5e04cc |
 | Apply BF Conversion Module migration in production | ✅ Applied through production pooler; grants committed in a36553e |
 | Verify BF checklist / SUM / downtime in production | ✅ QAS BF task path verified; SUM active; downtime 11.73h result |
 | Frontend Playwright regression suite | ✅ 110 passed / 48 skipped |
-| Backend pytest suite | ✅ 1302 passed |
+| Backend verification | ✅ Compile + direct project-task route tests passed locally; previous full pytest baseline 1302 passed |
 | MS365 Railway env vars added | ✅ 8f1ecfb |
 | MS365 OAuth connected | ✅ |
 | MS365 OneDrive/Outlook/Calendar configured | ✅ |
@@ -435,16 +453,19 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-Step 1 — Premium UI/UX overhaul
+Step 1 — Post-deploy production smoke
+After Vercel/Railway finish deploying `c214c01` and `fb67edf`, verify fresh login -> dashboard restores last active project, GF/BF switching updates Command Center, notes/dates persist on refresh, Project Initiation opens, and Agent Assist responses include project/SAP context.
+
+Step 2 — Premium UI/UX overhaul
 Upgrade the production experience now that the MS365 beta blocker is closed.
 
-Step 2 — User Manual
+Step 3 — User Manual
 Create the User Manual after the Premium UI/UX overhaul stabilizes.
 
-Step 3 — Update Welcome Packs
+Step 4 — Update Welcome Packs
 Refresh Welcome Packs with the User Manual and current production flow.
 
-Step 4 — Beta tester onboarding
+Step 5 — Beta tester onboarding
 Send beta tester credentials after Welcome Packs are updated.
 
 ---
@@ -461,9 +482,9 @@ Last verified: 05 June 2026
 | npm | YES | 11.11.0 | N/A |
 | python | YES | 3.12.10 | N/A |
 | pip | YES | 26.1.1 | N/A |
-| railway | YES | v5.0.0 | Authenticated - mohsin.sardar@gmail.com. Linked to octiss-production / sap-pmo-agent. Use flag form to link (see Section 20). |
+| railway | YES | v5.0.0 | Authenticated - mohsin.sardar@gmail.com. Relinked this session to octiss-production / sap-pmo-agent using the flag form in Section 20. |
 | vercel | YES | 53.2.0 | Authenticated; Octiss production project visible |
-| supabase CLI | YES | 2.98.2 | Authenticated + linked to qrxfprybbpqugptakeke |
+| supabase CLI | YES | 2.98.2 | Authenticated and production project visible; current backend checkout was not linked during this session. Production DB migration/seed was applied through Railway `DATABASE_URL` with `asyncpg`. Run `supabase link --project-ref qrxfprybbpqugptakeke` before `supabase db push`. |
 | playwright | YES | 1.59.0 | N/A |
 | curl | YES | 8.19.0 | N/A |
 | httpx | YES | 0.28.1 | N/A |
@@ -501,7 +522,7 @@ Last verified: 05 June 2026
 
 ### What Still Requires Mohsin to Act
 - External sends remain PM-approval-only. Codex can draft and dry-run, but cannot send email, WhatsApp, or calendar invites without explicit approval.
-- Supabase migrations: PARTIALLY AUTOMATED. Supabase CLI is linked to qrxfprybbpqugptakeke, and Codex can run `supabase db push`. Current migration filenames are skipped until renamed to Supabase timestamp format.
+- Supabase migrations: PARTIALLY AUTOMATED. Supabase CLI is authenticated and production is visible, but the current backend checkout was not linked during the 05 Jun 2026 session. Run `supabase link --project-ref qrxfprybbpqugptakeke` before `supabase db push`. The Project Initiation table migration was applied through Railway `DATABASE_URL` with `asyncpg`.
 - Railway first-time auth: run `railway login` once from local Windows Terminal. After that, Codex inherits auth automatically. If auth expires, repeat this step.
 - Anthropic API key rotation, Supabase DB password rotation, Azure app permission changes, and new paid service signups still require Mohsin.
 
