@@ -73,46 +73,30 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 ## 4. Current Build State (05 June 2026)
 
 ### What Is Live and Working
-- Backend: 399 routes; compile check passed; direct project-task route tests passed. Full backend pytest was not available in the current shell because `pytest` is not installed locally; previous full backend baseline remains 1302 passing.
-- Frontend: Vercel production, 110 Playwright tests passing / 48 skipped
-- Production URLs: `https://octiss-production.vercel.app` -> `https://sap-pmo-agent-production-3f52.up.railway.app`
-- Setup 5/5 READY for the production tester workspace after safe integration settings were configured
-- Microsoft 365 Railway env vars are present in production; tester workspace status endpoint reports `configured=true`
-- Microsoft OAuth URL generation is fixed in production: frontend calls the `-3f52` backend, backend `/connect` and `/auth` return 200, and generated auth URLs use the `-3f52` callback
-- MS365 connected — OneDrive, Outlook, Calendar configured. Dry-run active. SharePoint N/A (personal account).
-- Project Document Folders connected through personal OneDrive
-- Production GF test project: `b82f0d75-bdc6-41ea-8387-1f48ff7d5afd` (`GF Test Project`, 244 Activate-backed tasks)
-- Production BF test project: `e9cec48e-01f4-4506-a212-a9037ed76db9` (`BF Test Project`, 235 Activate-backed tasks)
-- Tester1 production `/api/v1/projects` verified: BF Test Project and GF Test Project are both returned and linked to the tester1 organization
-- Production GF/BF test projects re-initialized with generic SOW scope, team roster, modules, and task ownership mapping. GF has 9 team rows, 1 SOW seed, 7 modules, and 18/18 TRACK rows with owners. BF has 9 team rows, 1 SOW seed, 8 modules, and 13/13 TRACK rows with owners.
-- Phase View active project restoration fixed: `/phase/{phase}` now uses the shared project resolver, prioritizes the project list before phase detail calls, and loads an active/fallback project instead of showing "Select a project" after sidebar context selection
-- Command Center and top-level project workspaces now use the same shared active-project resolver: `/dashboard` restores the last active project after fresh login; route project ids are synced before project-scoped pages render; if no project was remembered, the page shows a prominent project selector instead of a blank "choose a project" state
-- Authenticated production smoke passed after deploy: tester workspace fresh login restored BF Test Project in Command Center, switching to GF updated Command Center, and switching back to BF updated Command Center.
-- Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
-- Task Screen notes are independent append-only saves with timestamped log entries; Save Notes does not trigger Save Dates, Assignment, or Status.
-- Dates use `DD-MMM-YYYY` display across the new task/phase/command-center surfaces, with explicit Save Dates persistence for planned/actual dates.
-- Task detail dirty-field preservation fixed: status autosave/refetch no longer wipes unsaved PM notes, dates, or owner edits.
-- TRACK task ownership defaults and project-team mapping are live; text labels are stored in `track_owner` and `agent_context.assigned_to_label`, not the UUID `assigned_to` column.
-- Agent context injection is hardened: task name, phase, deliverable, methodology, project SOW scope, modules, team roster, and SAP knowledge chunks are included; SAP knowledge retrieval falls back to layer scans if filtered vector results are empty.
-- Project Initiation module built: `/projects/{id}/initiation` supports SOW upload/extraction, scope confirmation, team roster CRUD, task ownership mapping, and redirects after new project creation.
-- 11 M10b/Project Initiation DB tables live in production, including BF checklist/SUM tables and `project_team_members` with `service_role` grants
-- Sidebar: Clean 7-item layout
-- Command Center: 6-section clean layout (REBUILT)
-- Task Screen: Built with Agent Assist CTA rendering, PM Review Agent panel, independent notes/date/assignment saves, stable detail save/readback, WBS context, TRACK ownership display, and text assignee compatibility
-- BF Conversion Module: production DB migration applied; QAS task CTA, Pre-SUM checklist, SUM tracker, downtime calculator, and Agent 8 cutover pack path verified
-- BF downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
-- SAP Knowledge Base: Built in M8D with SAP official content
-- Voice Copilot: Built in M10
-- 12 specialist agents built and live
-- PM-review-only and dry-run safety remain the default for generated content and automation outputs
+- Backend: 393+ routes, 1302+ tests passing
+- Frontend: Deployed Vercel, 110 Playwright passed / 48 skipped
+- Setup 5/5 READY — MS365 connected
+- GF Test Project: 244 Activate tasks ✅
+- BF Test Project: 235 Activate tasks ✅
+- Active project resolver: FIXED globally
+- Project Initiation Module: BUILT ✅
+- SOW upload + extraction: LIVE ✅
+- Project team roster: LIVE ✅
+- Task ownership mapping: LIVE ✅
+- Notes: timestamped log entries ✅
+- Dates: DD-MMM-YYYY everywhere ✅
+- Agent context: SOW + team + SAP chunks ✅
+- BF phase tracker: FIXED ✅
+- Login copyright footer: ADDED ✅
 
-### Known Issues (Fix These First)
-
-| # | Issue | Severity | Status |
-|---|---|---|---|
-| 1 | Project Alpha has legacy demo data | Info | Use GF/BF test projects above for production verification |
-| 2 | User Manual and Welcome Packs | Pending | Start after Premium UI/UX overhaul |
-| 3 | Beta tester onboarding | Pending | Resume after Premium UI/UX overhaul, User Manual, and Welcome Packs |
+### Known Issues
+| # | Issue | Status |
+|---|---|---|
+| 1 | AI Roadmap shows NVIDIA content | 📋 UX overhaul |
+| 2 | Settings page too cramped | 📋 UX overhaul |
+| 3 | Task descriptions still generic | 📋 UX overhaul |
+| 4 | Social login not yet enabled | 📋 UX overhaul |
+| 5 | BF Tests G1-H9 not yet done | ⏳ Next test session |
 
 ---
 
@@ -373,40 +357,24 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
-| current docs update | Frontend/Public Docs | End-of-session Handoff/SUD update for Project Initiation, task notes/dates, agent context, GF/BF production seed, and active-project restore; final docs commit hashes live in git history because the file cannot self-reference its own final hash |
-| eefa8e3 | Frontend | Add requested EM Intelligence Labs copyright footer on Login |
-| c214c01 | Frontend | Shared active-project gate for Command Center/workspaces; independent Task Screen notes/dates/assignment saves; Project Initiation UI; settings/login UX; full Playwright updates |
-| fb67edf | Backend | Project Initiation endpoints/table SQL; SOW PDF/DOCX/XLSX extraction; task notes endpoint; TRACK owner defaults; project/SAP context injection for agent calls |
-| 8f1ecfb | Backend | Microsoft OAuth Network Error fixed by removing MSAL-reserved `offline_access` from runtime request scopes and adding `/microsoft/auth` alias |
-| a36553e | Backend | BF conversion migration grants for production `service_role` access |
-| 724bf0f | Backend | Project task text assignees stored safely in `agent_context.assigned_to_label` |
-| 2599cf4 | Frontend | Task detail autosave race fixed so status refreshes do not wipe unsaved edits |
-| ad6d809 | Backend | Workspace setup status endpoint and Activate-backed production task filtering |
-| 3c40b91 | Frontend | Production backend URL corrected and BF task environment inference added |
-| 44472fa | Frontend Docs | Railway CLI automation status |
-| 3da6017 | Public Docs | Railway CLI automation status |
-| 5d59571 | Public Docs | Handoff + SUD updated after BF Conversion Module |
-| a49f7ab | Frontend Docs | Handoff + SUD updated after BF Conversion Module |
-| a5e04cc | Frontend | BF Conversion Module screen, task CTAs, SUM tracker, downtime calculator, and cutover comms pack CTA |
-| 44d00df | Backend | BF Conversion Module endpoints, service, migration SQL, and route tests |
-| ccfcb17 | Public Docs | CLI inventory and permanent docs update rule baseline |
-| cdb4885 | Frontend Docs | Handoff + SUD CLI inventory and permanent docs update rule baseline |
-| 3f6718f | Frontend | Update Playwright fixtures to real production UUIDs |
-| 82f09d5 | Frontend | Fix Task Screen + Phase View deliverable grouping |
-| f0c8b88 | Backend | Deliverable enrichment + task detail consistency |
-| 7e03eee | Docs | Initial public docs repo |
-| 16794ab | Frontend | Fix sidebar routing + Daily Briefing source |
-| a39e52b | Frontend | Enforce 6-section Command Center |
-| baeab4b | Frontend | Task-led Command Center rebuild |
-| 321c765 | Backend | Task agent chat endpoint |
-| b41176d | Frontend | Display linked task names |
-| 6f88948 | Backend | Enrich task names from roadmap_tasks |
-| 2adc40d | Frontend | Microsoft Connected badge |
-| 828cee7 | Frontend | Sidebar rebuild (M10b-7) |
-| c51f8f8 | Backend | Project Plan Agent + 5 endpoints |
-| 29f66c49 | Backend | Escalation + attendance tables |
-| 53bad706 | Backend | M10b-4 schema (6 new tables) |
-| 7ce4b96 | Frontend | SUD v1.5 |
+| eefa8e3 | Frontend | Login copyright footer |
+| c214c01 | Frontend | BF tracker + active project fixes |
+| fb67edf | Backend | Notes log, dates, agent context, initiation module |
+| 0808c46 | Frontend | Docs update |
+| adc985f | Public Docs | Docs update |
+| 90504559 | Frontend | Global active project resolver |
+| 5ccd18f | Frontend | Phase View project resolver |
+| 44472fa | Frontend | Railway docs update |
+| 3da6017 | Public Docs | Railway docs update |
+| 5553a7692 | Frontend | MS365 docs update |
+| 86bd0d57 | Public Docs | MS365 docs update |
+| 8f1ecfb | Backend | MS365 MSAL scope fix |
+| a5e04cc | Frontend | M10b-6c BF Conversion UI |
+| 44d00df | Backend | M10b-6c BF Conversion Module |
+| 82f09d5 | Frontend | Fix Task Screen + Phase View grouping |
+| f0c8b88 | Backend | Deliverable enrichment |
+| 3f6718f | Frontend | Playwright fixtures real UUIDs |
+| 16794ab | Frontend | Fix sidebar routing + Daily Briefing |
 
 ---
 
@@ -415,58 +383,51 @@ Conditional task activation:
 | Item | Status |
 |---|---|
 | Fix sidebar routing | ✅ 16794ab |
-| Fix Daily Briefing data source | ✅ 16794ab |
-| Fix Phase View Ungrouped Deliverable | ✅ 82f09d5 |
-| Fix Task Screen CTAs render correctly | ✅ 82f09d5 |
-| Fix Phase View active project restore + GF/BF selector visibility | ✅ 5ccd18f + ef425b5 |
-| Fix Command Center/global active project restore | ✅ 9050455 + c214c01 |
-| Fix notes save + timestamped note log | ✅ c214c01 + fb67edf |
-| Fix dates save + DD-MMM-YYYY display | ✅ c214c01 + fb67edf |
-| Add login copyright footer | ✅ eefa8e3 |
-| Fix BF Phase Tracker counts | ✅ c214c01 |
-| Fix BF Current Task Activate-backed filtering | ✅ c214c01 |
-| Fix agent SAP/project context injection | ✅ fb67edf |
-| Populate TRACK owners from defaults/team mapping | ✅ fb67edf + production seed |
-| Build Project Initiation module | ✅ c214c01 + fb67edf |
-| Re-initialize GF/BF production test projects | ✅ 05 Jun 2026 production seed |
-| Verify Agent Panel fires and responds | ✅ Production GF task verified |
-| Public docs repo created | ✅ 7e03eee |
-| Playwright fixtures use real UUIDs | ✅ 3f6718f |
-| CLI capabilities documented in Handoff | ✅ Task 0A |
-| Production backend URL points to Railway `-3f52` service | ✅ 3c40b91 |
-| Workspace setup endpoint reports 5/5 | ✅ ad6d809 + production settings verification |
-| Production task counts filtered to Activate-backed rows | ✅ GF 244 / BF 235 |
-| Task detail save/readback survives status autosave | ✅ 2599cf4 + c214c01 + production GF verification |
-| Text assignee labels do not 500 against UUID DB column | ✅ 724bf0f + production readback |
-| M10b-6c BF Conversion Module code | ✅ Backend 44d00df, frontend a5e04cc |
-| Apply BF Conversion Module migration in production | ✅ Applied through production pooler; grants committed in a36553e |
-| Verify BF checklist / SUM / downtime in production | ✅ QAS BF task path verified; SUM active; downtime 11.73h result |
-| Frontend Playwright regression suite | ✅ 110 passed / 48 skipped |
-| Backend verification | ✅ Compile + direct project-task route tests passed locally; previous full pytest baseline 1302 passed |
-| MS365 Railway env vars added | ✅ 8f1ecfb |
-| MS365 OAuth connected | ✅ |
-| MS365 OneDrive/Outlook/Calendar configured | ✅ |
-| SharePoint | N/A — personal account, not needed |
-| MS365 production fully live | ✅ |
-| User Manual | 📋 Post Premium UI/UX overhaul |
-| Update Welcome Packs | 📋 Post User Manual |
-| Send beta tester credentials | 📋 Post Welcome Packs |
+| Fix Phase View grouping | ✅ 82f09d5 |
+| Fix Task Screen CTAs | ✅ 82f09d5 |
+| BF Conversion Module | ✅ 44d00df |
+| MS365 connected + configured | ✅ 8f1ecfb |
+| Active project resolver global fix | ✅ 90504559 |
+| BF phase tracker fixed | ✅ c214c01 |
+| Notes timestamped log | ✅ fb67edf |
+| Dates DD-MMM-YYYY everywhere | ✅ fb67edf |
+| Agent context SOW + team + SAP | ✅ fb67edf |
+| Project Initiation Module | ✅ fb67edf |
+| GF + BF test projects seeded | ✅ fb67edf |
+| Login copyright footer | ✅ eefa8e3 |
+| Playwright 110 passed | ✅ |
+| BF manual tests G1-H9 | ⏳ Next session |
+| Premium UI/UX overhaul | 📋 After Q1 answer |
+| Social login (Microsoft + Google) | 📋 In UI/UX session |
+| User Manual | 📋 Post UI/UX |
+| Welcome Packs updated | 📋 Post Manual |
+| Beta tester credentials sent | 🔒 On hold |
 
 ---
 
 ## 18. What To Do In Next Session
 
-Step 1 — Premium UI/UX overhaul
-Upgrade the production experience now that the MS365 beta blocker is closed.
+Step 1 — Complete BF manual testing
+  Open Octiss_Manual_Test_Tracker_v1.0.xlsx
+  Complete sheets: BF Tests (G1-H9)
+  Then Overall Scores (P1-P5)
+  File: D:\Mohsin Personal\OneDrive\
+        EM Intelligence Lab\Octiss Beta\
+        Octiss_Manual_Test_Tracker_v1.0.xlsx
 
-Step 2 — User Manual
-Create the User Manual after the Premium UI/UX overhaul stabilizes.
+Step 2 — Fix any bugs found in BF testing
 
-Step 3 — Update Welcome Packs
-Refresh Welcome Packs with the User Manual and current production flow.
+Step 3 — UI/UX Premium Overhaul
+  Waiting for Mohsin Q1 design reference
+  Includes: full design system, social login,
+  Settings restructure, Agent Assist rename,
+  WBS numbering, task descriptions,
+  AI Roadmap content
 
-Step 4 — Beta tester onboarding
-Send beta tester credentials after Welcome Packs are updated.
+Step 4 — User Manual
+  After UI/UX stable
+
+Step 5 — Beta tester onboarding
 
 ---
 
