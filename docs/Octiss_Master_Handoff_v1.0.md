@@ -374,6 +374,7 @@ Conditional task activation:
 | Commit | Repo | Description |
 |---|---|---|
 | current docs update | Frontend/Public Docs | End-of-session Handoff/SUD update for Project Initiation, task notes/dates, agent context, GF/BF production seed, and active-project restore; final docs commit hashes live in git history because the file cannot self-reference its own final hash |
+| eefa8e3 | Frontend | Add requested EM Intelligence Labs copyright footer on Login |
 | c214c01 | Frontend | Shared active-project gate for Command Center/workspaces; independent Task Screen notes/dates/assignment saves; Project Initiation UI; settings/login UX; full Playwright updates |
 | fb67edf | Backend | Project Initiation endpoints/table SQL; SOW PDF/DOCX/XLSX extraction; task notes endpoint; TRACK owner defaults; project/SAP context injection for agent calls |
 | 8f1ecfb | Backend | Microsoft OAuth Network Error fixed by removing MSAL-reserved `offline_access` from runtime request scopes and adding `/microsoft/auth` alias |
@@ -421,6 +422,7 @@ Conditional task activation:
 | Fix Command Center/global active project restore | ✅ 9050455 + c214c01 |
 | Fix notes save + timestamped note log | ✅ c214c01 + fb67edf |
 | Fix dates save + DD-MMM-YYYY display | ✅ c214c01 + fb67edf |
+| Add login copyright footer | ✅ eefa8e3 |
 | Fix BF Phase Tracker counts | ✅ c214c01 |
 | Fix BF Current Task Activate-backed filtering | ✅ c214c01 |
 | Fix agent SAP/project context injection | ✅ fb67edf |
