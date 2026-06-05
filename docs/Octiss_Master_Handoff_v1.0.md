@@ -87,6 +87,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Production GF/BF test projects re-initialized with generic SOW scope, team roster, modules, and task ownership mapping. GF has 9 team rows, 1 SOW seed, 7 modules, and 18/18 TRACK rows with owners. BF has 9 team rows, 1 SOW seed, 8 modules, and 13/13 TRACK rows with owners.
 - Phase View active project restoration fixed: `/phase/{phase}` now uses the shared project resolver, prioritizes the project list before phase detail calls, and loads an active/fallback project instead of showing "Select a project" after sidebar context selection
 - Command Center and top-level project workspaces now use the same shared active-project resolver: `/dashboard` restores the last active project after fresh login; route project ids are synced before project-scoped pages render; if no project was remembered, the page shows a prominent project selector instead of a blank "choose a project" state
+- Authenticated production smoke passed after deploy: tester workspace fresh login restored BF Test Project in Command Center, switching to GF updated Command Center, and switching back to BF updated Command Center.
 - Activate task filtering is fixed: production GF/BF screens no longer mix in legacy demo task rows
 - Task Screen notes are independent append-only saves with timestamped log entries; Save Notes does not trigger Save Dates, Assignment, or Status.
 - Dates use `DD-MMM-YYYY` display across the new task/phase/command-center surfaces, with explicit Save Dates persistence for planned/actual dates.
@@ -453,19 +454,16 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-Step 1 — Post-deploy production smoke
-After Vercel/Railway finish deploying `c214c01` and `fb67edf`, verify fresh login -> dashboard restores last active project, GF/BF switching updates Command Center, notes/dates persist on refresh, Project Initiation opens, and Agent Assist responses include project/SAP context.
-
-Step 2 — Premium UI/UX overhaul
+Step 1 — Premium UI/UX overhaul
 Upgrade the production experience now that the MS365 beta blocker is closed.
 
-Step 3 — User Manual
+Step 2 — User Manual
 Create the User Manual after the Premium UI/UX overhaul stabilizes.
 
-Step 4 — Update Welcome Packs
+Step 3 — Update Welcome Packs
 Refresh Welcome Packs with the User Manual and current production flow.
 
-Step 5 — Beta tester onboarding
+Step 4 — Beta tester onboarding
 Send beta tester credentials after Welcome Packs are updated.
 
 ---

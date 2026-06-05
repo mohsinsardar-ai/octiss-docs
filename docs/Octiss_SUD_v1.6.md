@@ -29,7 +29,7 @@
 | v1.6.5 | 05 Jun 2026 | MS365 fully connected in production. OneDrive, Outlook, Calendar, and Project Document Folders are configured/connected. SharePoint is N/A for the personal Hotmail account and is not required for beta. Beta is now unblocked. |
 | v1.6.6 | 05 Jun 2026 | Phase View active project restoration fixed in frontend `5ccd18f` and selector/project-list timing hardened in `ef425b5`. `/phase/{phase}` now resolves from the shared project list and auto-restores only on routes that require an active project. Tester1 production projects endpoint returns both BF Test Project and GF Test Project. Frontend Playwright suite: 108 passed / 48 skipped. |
 | v1.6.7 | 05 Jun 2026 | Command Center and top-level project workspaces now use shared active-project resolution in frontend `9050455`. `/dashboard` restores the last active project after fresh login, GF/BF switching updates Command Center, and no remembered project shows a prominent selector. Frontend Playwright suite: 110 passed / 48 skipped. |
-| v1.6.8 | 05 Jun 2026 | Project Initiation, independent task notes/dates/assignment saves, Project/SAP agent context, TRACK owner defaults, and GF/BF generic production seeding completed. Frontend `c214c01`; backend `fb67edf`. Frontend Playwright suite: 110 passed / 48 skipped. Backend compile + direct project-task route tests passed locally; production Project Initiation migration/seed applied. |
+| v1.6.8 | 05 Jun 2026 | Project Initiation, independent task notes/dates/assignment saves, Project/SAP agent context, TRACK owner defaults, and GF/BF generic production seeding completed. Frontend `c214c01`; backend `fb67edf`. Frontend Playwright suite: 110 passed / 48 skipped. Backend compile + direct project-task route tests passed locally; production Project Initiation migration/seed applied. Authenticated production smoke passed: fresh login restored BF, GF switch updated Command Center, and BF switch updated Command Center. |
 
 ---
 
@@ -830,6 +830,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
+| 05 Jun 2026 | Authenticated production smoke after `c214c01`/`fb67edf` deploy passed for tester workspace: fresh login restored BF Test Project in Command Center, switching to GF updated Command Center, and switching back to BF updated Command Center. |
 | 05 Jun 2026 | Project Initiation is now the required bridge between project creation and Prepare. New projects redirect to `/projects/{id}/initiation`; PM can upload/confirm SOW scope, maintain the project team roster, and map task ownership before Prepare begins. Incomplete projects show a Command Center warning. |
 | 05 Jun 2026 | Task Screen saves are separated by intent: PM notes append to a timestamped log, dates save through explicit Save Dates, assignment/track owner saves separately, and status autosave no longer wipes unsaved note/date/owner edits during refetch. Dates display as `DD-MMM-YYYY` on the new task/phase/command-center surfaces. |
 | 05 Jun 2026 | Agent context must include task name, phase, deliverable, methodology, project SOW scope, modules, team roster, and SAP knowledge. If filtered vector search returns no SAP chunks, retrieval falls back to layer scans so PM-facing agent output does not claim zero SAP context. |
@@ -920,6 +921,7 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 - **Microsoft 365 production integration live** — connected=true; OneDrive, Outlook, Calendar configured; Project Document Folders connected; dry-run active; SharePoint N/A because the personal Hotmail account has no SPO license
 - **Command Center rebuilt** — 6-section clean layout (commit a39e52b + 1545871)
 - **Command Center active project restore fixed** — `/dashboard` uses the shared active-project resolver, restores the last active project after fresh login, syncs route project ids before project-scoped pages render, switches GF/BF correctly, and shows a prominent selector when no project was remembered (commits 9050455 + c214c01)
+- **Authenticated production smoke passed** — tester workspace fresh login restored BF Test Project in Command Center; GF and BF selector switches updated Command Center.
 - **Task Screen fixed and production-verified** — Agent Assist CTA rendering, agent panel, independent note/date/assignment saves, timestamped PM note log, status updates, direct task route loading, stable detail save/readback, dirty-field preservation, and text assignee labels
 - **Phase View grouping fixed** — tasks group by deliverable_name with General fallback (commit 82f09d5)
 - **Phase View active project restore fixed** — `/phase/{phase}` resolves active/fallback project from the shared project list, project-list loading is prioritized before phase detail calls, and the sidebar selector lists both GF Test Project and BF Test Project (commits 5ccd18f + ef425b5)
