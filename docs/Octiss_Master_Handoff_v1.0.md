@@ -100,6 +100,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Focused Playwright after empty states + micro-interactions: OK passed
 - Voice Copilot: OK verified; Web Speech API EN/AR/UR transcription sends transcript to agent query flow
 - Multi-language Phase 1: OK English + Arabic RTL via react-i18next
+- Backend test suite: OK 1316 passed / 0 failed; n8n production workflow placeholder check skipped with reason
 - Social SSO: Microsoft + Google ✅ Live
 - Agent context: SOW + team + SAP chunks ✅
 - Notes: timestamped log entries ✅
@@ -119,11 +120,10 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 | # | Item | Status |
 |---|---|---|
 | 1 | New migration needs Supabase SQL Editor apply | 20260606153000_project_ecosystem_choice.sql |
-| 2 | Backend pytest has unrelated n8n placeholder failure | tests/test_automation_triggers.py |
-| 3 | Settings deep sub-panel token audit | Pending after empty-state pass |
-| 4 | Test Round 2 | After UI polish |
-| 5 | User Manual | After Test Round 2 |
-| 6 | Beta onboarding | On hold |
+| 2 | Settings deep sub-panel token audit | Pending after empty-state pass |
+| 3 | Test Round 2 | After UI polish |
+| 4 | User Manual | After Test Round 2 |
+| 5 | Beta onboarding | On hold |
 
 ---
 
@@ -401,6 +401,7 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| d758515 | Backend | Resolve n8n placeholder test failure |
 | 702ce47 | Frontend | Multi-language Phase 1 EN/AR RTL |
 | c876fb9 | Frontend | Voice Copilot Web Speech verification |
 | f76fead | Frontend | Agent Assist panel stabilization |
@@ -461,6 +462,7 @@ Conditional task activation:
 | Focused Playwright after empty states | OK f76fead |
 | Voice Copilot verified | OK c876fb9 |
 | Multi-language Phase 1 | OK 702ce47 |
+| Backend test suite clean | ✅ |
 | Settings deep sub-panel UI audit | Next |
 | Test Round 2 | After UI polish |
 | User Manual | After Test Round 2 |
@@ -501,7 +503,6 @@ Priority 4 - Beta Tester Onboarding
   🎉 Beta Launch
 
 ### Backlog (fix when convenient):
-- tests/test_automation_triggers.py failure
 - Digital Twin Phase 2 (MS Teams bot)
   post 3-5 paying customers
 - Full 8-language support post-revenue
