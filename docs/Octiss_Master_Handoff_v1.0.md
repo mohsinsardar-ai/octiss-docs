@@ -456,17 +456,67 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-1. Apply new migration if not already applied
-   Apply `20260606153000_project_ecosystem_choice.sql` in Supabase SQL Editor.
+### Mohsin Actions First:
+Review live UI at octiss-production.vercel.app
+Take screenshots of:
+  Login, Sidebar, Command Center,
+  Phase View, Task Screen
+Share with Claude for UI polish prompt.
 
-2. Complete Linear UI audit
-   Finish Settings deep sub-panels, empty states, and micro-interactions after Phase 1.
+### Codex Queue (in order):
 
-3. Test Round 2
-   Full end-to-end test after the UI audit. User Manual is written from this round.
+Priority 1 — Empty States + Micro-interactions
+  Finish partial UI/UX items:
+  - All empty states designed
+  - Smooth transitions throughout
+  - Status chip animations (150ms)
+  - Agent Assist slide-in (250ms)
+  - Note save animation
+  - Drag animations on Kanban
 
-4. User Manual + beta onboarding
-   Start after Test Round 2 is clean.
+Priority 2 — UI/UX Polish Pass
+  Based on Mohsin screenshot review:
+  - More generous padding everywhere
+  - Stronger typography hierarchy
+  - Better visual depth and contrast
+  - Linear feel not just dark colours
+
+Priority 3 — Voice Copilot Verification
+  Test in production:
+  - Microphone button visible?
+  - Recording works?
+  - Transcription EN/UR/AR works?
+  - Agent receives and responds?
+  - Style to match Linear design
+
+Priority 4 — Multi-language Phase 1
+  English + Arabic for beta:
+  - react-i18next setup
+  - Extract all UI strings to en.json
+  - Arabic translation + RTL support
+
+Priority 5 — Test Round 2
+  Full end-to-end test using:
+  Octiss_Beta_Test_Tracker_v2.0_Single.xlsx
+  Every screen, every flow
+  GF and BF projects
+
+Priority 6 — User Manual
+  After Test Round 2 clean
+  Real screenshots of final Linear UI
+
+Priority 7 — Beta Tester Onboarding
+  5 testers + welcome packs
+  🎉 Beta Launch
+
+### Backlog (fix when convenient):
+- tests/test_automation_triggers.py failure
+- Digital Twin Phase 2 (MS Teams bot)
+  post 3-5 paying customers
+- Full 8-language support post-revenue
+- Gantt View (post-beta)
+- Codebase cleanup (post stable UI)
+- DB cleanup — retire DEMO project
 
 ---
 
