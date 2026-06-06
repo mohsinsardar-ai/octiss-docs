@@ -1,5 +1,5 @@
 # Octiss — Solution Understanding Document (SUD)
-**Version:** v1.6.7 | **Date:** 05 June 2026 | **Status:** LIVE — BETA UNBLOCKED
+**Version:** v1.6.9 | **Date:** 06 June 2026 | **Status:** LIVE — VERIFICATION RUNNING
 **Owner:** Mohsin Sardar — EM Intelligence Labs  
 **Classification:** Confidential — Internal Use Only  
 **Domains:** octiss.com | emintelligencelab.com
@@ -30,6 +30,7 @@
 | v1.6.6 | 05 Jun 2026 | Phase View active project restoration fixed in frontend `5ccd18f` and selector/project-list timing hardened in `ef425b5`. `/phase/{phase}` now resolves from the shared project list and auto-restores only on routes that require an active project. Tester1 production projects endpoint returns both BF Test Project and GF Test Project. Frontend Playwright suite: 108 passed / 48 skipped. |
 | v1.6.7 | 05 Jun 2026 | Command Center and top-level project workspaces now use shared active-project resolution in frontend `9050455`. `/dashboard` restores the last active project after fresh login, GF/BF switching updates Command Center, and no remembered project shows a prominent selector. Frontend Playwright suite: 110 passed / 48 skipped. |
 | v1.6.8 | 05 Jun 2026 | Project Initiation, independent task notes/dates/assignment saves, Project/SAP agent context, TRACK owner defaults, login copyright footer, and GF/BF generic production seeding completed. Frontend `c214c01` + `eefa8e3`; backend `fb67edf`. Frontend Playwright suite: 110 passed / 48 skipped. Backend compile + direct project-task route tests passed locally; production Project Initiation migration/seed applied. Authenticated production smoke passed: fresh login restored BF, GF switch updated Command Center, and BF switch updated Command Center. |
+| v1.6.9 | 06 Jun 2026 | Google SSO + ecosystem setup complete; all 9 build tasks complete; migrations and Supabase providers applied; Section 12 decisions and Section 13 build status updated for end-of-day state. |
 
 ---
 
@@ -830,7 +831,8 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Date | Decision |
 |---|---|
-| 06 Jun 2026 | FULL BUILD QUEUE TASKS 1-9 COMPLETE<br>Project creation now offers SOW-first and Q&A fallback paths; `creation_path` is saved per project.<br>Task exclude/restore/delete is built for Phase View and Task Screen, with excluded tasks hidden from default progress.<br>Automation Setup is now part of Project Initiation, backed by `project_automation_preferences`.<br>Settings has left-sidebar navigation, Automation Safety workflow scheduling, and Octiss-only AI Roadmap content.<br>CTA workflows 7-16 are built as PM-review-only workflow drafts and outbox contracts; nothing sends or saves externally without PM approval.<br>Google ecosystem backend contract is built: OAuth, status/connect, Drive, Gmail, and Calendar route contracts. Google Cloud credentials, Railway env vars, and Supabase provider setup still require Mohsin manual configuration.<br>Board and Calendar views are built. Microsoft and Google SSO buttons are built using Supabase OAuth, with email/password retained as fallback.<br>Backend commit: `cd317a3`. Frontend commit: `dbfcf8c`. Validation: frontend build passed, backend syntax check passed, Playwright full suite 110 passed / 48 skipped. |
+| 06 Jun 2026 | GOOGLE SSO + ECOSYSTEM COMPLETE<br>Google Cloud project: Mohsin PMO Automation (gen-lang-client-0123370567)<br>APIs enabled: Drive, Gmail, Calendar only.<br>Gemini and Agent Platform APIs confirmed NOT enabled — zero billing risk.<br>Budget alert: $5/month hard warning.<br>OAuth client: Octiss Production (Web app)<br>Supabase Google provider: Enabled.<br>Azure/Microsoft Supabase provider: Enabled.<br>Railway env vars added: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI.<br>Both SSO login options now live on Octiss login screen. |
+| 06 Jun 2026 | ALL 9 BUILD TASKS COMPLETE<br>Overnight Codex session built:<br>1. Project creation SOW/Q&A choice screen<br>2. Task Exclude/Delete with audit trail<br>3. Automation Setup in Project Initiation<br>4. Settings left sidebar nav restructure<br>5. CTA Workflows 7-16 (document automation)<br>6. Google Ecosystem (Drive/Gmail/Calendar)<br>7. Kanban Board (/board)<br>8. Calendar View (/calendar Month/Week/Day)<br>9. Social SSO (Microsoft + Google buttons)<br>Commits: cd317a3 (BE), dbfcf8c (FE)<br>Migrations applied to production Supabase:<br>20260605160000_project_initiation_module.sql<br>20260606120000_full_build_queue_features.sql<br>9-task verification session running. |
 | 06 Jun 2026 | N8N SETUP COMPLETE<br>All 6 module8 workflow JSON files updated with production backend URL and API key. Commit: `54f5b0f`.<br>All 6 imported and published in n8n:<br>- Octiss — Daily Briefing (daily 8AM)<br>- Octiss — Weekly Report (Monday 8AM)<br>- Octiss — RAID Check (daily 7AM)<br>- Octiss — OneDrive Sync (every 2hrs)<br>- Octiss — Backlog Summary (daily 8:30AM)<br>- Octiss — Hypercare Summary (daily 8:30AM)<br>Old broken workflows archived.<br>n8n instance: n8n-production-c148.up.railway.app<br>No manual n8n login required going forward for normal operations. |
 | 05 Jun 2026 | PROJECT CREATION FLOW<br>Two options must be presented to the PM on the project creation screen:<br>A) Create Project with SOW: upload SOW upfront, Agent 2 extracts scope, PM confirms extraction, and the plan is generated from real SOW data.<br>B) Create Project without SOW: PM answers 12 fallback questions, the plan is generated from answers, and SOW can be uploaded later via Project Initiation.<br>Both options are valid. A is recommended. B is for PMs who do not yet have SOW. Current build has SOW as an optional separate screen and must be corrected to show both options at project creation. |
 | 05 Jun 2026 | TASK EXCLUDE / DELETE<br>PM must be able to exclude or delete any task from the project plan directly from Phase View or Task Screen.<br>[Exclude Task] hides the task from Phase View, removes it from progress metrics, logs it in the project audit trail, and remains recoverable so the PM can restore excluded tasks.<br>[Delete Task] permanently removes the task, requires a confirmation dialog, and cannot be recovered.<br>Not yet built and required before beta. |
@@ -919,28 +921,26 @@ SOW v1.5 vision — locked until after M11 commercial launch. No build until SOW
 
 | Component | Status | Notes |
 |---|---|---|
-| Backend | ✅ Live | 393+ routes, 1302+ baseline tests; full-build API/schema contracts in `cd317a3` |
-| Frontend | ✅ Live | Vercel, production build passed, 110 Playwright passed / 48 skipped |
-| MS365 Integration | ✅ Live | OneDrive, Outlook, Calendar configured |
-| Project Initiation Module | ✅ Built | SOW/Q&A creation paths, team, task mapping, automation setup |
-| Agent Context | ✅ Fixed | SOW + team + SAP chunks injected |
-| BF Conversion Module | ✅ Live | Checklist, SUM, Calculator |
-| Active Project Resolver | ✅ Fixed | Global - all pages |
-| Notes Timestamped Log | ✅ Live | |
-| Dates DD-MMM-YYYY | ✅ Live | |
-| Login Copyright Footer | ✅ Live | |
-| n8n Workflows 1-6 | ✅ Live | Imported, configured, published 06 Jun |
-| n8n Workflows 7-16 | ✅ Built | CTA document workflows as PM-review-only drafts/outbox contracts |
-| Automation Settings Screen | ✅ Built | Active-project workflow schedule controls |
-| Task Exclude/Delete | ✅ Built | Exclude/restore/delete with default hidden excluded tasks |
-| SOW mandatory at creation | ✅ Built | PM chooses SOW recommended path or Q&A fallback |
-| Google Ecosystem | ✅ Built | OAuth + Drive/Gmail/Calendar route contracts; Google Cloud/Railway setup pending |
-| Kanban Board View | ✅ Built | `/board` with status columns, filters, drag status update |
-| Calendar View | ✅ Built | `/calendar` with Month/Week/Day task schedule views |
-| Social Login | ✅ Built | Microsoft + Google Supabase OAuth buttons; provider setup pending |
-| Gantt View | ❌ Not built | Post-beta |
-| Premium UI/UX Overhaul | ❌ Not started | Waiting for design reference |
-| User Manual | ❌ Not started | After Test Round 2 |
+| Backend | ✅ Live | 393+ routes, 1302+ tests |
+| Frontend | ✅ Live | Vercel, 110 Playwright |
+| MS365 Integration | ✅ Live | Fully configured |
+| Google Ecosystem | ✅ Live | Drive/Gmail/Calendar |
+| Social SSO | ✅ Live | Microsoft + Google |
+| n8n Workflows 1-6 | ✅ Live | 6 published |
+| Project Initiation | ✅ Live | SOW + Team + Automation |
+| Project Creation Flow | ✅ Live | SOW/Q&A choice |
+| Task Exclude/Delete | ✅ Live | With audit trail |
+| Automation Settings | ✅ Live | Per-workflow control |
+| CTA Workflows 7-16 | ✅ Built | Draft/approval flow |
+| Kanban Board | ✅ Live | /board |
+| Calendar View | ✅ Live | /calendar |
+| Agent Context | ✅ Fixed | SOW+team+SAP chunks |
+| BF Conversion Module | ✅ Live | Checklist/SUM/Calc |
+| Migrations applied | ✅ | Both SQL files applied |
+| 9-task verification | ⏳ Running | Codex session active |
+| Premium UI/UX Overhaul | 📋 Pending | Waiting Q1 design ref |
+| Test Round 2 | 📋 Pending | After UI/UX |
+| User Manual | 📋 Pending | After Test Round 2 |
 | Beta Onboarding | 🔒 On hold | After Test Round 2 |
 
 ---
@@ -1097,5 +1097,5 @@ Production status:
 - Downtime calculator production result for 420GB / 850 Z-objects / 300 QAS mins / 8 CPU / 64GB RAM: 11.73 hours estimated, 14.7-hour minimum window, 423-minute rollback point, HIGH confidence
 - Microsoft 365 is no longer a beta blocker: connected=true, OneDrive/Outlook/Calendar configured, Project Document Folders connected, SharePoint N/A for personal Hotmail account
 
-*End of Document — Octiss SUD v1.6.7 — 05 June 2026*
-*Next update: v1.7 after Premium UI/UX overhaul and User Manual completion*
+*End of Document — Octiss SUD v1.6.9 — 06 June 2026*
+*Next update: after 9-task verification and Premium UI/UX overhaul*

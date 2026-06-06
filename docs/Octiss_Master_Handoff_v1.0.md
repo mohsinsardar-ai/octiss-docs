@@ -1,5 +1,5 @@
 # Octiss — Master Handoff Document
-**Version:** v1.0 | **Date:** 04 June 2026
+**Version:** v1.0 | **Date:** 06 June 2026
 **Purpose:** Single reference for any new Claude or Codex session
 
 ---
@@ -73,52 +73,37 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 ## 4. Current Build State (06 June 2026)
 
 ### What Is Live and Working
-- Backend: 393+ routes, 1302+ baseline tests; new migration/API contracts committed in `cd317a3`
-- Frontend: Deployed Vercel; build passed; 110 Playwright passed / 48 skipped
-- Setup 5/5 READY - MS365 connected
+- Backend: 393+ routes, 1302+ tests passing
+- Frontend: Deployed Vercel octiss-production.vercel.app
+- Playwright: 110 passed / 48 skipped
+- MS365: connected — OneDrive, Outlook, Calendar configured
+- n8n: 6 workflows published and active
 - GF Test Project: 244 Activate tasks ✅
 - BF Test Project: 235 Activate tasks ✅
-- Active project resolver: FIXED globally
-- Project Initiation Module: BUILT ✅
-- SOW-first project creation choice screen: BUILT ✅
-- Q&A fallback project creation path: PRESERVED ✅
-- `creation_path` saved to projects: BUILT ✅
-- SOW upload + extraction: LIVE ✅
-- Project team roster: LIVE ✅
-- Task ownership mapping: LIVE ✅
-- Task exclude / restore / delete: BUILT ✅
-- Excluded tasks hidden from default progress: BUILT ✅
+- Project Initiation Module: ✅ Live
+- Project Creation: SOW/Q&A choice screen ✅
+- Task Exclude/Delete: ✅ Live
+- Automation Setup in Initiation: ✅ Live
+- Settings: Left sidebar nav ✅
+- CTA Workflows 7-16: ✅ Built
+- Google Ecosystem: ✅ Built and configured
+- Kanban Board (/board): ✅ Live
+- Calendar View (/calendar): ✅ Live
+- Social SSO: Microsoft + Google ✅ Live
+- Agent context: SOW + team + SAP chunks ✅
 - Notes: timestamped log entries ✅
 - Dates: DD-MMM-YYYY everywhere ✅
-- Agent context: SOW + team + SAP chunks ✅
-- BF phase tracker: FIXED ✅
-- Login copyright footer: ADDED ✅
-- Automation Setup in Project Initiation: BUILT ✅
-- Project automation preferences table/API: BUILT ✅
-- Settings left-sidebar structure: BUILT ✅
-- Automation Safety workflow schedule controls: BUILT ✅
-- AI Roadmap: Octiss roadmap only ✅
-- CTA document workflows 7-16: BUILT as PM-review drafts ✅
-- Command Center PM approval inbox: BUILT ✅
-- Google ecosystem backend contract: BUILT ✅
-- Google Settings integration card: BUILT ✅
-- Kanban Board view `/board`: BUILT ✅
-- Calendar view `/calendar`: BUILT ✅
-- Social SSO buttons: Microsoft + Google UI BUILT ✅
-- n8n: 6 workflows published and active ✅
-  Daily Briefing, Weekly Report, RAID Check,
-  OneDrive Sync, Backlog Summary,
-  Hypercare Summary
+- WBS numbering: Phase View ✅
+- Agent Assist panel: renamed ✅
 
-### Known Issues
-| # | Issue | Status |
+### Known Issues / Pending
+| # | Item | Status |
 |---|---|---|
-| 1 | New DB migration must be applied to production Supabase | ⏳ Next manual deploy step |
-| 2 | Google Cloud OAuth credentials and Railway env vars not yet configured | ⏳ Mohsin manual setup |
-| 3 | Supabase Microsoft/Google social providers must be enabled for SSO | ⏳ Mohsin manual setup |
-| 4 | Google Drive/Gmail/Calendar execution needs connected Google account and runner callback wiring | ⏳ Production verification |
-| 5 | BF Tests G1-H9 and full Test Round 2 not yet done | ⏳ Next test session |
-| 6 | Premium UI/UX overhaul still pending Q1 design reference | 📋 Next design session |
+| 1 | Codex 9-task verification pending | ⏳ Running |
+| 2 | UI/UX premium overhaul | 📋 Waiting Q1 ref |
+| 3 | Test Round 2 | 📋 After UI/UX |
+| 4 | User Manual | 📋 After Test Round 2 |
+| 5 | Beta onboarding | 🔒 On hold |
 
 ---
 
@@ -355,8 +340,25 @@ Conditional task activation:
 | OAuth URL Route | `/api/v1/integrations/microsoft/connect` and `/api/v1/integrations/microsoft/auth` both return auth URLs |
 | Capabilities | OneDrive CONFIGURED; Outlook CONFIGURED; Calendar CONFIGURED; Project Document Folders CONNECTED; SharePoint N/A — personal Hotmail account has no SPO license |
 | Automation Mode | Dry-run active |
-| Next Step | Proceed with Premium UI/UX overhaul; SharePoint is not required for beta |
+| Next Step | Proceed with Codex 9-task verification, then Premium UI/UX overhaul |
 | Home page | https://octiss.com |
+
+---
+
+## 14b. Google Configuration
+
+| Item | Value |
+|---|---|
+| Google Cloud Project | Mohsin PMO Automation |
+| Project ID | gen-lang-client-0123370567 |
+| OAuth Client | Octiss Production |
+| APIs Enabled | Google Drive, Gmail, Calendar |
+| Redirect URI | https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/google/callback |
+| Supabase Callback | https://qrxfprybbpqugptakeke.supabase.co/auth/v1/callback |
+| Budget Alert | $5/month — alerts at 50/90/100% |
+| Gemini API | NOT enabled — safe |
+| Agent Platform API | NOT enabled — safe |
+| Railway Env Vars | GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI |
 
 ---
 
@@ -379,28 +381,23 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
-| dbfcf8c | Frontend | Project workflow build queue UI |
-| cd317a3 | Backend | Project automation, task exclude/delete, Google workflow contracts |
-| 5f0f891 | Frontend | n8n docs update |
-| bf564a3 | Public Docs | n8n docs update |
-| eefa8e3 | Frontend | Login copyright footer |
-| c214c01 | Frontend | BF tracker + active project fixes |
-| fb67edf | Backend | Notes log, dates, agent context, initiation module |
-| 0808c46 | Frontend | Docs update |
-| adc985f | Public Docs | Docs update |
+| 2acd505 | Frontend | All 9 build tasks + docs |
+| dbfcf8c | Frontend | All 9 build tasks feature |
+| cd317a3 | Backend | All 9 build tasks backend |
+| 929ffa9 | Public Docs | Docs update |
+| 5f0f891 | Frontend | Docs n8n complete |
+| bf564a3 | Public Docs | Docs n8n complete |
+| 54f5b0f | Backend | n8n workflow files updated |
 | 90504559 | Frontend | Global active project resolver |
-| 5ccd18f | Frontend | Phase View project resolver |
-| 44472fa | Frontend | Railway docs update |
-| 3da6017 | Public Docs | Railway docs update |
-| 5553a7692 | Frontend | MS365 docs update |
-| 86bd0d57 | Public Docs | MS365 docs update |
+| fb67edf | Backend | Notes, dates, agent context |
+| c214c01 | Frontend | BF tracker fixes |
+| eefa8e3 | Frontend | Login copyright footer |
 | 8f1ecfb | Backend | MS365 MSAL scope fix |
-| a5e04cc | Frontend | M10b-6c BF Conversion UI |
-| 44d00df | Backend | M10b-6c BF Conversion Module |
-| 82f09d5 | Frontend | Fix Task Screen + Phase View grouping |
+| a5e04cc | Frontend | BF Conversion UI |
+| 44d00df | Backend | BF Conversion Module |
+| 82f09d5 | Frontend | Task Screen + Phase View fix |
 | f0c8b88 | Backend | Deliverable enrichment |
-| 3f6718f | Frontend | Playwright fixtures real UUIDs |
-| 16794ab | Frontend | Fix sidebar routing + Daily Briefing |
+| 16794ab | Frontend | Fix sidebar routing |
 
 ---
 
@@ -410,95 +407,57 @@ Conditional task activation:
 |---|---|
 | Fix sidebar routing | ✅ 16794ab |
 | Fix Phase View grouping | ✅ 82f09d5 |
-| Fix Task Screen CTAs | ✅ 82f09d5 |
 | BF Conversion Module | ✅ 44d00df |
-| MS365 connected + configured | ✅ 8f1ecfb |
-| Active project resolver global fix | ✅ 90504559 |
-| BF phase tracker fixed | ✅ c214c01 |
-| Notes timestamped log | ✅ fb67edf |
-| Dates DD-MMM-YYYY everywhere | ✅ fb67edf |
-| Agent context SOW + team + SAP | ✅ fb67edf |
+| MS365 connected | ✅ 8f1ecfb |
+| Active project resolver | ✅ 90504559 |
 | Project Initiation Module | ✅ fb67edf |
-| GF + BF test projects seeded | ✅ fb67edf |
-| Login copyright footer | ✅ eefa8e3 |
-| n8n workflow files updated with real URLs | ✅ 54f5b0f |
-| n8n 6 workflows imported and published | ✅ 06 Jun 2026 |
-| Project creation choice screen | ✅ dbfcf8c |
-| SOW upload path at creation | ✅ dbfcf8c |
-| Q&A fallback path preserved | ✅ dbfcf8c |
-| `creation_path` DB field | ✅ cd317a3 |
-| Task exclude / restore / delete backend | ✅ cd317a3 |
-| Phase View exclude / restore / delete UI | ✅ dbfcf8c |
-| Task Screen exclude / delete UI | ✅ dbfcf8c |
-| Automation setup in Project Initiation | ✅ dbfcf8c |
-| Project automation preferences API/table | ✅ cd317a3 |
-| Automation Settings workflow scheduler | ✅ dbfcf8c |
-| CTA workflows 7-16 PM draft contracts | ✅ cd317a3 |
-| Command Center PM approval inbox | ✅ dbfcf8c |
-| Google OAuth backend and exact route contracts | ✅ cd317a3 |
-| Google Settings integration card | ✅ dbfcf8c |
-| Kanban Board view | ✅ dbfcf8c |
-| Calendar view | ✅ dbfcf8c |
-| Microsoft + Google SSO buttons | ✅ dbfcf8c |
-| Playwright full suite | ✅ 110 passed / 48 skipped |
-| Frontend production build | ✅ dbfcf8c |
-| Backend syntax check | ✅ cd317a3 |
-| Production DB migration applied | ⏳ Next manual deploy step |
-| Google Cloud OAuth setup | ⏳ Mohsin manual setup |
-| Supabase social provider setup | ⏳ Mohsin manual setup |
-| BF manual tests G1-H9 | ⏳ Next session |
-| Test Round 2 | ⏳ After production deploy verification |
-| Premium UI/UX overhaul | 📋 After Q1 answer |
-| User Manual | 📋 Post Test Round 2 |
-| Welcome Packs updated | 📋 Post Manual |
-| Beta tester credentials sent | 🔒 On hold |
+| n8n 6 workflows live | ✅ 06 Jun |
+| All 9 build tasks complete | ✅ dbfcf8c |
+| Migrations applied in Supabase | ✅ 06 Jun |
+| Azure Supabase provider enabled | ✅ 06 Jun |
+| Google Cloud OAuth setup | ✅ 06 Jun |
+| Google Supabase provider enabled | ✅ 06 Jun |
+| Google Railway env vars added | ✅ 06 Jun |
+| Google budget alert $5/month | ✅ 06 Jun |
+| Social SSO Microsoft + Google | ✅ Live |
+| Codex 9-task verification | ⏳ Running |
+| Premium UI/UX overhaul | 📋 Waiting Q1 |
+| Test Round 2 | 📋 After UI/UX |
+| User Manual | 📋 After Test Round 2 |
+| Beta Tester Onboarding | 🔒 On hold |
 
 ---
 
 ## 18. What To Do In Next Session
 
-Step 1 - Apply the production database migration
-  File: `supabase/migrations/20260606120000_full_build_queue_features.sql`
-  Adds: `projects.creation_path`, `project_tasks.excluded`, `project_tasks.excluded_at`, `project_automation_preferences`, `workflow_approval_drafts`, `google_integration_tokens`.
-  Apply through Supabase CLI/SQL process before verifying new production flows.
+### Immediate — Codex
+1. Complete 9-task verification session
+   Check every task actually works in production
+   Fix anything partial or missing
+   Report full results
 
-Step 2 - Configure Google and Supabase OAuth manually
-  Google Cloud Console:
-  1. Create/select the Octiss Google Cloud project.
-  2. Enable Google Drive API, Gmail API, and Google Calendar API.
-  3. Configure OAuth consent screen for the intended tester users.
-  4. Create OAuth 2.0 Web application credentials.
-  5. Add backend redirect URI: `https://sap-pmo-agent-production-3f52.up.railway.app/api/v1/integrations/google/callback`.
-  6. Add Supabase redirect URI: `[Supabase project URL]/auth/v1/callback`.
-  7. Add Google client ID/secret to Railway as Google OAuth env vars.
-  8. Enable Google provider in Supabase Auth and paste the same client ID/secret.
-  Supabase Microsoft/Azure provider:
-  1. Confirm Azure provider is enabled in Supabase Auth.
-  2. Add the Supabase callback URI to the Azure app if missing.
-  3. Keep email/password active as fallback.
+### After Verification Clean
+2. Premium UI/UX Overhaul
+   Waiting for Mohsin Q1 design reference
+   (which SaaS product UI do you love?)
+   Covers all GF test feedback:
+   - Full design system overhaul
+   - Agent Assist panel styling
+   - Settings left sidebar polish
+   - Kanban and Calendar styling
+   - Login screen with SSO buttons
+   - WBS numbering display
+   - Date format DD-MMM-YYYY
+   - Task description quality
+   - Progress bar visibility
 
-Step 3 - Production smoke after backend/frontend deploy
-  Verify both creation paths:
-  - SOW path creates a project, extracts scope, saves `creation_path=SOW`, and reaches Project Initiation.
-  - Q&A path creates a project, saves `creation_path=QA`, and reaches Project Initiation.
-  Verify task exclude/restore/delete, automation preferences, PM approval inbox, Board, Calendar, and social-login fallback messages.
+3. Test Round 2 — full end to end
+   After UI/UX complete
+   User Manual written from this test
 
-Step 4 - Complete BF manual testing
-  Open Octiss_Manual_Test_Tracker_v1.0.xlsx
-  Complete sheets: BF Tests (G1-H9), then Overall Scores (P1-P5).
-  File: `D:\Mohsin Personal\OneDrive\EM Intelligence Lab\Octiss Beta\Octiss_Manual_Test_Tracker_v1.0.xlsx`
-
-Step 5 - Fix any bugs found in Test Round 2
-
-Step 6 - UI/UX Premium Overhaul
-  Waiting for Mohsin Q1 design reference.
-  Includes: full design system, Settings polish, Agent Assist rename polish, WBS numbering polish, task descriptions, Board/Calendar styling, and AI Roadmap final copy.
-
-Step 7 - User Manual
-  After Test Round 2 and UI/UX are stable.
-
-Step 8 - Welcome Packs and beta tester onboarding
-  Send only after Test Round 2 is clean and the User Manual is ready.
+4. Beta Tester Onboarding
+   After Test Round 2 clean
+   5 testers, welcome packs sent
 
 ---
 
