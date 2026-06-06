@@ -101,16 +101,25 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Dates: DD-MMM-YYYY everywhere ✅
 - WBS numbering: Phase View ✅
 - Agent Assist panel: renamed ✅
+- Linear UI tokens + Inter font: ✅ Live
+- Linear shell/sidebar: ✅ Live
+- Linear Command Center: ✅ Live
+- Linear Phase View + Task Screen: ✅ Live
+- Linear Board + Calendar: ✅ Live
+- Linear Project Creation + Initiation: ✅ Live
+- Linear BF checklist/SUM/downtime screens: ✅ Live
+- Focused Playwright after UI overhaul: ✅ Passed
 
 ### Known Issues / Pending
 | # | Item | Status |
 |---|---|---|
 | 1 | New migration needs Supabase SQL Editor apply | 20260606153000_project_ecosystem_choice.sql |
 | 2 | Backend pytest has unrelated n8n placeholder failure | tests/test_automation_triggers.py |
-| 3 | UI/UX premium overhaul | 📋 Waiting Q1 ref |
-| 4 | Test Round 2 | 📋 After UI/UX |
-| 5 | User Manual | 📋 After Test Round 2 |
-| 6 | Beta onboarding | 🔒 On hold |
+| 3 | Settings deep sub-panel token audit | 📋 Pending after Linear Phase 1 |
+| 4 | Empty states + micro-interactions full audit | 📋 Pending after Linear Phase 1 |
+| 5 | Test Round 2 | 📋 After UI audit |
+| 6 | User Manual | 📋 After Test Round 2 |
+| 7 | Beta onboarding | 🔒 On hold |
 
 ---
 
@@ -388,6 +397,11 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| 9ccea73 | Frontend | Focused Playwright specs updated for Linear UI |
+| 0db73cd | Frontend | Linear project setup, initiation, and BF conversion screens |
+| 6b28b03 | Frontend | Linear board, calendar, and settings shell |
+| 4aa2f86 | Frontend | Linear phase view, task screen, and Agent Assist |
+| c73a1d5 | Frontend | Linear tokens, shell, sidebar, login, and Command Center |
 | cf7c502 | Backend | Ecosystem selector DB/API support |
 | 1a96d93 | Frontend | Verification pass fixes |
 | 2acd505 | Frontend | All 9 build tasks + docs |
@@ -430,8 +444,11 @@ Conditional task activation:
 | Google budget alert $5/month | ✅ 06 Jun |
 | Social SSO Microsoft + Google | ✅ Live |
 | Verification pass - 9 tasks | OK 1a96d93 |
-| Premium UI/UX overhaul | 📋 Waiting Q1 |
-| Test Round 2 | 📋 After UI/UX |
+| Linear UI/UX overhaul Phase 1 | OK 0db73cd |
+| Focused Playwright after Linear UI | OK 9ccea73 |
+| Settings deep sub-panel UI audit | 📋 Next |
+| Empty states + micro-interactions audit | 📋 Next |
+| Test Round 2 | 📋 After UI audit |
 | User Manual | 📋 After Test Round 2 |
 | Beta Tester Onboarding | 🔒 On hold |
 
@@ -439,16 +456,16 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-1. Apply new migration if exists
+1. Apply new migration if not already applied
    Apply `20260606153000_project_ecosystem_choice.sql` in Supabase SQL Editor.
 
-2. Premium UI/UX overhaul (Linear style)
-   Covers Command Center, Phase View, Task Screen, Settings, Board, Calendar, Login, and Agent Assist polish.
+2. Complete Linear UI audit
+   Finish Settings deep sub-panels, empty states, and micro-interactions after Phase 1.
 
 3. Test Round 2
-   Full end-to-end test after UI/UX overhaul. User Manual is written from this round.
+   Full end-to-end test after the UI audit. User Manual is written from this round.
 
-4. Beta onboarding
+4. User Manual + beta onboarding
    Start after Test Round 2 is clean.
 
 ---
