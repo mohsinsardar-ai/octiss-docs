@@ -99,6 +99,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Micro-interactions: OK page/card/status transitions, task exclude/restore, note save, Agent Assist slide-in, Kanban drag/drop, modal/skeleton transitions
 - Focused Playwright after empty states + micro-interactions: OK passed
 - Voice Copilot: OK verified; Web Speech API EN/AR/UR transcription sends transcript to agent query flow
+- Multi-language Phase 1: OK English + Arabic RTL via react-i18next
 - Social SSO: Microsoft + Google ✅ Live
 - Agent context: SOW + team + SAP chunks ✅
 - Notes: timestamped log entries ✅
@@ -400,6 +401,7 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| 702ce47 | Frontend | Multi-language Phase 1 EN/AR RTL |
 | c876fb9 | Frontend | Voice Copilot Web Speech verification |
 | f76fead | Frontend | Agent Assist panel stabilization |
 | 1c11852 | Frontend | Task assist and BF checklist empty interactions |
@@ -458,6 +460,7 @@ Conditional task activation:
 | Empty states + micro-interactions audit | OK f76fead |
 | Focused Playwright after empty states | OK f76fead |
 | Voice Copilot verified | OK c876fb9 |
+| Multi-language Phase 1 | OK 702ce47 |
 | Settings deep sub-panel UI audit | Next |
 | Test Round 2 | After UI polish |
 | User Manual | After Test Round 2 |
@@ -483,23 +486,17 @@ Priority 1 - UI/UX Polish Pass
   - Better visual depth and contrast
   - Linear feel not just dark colours
 
-Priority 2 - Multi-language Phase 1
-  English + Arabic for beta:
-  - react-i18next setup
-  - Extract all UI strings to en.json
-  - Arabic translation + RTL support
-
-Priority 3 - Test Round 2
+Priority 2 - Test Round 2
   Full end-to-end test using:
   Octiss_Beta_Test_Tracker_v2.0_Single.xlsx
   Every screen, every flow
   Seeded beta projects
 
-Priority 4 - User Manual
+Priority 3 - User Manual
   After Test Round 2 clean
   Real screenshots of final Linear UI
 
-Priority 5 - Beta Tester Onboarding
+Priority 4 - Beta Tester Onboarding
   5 testers + welcome packs
   🎉 Beta Launch
 
