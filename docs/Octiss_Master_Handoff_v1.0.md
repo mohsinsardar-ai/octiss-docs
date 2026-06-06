@@ -89,6 +89,12 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Google Ecosystem: ✅ Built and configured
 - Kanban Board (/board): ✅ Live
 - Calendar View (/calendar): ✅ Live
+- /board Kanban route: OK registered
+- /calendar Calendar route: OK registered
+- Task exclude/delete UI: OK Phase View + Task Screen
+- PM Inbox: OK Command Center
+- Ecosystem selector: OK saves to DB
+- Login SSO + footer: OK fixed
 - Social SSO: Microsoft + Google ✅ Live
 - Agent context: SOW + team + SAP chunks ✅
 - Notes: timestamped log entries ✅
@@ -99,11 +105,12 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 ### Known Issues / Pending
 | # | Item | Status |
 |---|---|---|
-| 1 | Codex 9-task verification pending | ⏳ Running |
-| 2 | UI/UX premium overhaul | 📋 Waiting Q1 ref |
-| 3 | Test Round 2 | 📋 After UI/UX |
-| 4 | User Manual | 📋 After Test Round 2 |
-| 5 | Beta onboarding | 🔒 On hold |
+| 1 | New migration needs Supabase SQL Editor apply | 20260606153000_project_ecosystem_choice.sql |
+| 2 | Backend pytest has unrelated n8n placeholder failure | tests/test_automation_triggers.py |
+| 3 | UI/UX premium overhaul | 📋 Waiting Q1 ref |
+| 4 | Test Round 2 | 📋 After UI/UX |
+| 5 | User Manual | 📋 After Test Round 2 |
+| 6 | Beta onboarding | 🔒 On hold |
 
 ---
 
@@ -381,6 +388,8 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| cf7c502 | Backend | Ecosystem selector DB/API support |
+| 1a96d93 | Frontend | Verification pass fixes |
 | 2acd505 | Frontend | All 9 build tasks + docs |
 | dbfcf8c | Frontend | All 9 build tasks feature |
 | cd317a3 | Backend | All 9 build tasks backend |
@@ -420,7 +429,7 @@ Conditional task activation:
 | Google Railway env vars added | ✅ 06 Jun |
 | Google budget alert $5/month | ✅ 06 Jun |
 | Social SSO Microsoft + Google | ✅ Live |
-| Codex 9-task verification | ⏳ Running |
+| Verification pass - 9 tasks | OK 1a96d93 |
 | Premium UI/UX overhaul | 📋 Waiting Q1 |
 | Test Round 2 | 📋 After UI/UX |
 | User Manual | 📋 After Test Round 2 |
@@ -430,34 +439,17 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-### Immediate — Codex
-1. Complete 9-task verification session
-   Check every task actually works in production
-   Fix anything partial or missing
-   Report full results
+1. Apply new migration if exists
+   Apply `20260606153000_project_ecosystem_choice.sql` in Supabase SQL Editor.
 
-### After Verification Clean
-2. Premium UI/UX Overhaul
-   Waiting for Mohsin Q1 design reference
-   (which SaaS product UI do you love?)
-   Covers all GF test feedback:
-   - Full design system overhaul
-   - Agent Assist panel styling
-   - Settings left sidebar polish
-   - Kanban and Calendar styling
-   - Login screen with SSO buttons
-   - WBS numbering display
-   - Date format DD-MMM-YYYY
-   - Task description quality
-   - Progress bar visibility
+2. Premium UI/UX overhaul (Linear style)
+   Covers Command Center, Phase View, Task Screen, Settings, Board, Calendar, Login, and Agent Assist polish.
 
-3. Test Round 2 — full end to end
-   After UI/UX complete
-   User Manual written from this test
+3. Test Round 2
+   Full end-to-end test after UI/UX overhaul. User Manual is written from this round.
 
-4. Beta Tester Onboarding
-   After Test Round 2 clean
-   5 testers, welcome packs sent
+4. Beta onboarding
+   Start after Test Round 2 is clean.
 
 ---
 
