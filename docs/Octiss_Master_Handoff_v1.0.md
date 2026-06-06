@@ -95,6 +95,9 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - PM Inbox: OK Command Center
 - Ecosystem selector: OK saves to DB
 - Login SSO + footer: OK fixed
+- Empty states: OK Command Center, Phase View, Board, Calendar, Notifications, Project Team, Agent Assist, BF Checklist
+- Micro-interactions: OK page/card/status transitions, task exclude/restore, note save, Agent Assist slide-in, Kanban drag/drop, modal/skeleton transitions
+- Focused Playwright after empty states + micro-interactions: OK passed
 - Social SSO: Microsoft + Google ✅ Live
 - Agent context: SOW + team + SAP chunks ✅
 - Notes: timestamped log entries ✅
@@ -115,11 +118,10 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 |---|---|---|
 | 1 | New migration needs Supabase SQL Editor apply | 20260606153000_project_ecosystem_choice.sql |
 | 2 | Backend pytest has unrelated n8n placeholder failure | tests/test_automation_triggers.py |
-| 3 | Settings deep sub-panel token audit | 📋 Pending after Linear Phase 1 |
-| 4 | Empty states + micro-interactions full audit | 📋 Pending after Linear Phase 1 |
-| 5 | Test Round 2 | 📋 After UI audit |
-| 6 | User Manual | 📋 After Test Round 2 |
-| 7 | Beta onboarding | 🔒 On hold |
+| 3 | Settings deep sub-panel token audit | Pending after empty-state pass |
+| 4 | Test Round 2 | After UI polish |
+| 5 | User Manual | After Test Round 2 |
+| 6 | Beta onboarding | On hold |
 
 ---
 
@@ -397,6 +399,11 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| f76fead | Frontend | Agent Assist panel stabilization |
+| 1c11852 | Frontend | Task assist and BF checklist empty interactions |
+| 0413f3f | Frontend | Board, calendar, and team empty states |
+| 33cc64a | Frontend | Command Center, Phase View, and Notifications empty states |
+| aae64cf | Frontend | Empty-state and micro-interaction primitives |
 | 9ccea73 | Frontend | Focused Playwright specs updated for Linear UI |
 | 0db73cd | Frontend | Linear project setup, initiation, and BF conversion screens |
 | 6b28b03 | Frontend | Linear board, calendar, and settings shell |
@@ -446,10 +453,11 @@ Conditional task activation:
 | Verification pass - 9 tasks | OK 1a96d93 |
 | Linear UI/UX overhaul Phase 1 | OK 0db73cd |
 | Focused Playwright after Linear UI | OK 9ccea73 |
-| Settings deep sub-panel UI audit | 📋 Next |
-| Empty states + micro-interactions audit | 📋 Next |
-| Test Round 2 | 📋 After UI audit |
-| User Manual | 📋 After Test Round 2 |
+| Empty states + micro-interactions audit | OK f76fead |
+| Focused Playwright after empty states | OK f76fead |
+| Settings deep sub-panel UI audit | Next |
+| Test Round 2 | After UI polish |
+| User Manual | After Test Round 2 |
 | Beta Tester Onboarding | 🔒 On hold |
 
 ---
@@ -465,23 +473,14 @@ Share with Claude for UI polish prompt.
 
 ### Codex Queue (in order):
 
-Priority 1 — Empty States + Micro-interactions
-  Finish partial UI/UX items:
-  - All empty states designed
-  - Smooth transitions throughout
-  - Status chip animations (150ms)
-  - Agent Assist slide-in (250ms)
-  - Note save animation
-  - Drag animations on Kanban
-
-Priority 2 — UI/UX Polish Pass
+Priority 1 - UI/UX Polish Pass
   Based on Mohsin screenshot review:
   - More generous padding everywhere
   - Stronger typography hierarchy
   - Better visual depth and contrast
   - Linear feel not just dark colours
 
-Priority 3 — Voice Copilot Verification
+Priority 2 - Voice Copilot Verification
   Test in production:
   - Microphone button visible?
   - Recording works?
@@ -489,23 +488,23 @@ Priority 3 — Voice Copilot Verification
   - Agent receives and responds?
   - Style to match Linear design
 
-Priority 4 — Multi-language Phase 1
+Priority 3 - Multi-language Phase 1
   English + Arabic for beta:
   - react-i18next setup
   - Extract all UI strings to en.json
   - Arabic translation + RTL support
 
-Priority 5 — Test Round 2
+Priority 4 - Test Round 2
   Full end-to-end test using:
   Octiss_Beta_Test_Tracker_v2.0_Single.xlsx
   Every screen, every flow
-  GF and BF projects
+  Seeded beta projects
 
-Priority 6 — User Manual
+Priority 5 - User Manual
   After Test Round 2 clean
   Real screenshots of final Linear UI
 
-Priority 7 — Beta Tester Onboarding
+Priority 6 - Beta Tester Onboarding
   5 testers + welcome packs
   🎉 Beta Launch
 
