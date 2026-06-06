@@ -98,6 +98,7 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Empty states: OK Command Center, Phase View, Board, Calendar, Notifications, Project Team, Agent Assist, BF Checklist
 - Micro-interactions: OK page/card/status transitions, task exclude/restore, note save, Agent Assist slide-in, Kanban drag/drop, modal/skeleton transitions
 - Focused Playwright after empty states + micro-interactions: OK passed
+- Voice Copilot: OK verified; Web Speech API EN/AR/UR transcription sends transcript to agent query flow
 - Social SSO: Microsoft + Google ✅ Live
 - Agent context: SOW + team + SAP chunks ✅
 - Notes: timestamped log entries ✅
@@ -399,6 +400,7 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| c876fb9 | Frontend | Voice Copilot Web Speech verification |
 | f76fead | Frontend | Agent Assist panel stabilization |
 | 1c11852 | Frontend | Task assist and BF checklist empty interactions |
 | 0413f3f | Frontend | Board, calendar, and team empty states |
@@ -455,6 +457,7 @@ Conditional task activation:
 | Focused Playwright after Linear UI | OK 9ccea73 |
 | Empty states + micro-interactions audit | OK f76fead |
 | Focused Playwright after empty states | OK f76fead |
+| Voice Copilot verified | OK c876fb9 |
 | Settings deep sub-panel UI audit | Next |
 | Test Round 2 | After UI polish |
 | User Manual | After Test Round 2 |
@@ -480,31 +483,23 @@ Priority 1 - UI/UX Polish Pass
   - Better visual depth and contrast
   - Linear feel not just dark colours
 
-Priority 2 - Voice Copilot Verification
-  Test in production:
-  - Microphone button visible?
-  - Recording works?
-  - Transcription EN/UR/AR works?
-  - Agent receives and responds?
-  - Style to match Linear design
-
-Priority 3 - Multi-language Phase 1
+Priority 2 - Multi-language Phase 1
   English + Arabic for beta:
   - react-i18next setup
   - Extract all UI strings to en.json
   - Arabic translation + RTL support
 
-Priority 4 - Test Round 2
+Priority 3 - Test Round 2
   Full end-to-end test using:
   Octiss_Beta_Test_Tracker_v2.0_Single.xlsx
   Every screen, every flow
   Seeded beta projects
 
-Priority 5 - User Manual
+Priority 4 - User Manual
   After Test Round 2 clean
   Real screenshots of final Linear UI
 
-Priority 6 - Beta Tester Onboarding
+Priority 5 - Beta Tester Onboarding
   5 testers + welcome packs
   🎉 Beta Launch
 
