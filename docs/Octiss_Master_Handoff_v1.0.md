@@ -116,12 +116,27 @@ The PM works through tasks in sequence. Each task has a task screen. The task sc
 - Linear BF checklist/SUM/downtime screens: ✅ Live
 - Focused Playwright after UI overhaul: ✅ Passed
 
+### Owner Review 10-Fix Pass (06 Jun 2026)
+- Frontend: OK 7d668c4
+- Backend: OK ca8c72d
+- Primary phase navigation: OK sidebar phase clicks open `/phase/{phase}` task lists; workspace moved to `/phase/{phase}/workspace`
+- SSO buttons: OK Microsoft/Google active with Supabase OAuth origin redirect
+- Settings structure: OK 200px left nav; one right-side section visible at a time; setup wizard shown at `/settings?setup=1`
+- n8n status in Settings: OK backend `/api/v1/automation/n8n/status` reports six active workflows
+- Agent response formatting: OK Agent Assist renders markdown; backend agent prompts request structured markdown fields
+- Task descriptions: OK real description fields used first; fallback generates task-specific markdown from task/phase/deliverable/methodology
+- PM Inbox visibility: OK dedicated `/inbox` route from Notifications, Command Center inbox link, task-screen draft confirmation
+- Phase status accuracy: OK workspace progress derives from `project_tasks` completion when task data exists; gate passed no longer hardcoded
+- Communication CTA errors: OK task CTA draft errors include what failed, backend reason, and next step
+- Post-login routing: OK incomplete setup redirects to `/settings?setup=1`; no active project shows selector gate
+- Validation: OK `npm run build`; Playwright `sap-pmo-dashboard` 6/6 and `m10b8-project-plan-command-center` 4/4; backend targeted automation tests 10 passed / 1 skipped
+
 ### Known Issues / Pending
 | # | Item | Status |
 |---|---|---|
 | 1 | New migration needs Supabase SQL Editor apply | 20260606153000_project_ecosystem_choice.sql |
-| 2 | Settings deep sub-panel token audit | Pending after empty-state pass |
-| 3 | Test Round 2 | After UI polish |
+| 2 | Production deploy smoke after owner-review pass | Monitor Vercel/Railway after push |
+| 3 | Test Round 2 | Next full beta gate |
 | 4 | User Manual | After Test Round 2 |
 | 5 | Beta onboarding | On hold |
 
@@ -401,6 +416,8 @@ Conditional task activation:
 
 | Commit | Repo | Description |
 |---|---|---|
+| 7d668c4 | Frontend | Owner review navigation, inbox, SSO, task guidance |
+| ca8c72d | Backend | n8n status endpoint and agent markdown formatting |
 | d758515 | Backend | Resolve n8n placeholder test failure |
 | 702ce47 | Frontend | Multi-language Phase 1 EN/AR RTL |
 | c876fb9 | Frontend | Voice Copilot Web Speech verification |
@@ -463,8 +480,9 @@ Conditional task activation:
 | Voice Copilot verified | OK c876fb9 |
 | Multi-language Phase 1 | OK 702ce47 |
 | Backend test suite clean | ✅ |
-| Settings deep sub-panel UI audit | Next |
-| Test Round 2 | After UI polish |
+| Owner review - 10 critical fixes | OK 7d668c4 / ca8c72d |
+| Focused Playwright after owner review | OK 10/10 |
+| Test Round 2 | Next |
 | User Manual | After Test Round 2 |
 | Beta Tester Onboarding | 🔒 On hold |
 
@@ -472,33 +490,23 @@ Conditional task activation:
 
 ## 18. What To Do In Next Session
 
-### Mohsin Actions First:
-Review live UI at octiss-production.vercel.app
-Take screenshots of:
-  Login, Sidebar, Command Center,
-  Phase View, Task Screen
-Share with Claude for UI polish prompt.
-
 ### Codex Queue (in order):
 
-Priority 1 - UI/UX Polish Pass
-  Based on Mohsin screenshot review:
-  - More generous padding everywhere
-  - Stronger typography hierarchy
-  - Better visual depth and contrast
-  - Linear feel not just dark colours
+Step 1 - Production smoke after owner-review deploy
+  Verify login SSO buttons, sidebar phase routing, PM Inbox `/inbox`,
+  Settings n8n active statuses, and Task Screen draft confirmation.
 
-Priority 2 - Test Round 2
+Step 2 - Test Round 2
   Full end-to-end test using:
   Octiss_Beta_Test_Tracker_v2.0_Single.xlsx
   Every screen, every flow
   Seeded beta projects
 
-Priority 3 - User Manual
+Step 3 - User Manual
   After Test Round 2 clean
   Real screenshots of final Linear UI
 
-Priority 4 - Beta Tester Onboarding
+Step 4 - Beta Tester Onboarding
   5 testers + welcome packs
   🎉 Beta Launch
 
