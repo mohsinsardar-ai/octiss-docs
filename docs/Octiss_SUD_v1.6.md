@@ -1121,3 +1121,179 @@ Production status:
 
 *End of Document — Octiss SUD v1.6.9 — 06 June 2026*
 *Next update: after 9-task verification and Premium UI/UX overhaul*
+
+
+# Octiss SUD — Addendum v1.7
+**Date:** 08 June 2026
+**Adds to:** SUD v1.6
+**Purpose:** Document new decisions and features agreed on 08 June 2026
+
+---
+
+## New Section 8 — Delivery Template Distribution
+
+### 8.1 The Problem This Solves
+
+One of the most frequent PM tasks during an SAP implementation is distributing delivery templates to consultants. Examples: sending the BPML template to functional consultants before Explore workshops, sending the FSD template to ABAP developers before WRICEF development begins. Currently PMs manage this manually via email with no tracking.
+
+### 8.2 Decision
+
+**DECISION (08 Jun 2026):** Build Template Distribution as a Phase 1 feature before beta launch. This is a [Send Template] CTA on the task screen. PM selects recipient from the project team. Octiss sends via connected Outlook. Phase 2 (post-beta) adds agent pre-fill before sending.
+
+**PM is ALWAYS the approver. Consultants never log into Octiss.**
+
+### 8.3 Template Library
+
+The following templates are confirmed for the Octiss delivery template library. Mohsin Sardar will upload original versions. Claude will recolor to Octiss brand and reword where needed. Structure of original templates is preserved.
+
+| # | Template | Format | Phase | Linked Task Type |
+|---|---|---|---|---|
+| 1 | Business Process Master List (BPML) | Excel | Explore | BPML preparation and sign-off |
+| 2 | Functional Specification Document (FSD) | Word | Realize | FSD per WRICEF item |
+| 3 | Solution Design Document (SDD) | Word | Explore | Solution design per module |
+| 4 | Technical Specification Document (TSD) | Word | Realize | TSD per WRICEF item |
+| 5 | Cutover Plan | Excel | Deploy | Cutover planning and execution |
+| 6 | Transport Request Strategy | Word | Realize | TR landscape and strategy |
+| 7 | Weekly Status Report | Word | All Phases | Weekly PM reporting |
+| 8 | SteerCo Presentation Deck | PPTX | All Phases | Monthly SteerCo |
+
+### 8.4 Two Send Modes
+
+**Mode A — Send Blank Template**
+PM clicks [Send Template] → selects recipient from team → Octiss sends blank template as attachment via Outlook → PM gets send confirmation logged in Octiss.
+
+**Mode B — Send Pre-Filled Template (Phase 2 — Post Beta)**
+PM clicks [Send Pre-Filled Template] → Agent reads project context (SOW, task, team) → fills in project name, modules, dates, consultant name, scope → PM reviews on screen → approves → Octiss sends via Outlook.
+
+### 8.5 Database Tables
+
+```sql
+delivery_templates (
+  id UUID PRIMARY KEY,
+  template_name TEXT NOT NULL,
+  template_type TEXT,        -- BPML / FSD / SDD / TSD / CUTOVER / TR / WEEKLY / STEERCO
+  format TEXT,               -- WORD / EXCEL / PPTX
+  phase TEXT,                -- PREPARE / EXPLORE / REALIZE / DEPLOY / RUN / ALL
+  linked_task_type TEXT,     -- matches activate_tasks.task_type or deliverable_name
+  file_path TEXT,            -- stored in Supabase storage
+  version TEXT,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+)
+
+project_template_sends (
+  id UUID PRIMARY KEY,
+  project_id UUID REFERENCES projects(id),
+  template_id UUID REFERENCES delivery_templates(id),
+  task_id UUID REFERENCES project_tasks(id),
+  sent_to_name TEXT,
+  sent_to_email TEXT,
+  sent_to_role TEXT,
+  send_mode TEXT,            -- BLANK / PRE_FILLED
+  sent_at TIMESTAMPTZ,
+  outlook_message_id TEXT,
+  status TEXT,               -- SENT / FAILED / PENDING_APPROVAL
+  pm_approved_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+)
+```
+
+### 8.6 Task Screen CTA
+
+A [Send Template] button appears on the task screen when:
+- The task has a `template_type` linked in `activate_tasks`
+- The linked template exists in `delivery_templates`
+- The PM has Outlook connected in MS365 settings
+
+The button does NOT appear on TRACK tasks (those are executed by technical teams, not managed by PM document distribution).
+
+---
+
+## New Section 9 — Reporting Templates
+
+### 9.1 Decision
+
+**DECISION (08 Jun 2026):** Design branded Octiss PPTX SteerCo deck and Word weekly status report template. Agent fills content. PM reviews and approves before distribution. SteerCo PPTX will be designed by Claude and is a primary deliverable for beta launch.
+
+### 9.2 SteerCo PPTX Deck Structure
+
+| Slide | Content | Agent Source |
+|---|---|---|
+| 1 | Cover — Project name, date, PM name, period | Project context |
+| 2 | Executive Summary — RAG status, key message | Synthesis Agent |
+| 3 | Phase Progress — all 5 phases, % complete | project_tasks data |
+| 4 | Key Accomplishments — bullet list | Synthesis Agent |
+| 5 | Risks and Issues — top 3-5 with RAG | RAID Agent |
+| 6 | Decisions Required — open decisions | Decision register |
+| 7 | Upcoming Milestones — next 4 weeks | project_tasks data |
+| 8 | Actions and Owners — open actions | project_action_items |
+| 9 | Next SteerCo Date + Close | Project context |
+
+### 9.3 Weekly Status Report Structure
+
+| Section | Content | Agent Source |
+|---|---|---|
+| Header | Project, week, PM, date, overall RAG | Project context |
+| Phase Progress | All phases, % complete, current phase focus | project_tasks data |
+| Accomplishments | What was completed this week | Synthesis Agent |
+| Issues and Risks | Active risks, new issues this week | RAID Agent |
+| Actions | Open actions, overdue actions, new actions | project_action_items |
+| Next Week Plan | Planned activities for next 7 days | project_tasks data |
+
+### 9.4 Octiss Brand Colours for Templates
+
+| Colour | Hex | Usage |
+|---|---|---|
+| Primary Navy | #1E3A5F | Headers, title blocks, primary text |
+| Accent Blue | #2E6DA4 | Subheadings, accent bars, highlights |
+| Light Background | #F5F7FA | Table rows, section backgrounds |
+| Body Text | #444444 | Standard body copy |
+| White | #FFFFFF | Slide backgrounds, cell fills |
+| Amber | #F59E0B | PENDING / WARNING status |
+| Green | #16A34A | COMPLETE / OK status |
+| Red | #DC2626 | CRITICAL / BLOCKED status |
+
+---
+
+## New Section 10 — Beta Testing Architecture
+
+### 10.1 Decision
+
+**DECISION (08 Jun 2026):** Beta testers test Octiss using mock SOW documents and mock team data. NO pre-seeding of project data. Testers go through the real onboarding flow — upload SOW, confirm extraction, add team, generate plan. This tests the full product end to end.
+
+### 10.2 Tester Assignments
+
+| Tester | Project | Modules | WRICEF | Integration(s) | Special Flag |
+|---|---|---|---|---|---|
+| Mohsin Sardar | Project Atlas — Atlas Retail Group | FI, CO, MM, SD | 8 | 1 (POS to SD) | Simplest — baseline |
+| Zeeshan Mustafa | Project Beacon — Beacon Industrial Mfg | FI, CO, MM, SD, PP, QM | 14 | 2 | Manufacturing + PP/QM |
+| Huma Naseem | Project Crest — Crest Healthcare | FI, CO, MM, SD, HCM, PS | 12 | 2 | Only project with SAP Build |
+| Saad Ali | Project Delta — Delta Engineering | FI, CO, MM, SD, PP, PM, QM | 18 | 3 | Only project with SAC + PM module |
+| Tester 5 | TBD | TBD | TBD | TBD | Details pending from Mohsin |
+
+### 10.3 Documents Produced (08 Jun 2026)
+
+- 4 x Mock SOW documents (Word) — professional, realistic, unique per tester
+- 1 x CONFIDENTIAL Expected Outcomes document (Word) — Mohsin only
+- Stored at: D:\Mohsin Personal\OneDrive\EM Intelligence Lab\Octiss Beta\
+
+### 10.4 Team Member Entry
+
+**DECISION (08 Jun 2026):** Team members are entered via a simple Add Team Member form in Octiss. No Excel upload in v1. Fields: Name, Role, Module, Email, Team (SI Firm / Customer). Form to be built June 11.
+
+---
+
+## Decisions Log Update (08 Jun 2026)
+
+| # | Decision | Date |
+|---|---|---|
+| D-01 | Build Template Distribution before beta — Phase 1 is blank send, Phase 2 is agent pre-fill | 08 Jun 2026 |
+| D-02 | PM uploads own original templates — Claude recolors and rewords to Octiss brand | 08 Jun 2026 |
+| D-03 | SteerCo PPTX and Weekly Status Word templates to be designed in Octiss brand | 08 Jun 2026 |
+| D-04 | Beta testers use real onboarding flow — NO pre-seeded data | 08 Jun 2026 |
+| D-05 | Team member entry via simple Add form — no Excel upload for v1 | 08 Jun 2026 |
+| D-06 | 5 beta testers, 5 unique SOW profiles, ranging from 4 to 7 modules | 08 Jun 2026 |
+| D-07 | Tester 4 (Saad Ali / Project Delta) is only project with SAC licensed | 08 Jun 2026 |
+| D-08 | Tester 3 (Huma Naseem / Project Crest) is only project with SAP Build licensed | 08 Jun 2026 |
+| D-09 | All beta testers are Greenfield — BF Conversion tested by Mohsin himself | 08 Jun 2026 |
+| D-10 | Tester 5 details pending — SOW to be produced once name/profile provided | 08 Jun 2026 |
