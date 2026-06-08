@@ -1297,3 +1297,113 @@ The button does NOT appear on TRACK tasks (those are executed by technical teams
 | D-08 | Tester 3 (Huma Naseem / Project Crest) is only project with SAP Build licensed | 08 Jun 2026 |
 | D-09 | All beta testers are Greenfield — BF Conversion tested by Mohsin himself | 08 Jun 2026 |
 | D-10 | Tester 5 details pending — SOW to be produced once name/profile provided | 08 Jun 2026 |
+
+---
+
+## 16. Project Delivery Template Library
+
+Octiss ships 31 branded project delivery templates covering the full SAP Activate delivery lifecycle (Prepare to Explore to Realize to Deploy to Run). These are the physical artifacts that agents reference, generate, and route to stakeholders.
+
+### Design Philosophy
+
+Templates follow a three-tier field system that distinguishes what Octiss pre-fills, what the consultant completes, and what is guidance text to delete:
+
+1. Black text — pre-filled by Octiss: project name, dates, methodology, phase
+2. [Navy brackets] — consultant fills substantive content
+3. Grey italic guidance — instructional text only, deleted before submission
+
+This design was a deliberate product decision: Octiss never puts words in the consultant's mouth for technical content. It governs, guides, and routes. The consultant provides the substance.
+
+### Template Inventory
+
+| # | Template Name | Type | SAP Activate Purpose |
+|---|---|---|---|
+| 1 | FSD — Workflow | Word | Functional Spec for workflow enhancements |
+| 2 | FSD — Conversion | Word | Functional Spec for data conversion objects |
+| 3 | FSD — Report | Word | Functional Spec for custom reports |
+| 4 | FSD — Enhancement | Word | Functional Spec for enhancements |
+| 5 | FSD — Form | Word | Functional Spec for custom forms |
+| 6 | FSD — Interface | Word | Functional Spec for interfaces and integrations |
+| 7 | Project Charter | Word | Project initiation, scope, governance, team structure |
+| 8 | Minutes of Meeting | Word | Workshop and meeting minutes |
+| 9 | Phase Acceptance and Closure Certificate | Word | Phase sign-off and closure |
+| 10 | RAID Management Methodology | Word | Risk, Assumption, Issue, Decision methodology |
+| 11 | Change Control Methodology | Word | CR process and CCB methodology |
+| 12 | Document Management Methodology | Word | Document categorisation and control |
+| 13 | Stakeholder Communication Methodology | Word | Governance committees and communication standards |
+| 14 | Project Structure and Scheduling Methodology | Word | WBS, planning levels, workstreams |
+| 15 | Solution Design Document | Word | Process levels and solution design |
+| 16 | Enterprise Structure Document | Word | Org structure, plants, purchasing and sales areas |
+| 17 | Master Data Management Strategy | Word | Data cuts, CMDT roles, migration tools |
+| 18 | Testing Strategy | Word | UT, SFT, FIT, UAT, Regression test approach |
+| 19 | UAT Document | Word | Test scenarios, cases, execution, sign-off |
+| 20 | Training Enablement Strategy | Word | CE/SA workstreams, TTT, training plan |
+| 21 | Access Management and UX Strategy | Word | Role types, RAM, Fiori UX, responsibility matrix |
+| 22 | Technical Landscape Strategy | Word | Platform options, landscape tables, integration design |
+| 23 | BPML | Excel | Business Process Master List with LOB reference and summary |
+| 24 | Product Backlog | Excel | MoSCoW priority backlog with WRICEF tracking |
+| 25 | Test Script | Excel | Test scenarios, pass/fail CF, auto-updating summary |
+| 26 | RAM — Role Assignment Matrix | Excel | Role definitions, derived roles, auth objects |
+| 27 | Q-Gate Checklist | Excel | SAP Activate quality gate assessment across all 4 phases |
+| 28 | Project Kickoff Deck | PPTX | 25-slide full kickoff presentation |
+| 29 | Project Status Report | PPTX | 10-slide weekly status report with RAG dashboard |
+| 30 | Flowchart and Diagram Templates | PPTX | Process flowchart templates — pending |
+| 31 | Reserved | — | — |
+
+### Template-to-Agent Mapping
+
+| Template | Primary Agent | Trigger Condition |
+|---|---|---|
+| FSD variants (6) | Agent 4 — Explore | WRICEF task: FSD creation required |
+| Project Charter | Agent 3 — Prepare | Charter task in Prepare phase |
+| Minutes of Meeting | Agent 9 — Meeting Intelligence | Post-workshop auto-generation |
+| Phase Acceptance Certificate | Agent 1 — SAP Activate Governance | Phase gate: all tasks complete |
+| RAID Methodology | Agent 10 — RAID/Risk | Project setup and methodology reference |
+| Change Control Methodology | Agent 10 and Agent 8 | Change request process triggered |
+| Document Management Methodology | Agent 8 — Stakeholder | Document governance setup in Prepare |
+| Stakeholder Communication Methodology | Agent 8 — Stakeholder | Governance setup in Prepare |
+| BPML | Agent 4 — Explore | Fit-to-Standard workshop task |
+| Solution Design Document | Agent 4 — Explore | Solution design task in Explore |
+| Test Script | Agent 5 — Realize | Testing task: script creation required |
+| UAT Document | Agent 5 — Realize | UAT task activation |
+| Q-Gate Checklist | Agent 1 — SAP Activate Governance | Phase gate quality review |
+| Project Kickoff Deck | Agent 3 — Prepare and Agent 9 | Kickoff meeting task in Prepare |
+| Project Status Report | Agent 8 — Stakeholder and Agent 12 — Daily Briefing | Weekly reporting task |
+| RAM | Agent 8 — Stakeholder | Access and role management task |
+| Training Enablement Strategy | Agent 6 — Deploy | Training preparation task |
+| Technical Landscape Strategy | Agent 3 — Prepare | Landscape design in Prepare |
+| Access Management and UX Strategy | Agent 8 — Stakeholder | Security and access setup |
+| Enterprise Structure Document | Agent 4 — Explore | Enterprise structure workshop |
+| Master Data Management Strategy | Agent 4 — Explore | Master data planning task |
+
+### Automation Route via n8n
+
+When the PM approves a template artifact in Octiss, n8n routes it automatically to the correct stakeholders and stores it in OneDrive.
+
+PM reviews draft in Octiss, approves, then n8n dispatches as follows:
+
+FSD (module-specific) — To: module consultant (matching workstream) — CC: Customer PM
+
+MOM — To: all session attendees — CC: Customer PM
+
+Phase Closure Certificate — To: Customer PM and Executive Sponsor — CC: SI Firm PM
+
+Status Report — To: Steering Committee and Customer PM
+
+BPML final — To: Customer PM and Business team — CC: module consultant
+
+UAT Document — To: key users per module and Customer PM — CC: module consultant
+
+All documents are stored in the correct OneDrive project folder by n8n after dispatch.
+
+### Key Product Decision
+
+Templates are a delivery governance layer, not an agent output. Agents guide the PM on what to create, when to create it, and who receives it. The template itself is the consultant's work product. Octiss tracks, routes, and archives it. This distinction is fundamental to the product's value proposition: Octiss governs the delivery process without replacing the consultant's expertise.
+
+### Branding Standard
+
+Primary colour: #1E3A5F navy. Accent: #2E6DA4 blue. Light background: #F5F7FA. All templates carry the Octiss or EM Intelligence Labs header and footer with page numbers. An amber Template Guide banner appears on every document. File naming convention: TemplateName_Octiss_Template with the appropriate extension.
+
+### Status as of 08 June 2026
+
+Groups A through I complete — 29 of 31 templates built. Group J flowchart PPTX pending. Q-Gate Checklist built as v2 to resolve an Excel repair dialog issue caused by named Tables conflicting with merged header rows in phase sheets.

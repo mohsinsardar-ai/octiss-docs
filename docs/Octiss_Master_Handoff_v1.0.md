@@ -558,3 +558,112 @@ Test every screen in sequence (see Section 18)
 Document every issue
 Fix before beta launch
 ```
+
+
+---
+
+## 19. Project Delivery Template Library
+
+Octiss ships 31 professionally branded project delivery templates (Word, Excel, PPTX) built by EM Intelligence Labs on 08 June 2026. These are the physical artifacts that Octiss agents reference, generate, and route to stakeholders via n8n automation.
+
+### Template Inventory
+
+| # | Template Name | Type | SAP Activate Purpose |
+|---|---|---|---|
+| 1 | FSD — Workflow | Word | Functional Spec for workflow enhancements |
+| 2 | FSD — Conversion | Word | Functional Spec for data conversion objects |
+| 3 | FSD — Report | Word | Functional Spec for custom reports |
+| 4 | FSD — Enhancement | Word | Functional Spec for enhancements |
+| 5 | FSD — Form | Word | Functional Spec for custom forms |
+| 6 | FSD — Interface | Word | Functional Spec for interfaces/integrations |
+| 7 | Project Charter | Word | Project initiation, scope, team structure |
+| 8 | Minutes of Meeting | Word | Workshop and meeting minutes |
+| 9 | Phase Acceptance & Closure Certificate | Word | Phase sign-off and closure |
+| 10 | RAID Management Methodology | Word | Risk/Assumption/Issue/Decision methodology |
+| 11 | Change Control Methodology | Word | CR process and CCB methodology |
+| 12 | Document Management Methodology | Word | Document categorisation and control |
+| 13 | Stakeholder Communication Methodology | Word | Governance committees and communication standards |
+| 14 | Project Structure & Scheduling Methodology | Word | WBS, planning levels, workstreams |
+| 15 | Solution Design Document | Word | Process levels and solution design |
+| 16 | Enterprise Structure Document | Word | Org structure, plants, purchasing/sales areas |
+| 17 | Master Data Management Strategy | Word | Data cuts, CMDT roles, migration tools |
+| 18 | Testing Strategy | Word | UT/SFT/FIT/UAT/Regression test approach |
+| 19 | UAT Document | Word | Test scenarios, cases, execution, sign-off |
+| 20 | Training Enablement Strategy | Word | CE/SA workstreams, TTT, training plan |
+| 21 | Access Management & UX Strategy | Word | Role types, RAM, Fiori UX, responsibility matrix |
+| 22 | Technical Landscape Strategy | Word | Platform options, landscape tables, integration design |
+| 23 | BPML | Excel | Business Process Master List with LOB reference and summary |
+| 24 | Product Backlog | Excel | MoSCoW priority backlog with WRICEF tracking |
+| 25 | Test Script | Excel | Test scenarios, pass/fail CF, auto-summary |
+| 26 | RAM (Role Assignment Matrix) | Excel | Role definitions, derived roles, auth objects |
+| 27 | Q-Gate Checklist | Excel | SAP Activate quality gate assessment — all 4 phases |
+| 28 | Project Kickoff Deck | PPTX | 25-slide full kickoff presentation |
+| 29 | Project Status Report | PPTX | 10-slide weekly status report with RAG dashboard |
+| 30 | Flowchart & Diagram Templates | PPTX | Process flowchart templates (⏳ pending) |
+| 31 | [Reserved] | — | — |
+
+### Branding Standard Applied to All Templates
+
+- **Primary:** #1E3A5F (navy) | **Accent:** #2E6DA4 (blue) | **Light:** #F5F7FA
+- **Three-tier field system:**
+  - Black text = pre-filled by Octiss (project name, dates, methodology)
+  - `[Navy brackets]` = consultant fills in the substantive content
+  - *Guidance: grey italic* = instructional text — delete before submitting
+- Header/footer: "Octiss | EM Intelligence Labs" branding on every page
+- Amber Template Guide banner on every document
+
+### How Templates Connect to the Product
+
+Agents in Octiss do NOT fill templates themselves. The agent guides the PM on what to check, request, and escalate. Templates are surfaced as CTAs on the Task Screen.
+
+| Template | Triggered By | Agent |
+|---|---|---|
+| FSD variants | WRICEF task in Explore/Realize | Agent 4 — Explore |
+| Project Charter | Charter task in Prepare | Agent 3 — Prepare |
+| Minutes of Meeting | Post-workshop auto-generation | Agent 9 — Meeting Intelligence |
+| Phase Acceptance Certificate | Phase gate completion | Agent 1 — SAP Activate Governance |
+| BPML | Fit-to-Standard workshop task | Agent 4 — Explore |
+| Test Script / UAT Document | Testing tasks in Realize | Agent 5 — Realize |
+| Q-Gate Checklist | Phase gate quality review | Agent 1 — SAP Activate Governance |
+| Project Kickoff Deck | Kickoff meeting task in Prepare | Agent 3 / Agent 9 |
+| Project Status Report | Weekly reporting task | Agent 8 / Agent 12 |
+| RAM | Access management task | Agent 8 — Stakeholder Communication |
+| Training Strategy | Training preparation in Deploy | Agent 6 — Deploy |
+
+### n8n Routing Rules for Approved Templates
+
+Once PM approves a template in Octiss, n8n routes it automatically:
+
+| Template | To (recipients) | CC |
+|---|---|---|
+| FSD (module-specific) | Module consultant (matching workstream) | Customer PM |
+| MOM | All session attendees | Customer PM |
+| Phase Closure Certificate | Customer PM + Executive Sponsor | SI Firm PM |
+| Status Report | Steering Committee + Customer PM | — |
+| UAT Document | Key users (per module) + Customer PM | Module consultant |
+| BPML (final) | Customer PM + Business team | Module consultant |
+
+All documents stored in the project's OneDrive folder structure by n8n after dispatch.
+
+### File Locations (Local)
+
+| Item | Path |
+|---|---|
+| Output templates | `D:\Mohsin Personal\OneDrive\EM Intelligence Lab\Octiss Beta\Templates\` |
+| Build scripts | `/home/claude/octiss-templates/` (session of 08 Jun 2026) |
+| File naming convention | `[TemplateName]_Octiss_Template.[docx/xlsx/pptx]` |
+
+### Status (08 June 2026)
+
+| Group | Templates | Status |
+|---|---|---|
+| A — 6 FSD variants | Word | ✅ Complete |
+| B — Charter, MOM, Phase Closure | Word | ✅ Complete |
+| C — RAID, Change Control, Doc Mgmt, Stakeholder, Scheduling | Word | ✅ Complete |
+| D — SDD, Enterprise Structure, Master Data | Word | ✅ Complete |
+| E — Testing Strategy, UAT, Training | Word | ✅ Complete |
+| F — Access/UX, Technical Landscape | Word | ✅ Complete |
+| G — BPML, Product Backlog, Test Script, RAM | Excel | ✅ Complete |
+| H — Q-Gate Checklist | Excel | ✅ Complete (v2 — Excel repair dialog fixed) |
+| I — Kickoff Deck, Status Report | PPTX | ✅ Complete |
+| J — Flowchart Templates | PPTX | ⏳ Pending |
