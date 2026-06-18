@@ -1,5 +1,5 @@
 # Octiss - Solution Understanding Document (SUD)
-**Version:** v2.5 | **Date:** 16 June 2026 | **Status:** LIVE
+**Version:** v2.8 | **Date:** 18 June 2026 | **Status:** LIVE
 **Owner:** Mohsin Sardar - EM Intelligence Labs
 **Classification:** Confidential - Internal Use Only
 
@@ -21,6 +21,10 @@
 | v2.4 | 15 Jun 2026 | Massive expansion session. Full E2E completed (all 16 screens PASS). 33 E2E issues fixed across 5 batches. CR-1 full rebuild (7-stage lifecycle, 6 types). WRICEF FSD bundle (6 types, full loop, exceptions). All 11 agent system prompts upgraded from generic to purpose-built SAP Activate specialists. 5 new agents (13-17) built full-stack. 4 new tracking screens (Documents/DataMig/Commercial/Training). 4 new intelligence features: Proactive Alerts (hourly n8n), Auto Status Report (weekly n8n), Pre-Meeting Pack, Health Dashboard. 10 new/changed DB tables. 17 total agents. 32+ new backend endpoints. Latest commits FE 52a8e5b / BE 18b3fdd. |
 | v2.4 (cont.) | 15 Jun 2026 (afternoon/evening) | Continuation session. **CR-2** (Impact Analysis + CCB + CRF .docx, 19 new columns, AI Suggest Impact). **Smart Alert Actions** (context-aware buttons per alert type; "Noted" / "Mark resolved" with mandatory resolution_reason; RAID risk highlight). **E-01/02/05/06/10** all COMPLETE. **SOW module extraction fix** (SAP codes not categories). **7 critical bug fixes** incl. WC-table permission grants and a duplicate-MONTH_ABBR build freeze (prod was stuck on E-02 bundle). **Project Alpha** test project built/configured (12 SAP-code modules, 18 WRICEF, 15 team members); DB cleaned to 2 projects. Full E2E re-run on Project Alpha is the next objective. Latest commits FE 31d27a8 / BE a6a0519. See §22 (continuation features), §23 (bug fixes), §24 (Project Alpha + E2E + Automation Roadmap). |
 | v2.5 | 16 Jun 2026 | **E2E session (Project Alpha).** Screens 1–4 verified. **Task Assignment Engine** (deterministic, no LLM; module normalization; 245/246 assigned). **5-stage Escalation Engine** (draft-only mailto, n8n hourly). **Template Library integration** (87 templates; `[bracket]`+`{{brace}}` placeholder fill; .docx/.xlsx/.pptx). New tables **communication_drafts**, **task_escalations**; **project_tasks** assignment columns + **assigned_to FK corrected** (auth.users → team_members); **session_attendance** missing columns added. CORS Content-Disposition exposed. Command Center KPI fixes (D-10/D-11), Settings role label (S-07), task-list assignee names (T-24) + module labels (T-28), PM Inbox Email Drafts. Latest commits FE e447e1f / BE 0197bf5. See §25 (Architecture Decisions — June 2026). |
+| v2.6 | 17 Jun 2026 | T-59 fully closed (5 FE commits + 1 BE). Evidence Intelligence Layer: task_evidence + project_storage_config + project_email_config tables, OneDrive/MS365 Graph API providers, 4 evidence endpoints. 246 GF task descriptions rewritten (senior PM quality, markdown format, role placeholders). Task Detail page redesigned: TaskHeaderMeta pills, WhoToContact, PMEscalationPath, EvidenceSection checkboxes, SapActivateRef collapsed pill, agent auto-brief removed, Ask Phase Agent opt-in. Step 7 right panel consolidation deferred. Latest commits FE e26957a / BE eacac03. |
+| v2.7 | 17 Jun 2026 | Task Detail full redesign complete (5 commits, c816a00). 5-tab layout: Overview (collapsible sections) / Team & Escalation (contacts + escalation ladder + TRACK) / Task Checklist (evidence checkboxes) / Documents (return loop) / Notes (PM notes only). Editable header pills: planned/actual dates + assignee with auto-save. Right panel Overview-only. Review Document CTA replaces Ask Phase Agent. n8n Evidence Intelligence (Hourly) workflow published. Latest FE c816a00 / BE eacac03. |
+| v2.8 | 18 Jun 2026 | WRICEF Intelligence Layer complete: wricef_session_notes table, FSD Agent reads session notes, Meeting Intelligence extract_requirements(), Session Intelligence block in FsdPanel, summary bar, sessions badge, FSD lifecycle 6 stages, Create FSD Template rename, filename fix (WRICEF-XXX format), stage labels fixed (Upload Consultant FSD / PM Review), WRICEF sorted W-R-I-C-E-F. Document Filing Service: provider-abstracted auto-filing, 20-folder project structure, OneDrive/GDrive/Dropbox providers. Agent Architecture v1.1: Digital Twin Teams+GoogleMeet Phase 1, Whisper large-v3, evidence-based document review, MOM approval flow. Security: all 95 tables RLS enabled. Latest FE 42bb2d2 / BE cd9fcac. |
+| v2.9 | 18 Jun 2026 | E2E Session. Screen 6 CR GREEN: 7-stage lifecycle, AI Suggest 7 fields (Agent 7 endpoint), CRF Octiss-branded 7-page .docx (role_type fix, org format match). Screen 7 RAID rebuilt: risk save fix (CHECK constraint m10bc), risk_category/risk_owner/risk_status added, Issues register (project_raid_issues), Decisions register (project_raid_decisions), Actions enhanced, agentic pre-fill on all 4 tabs. CR Intelligence Layer designed (SOW baseline = existing tables, SCOPE_DRIFT alert, 20/28 auto-fill). AI-Driven RAID Intelligence Layer designed: Engine 1 Evidence Scanner, Engine 2 Downstream Impact Mapper, Engine 3 Intelligence Feed Panel. Configurable Escalation Thresholds designed (intelligence_config JSONB). Latest FE 4198981 / BE c3ebeb6. |
 
 ---
 
@@ -708,6 +712,318 @@ Run full E2E on Project Alpha — Login first, then screen by screen. PM shares 
 
 ---
 
-*End of Document - Octiss SUD v2.5 - 16 June 2026 (E2E session)*
+## 26. Evidence Intelligence Layer (17 June 2026)
+
+### Architecture
+Provider-abstracted evidence detection system. Two interfaces:
+- StorageProvider: OneDrive (full), GDrive (stub), Dropbox (stub)
+- EmailProvider: MS365 (full), Gmail (stub)
+
+### DB Tables
+- task_evidence: id, project_id, task_id, evidence_item,
+  evidence_order, is_complete, completed_at, completed_by,
+  completion_source (calendar/document/email/onedrive/
+  gdrive/dropbox/cross_task), completion_reference, created_at
+- project_storage_config: project_id, provider, root_path,
+  access_token, refresh_token, token_expires_at
+- project_email_config: project_id, provider, pm_email,
+  access_token, refresh_token, token_expires_at
+
+### Auto-tick Logic
+1. calendar: project_meetings.roadmap_task_id = task_id
+2. document: communication_drafts.status = 'sent' for task
+3. onedrive: Graph API file search in project root_path
+4. email: Graph API inbox search for BPO reply to project
+5. manual: PM ticks checkbox directly
+6. cross_task: E-12 cascade (post-beta)
+
+### EVIDENCE_TEMPLATES (per workstream — role placeholders)
+Defined in evidence_service.py. 8 workstreams covered:
+Technical Architecture & Infrastructure, Project Management,
+Application Design and Configuration, Solution Adoption,
+Integration, Testing, Data Management, Extensibility.
+DEFAULT fallback for unmatched workstreams.
+
+### Known Caveats
+- communication_drafts.status must reach 'sent' for document
+  auto-tick (currently 'draft'/'PENDING_REVIEW')
+- Calendar uses roadmap_task_id — verify linkage in testing
+- project_team_members table has no organisation column —
+  defaults to "" (Customer filter won't match these members)
+
+### 4 Backend Endpoints
+GET  /api/v1/projects/{id}/tasks/{tid}/evidence
+  — auto-initializes evidence on first call
+PATCH /api/v1/projects/{id}/tasks/{tid}/evidence/{eid}
+  — manual tick/untick by PM
+POST /api/v1/projects/{id}/tasks/{tid}/evidence/auto-check
+  — single task auto-detection (n8n or manual)
+POST /api/v1/projects/{id}/evidence/auto-check-all
+  — all active tasks for project (n8n hourly)
+
+### n8n Workflow (PENDING CREATION)
+"Octiss — Evidence Intelligence (Hourly)"
+Trigger → GET projects → Loop → POST auto-check-all → Log
+
+---
+
+## 27. Task Description Rewrite (17 June 2026)
+
+### GF Complete — BF Pending
+- 246 GF tasks: all descriptions rewritten ✅
+- BF tasks: pending (create BF project first)
+- Script: scripts/generate_task_descriptions.py (gitignored,
+  credentials hardcoded for local one-time use)
+
+### Approved Description Format
+# [Task Name]
+**Phase:** X | **Type:** KEEP/TRACK | **Implementation**
+
+## WHAT THIS TASK INVOLVES
+- phase-specific, task-specific, real-world context
+- business risk if missed
+
+## WHAT YOU NEED TO DO
+- **Contact** [role] to [action]
+- **Confirm** [specific thing]
+- **Capture** [what + where]
+- **Escalate** to [role] if [trigger]
+- **Evidence** required: [specific items]
+
+## ACCEPTANCE CRITERIA
+- **[Deliverable]** [measurable condition]
+- **Evidence** documented and filed
+
+## EVIDENCE REQUIRED
+- [Specific item 1-5]
+
+### Rules
+- Role placeholders only in DB description column
+- Real names injected at render time from team_members
+- Partner not SI Firm
+- Max 400 words per task
+- Task-specific content — never generic boilerplate
+
+### BF Run — Use Batch API + Prompt Caching
+- client.messages.batches.create() — 50% cheaper, no hanging
+- cache_control on system prompt — 80% input token saving
+- No sequential API calls — submit all at once, get results back
+
+---
+
+## 28. Task Detail Page Redesign (17 June 2026)
+
+### Components Added (commit e26957a)
+TaskHeaderMeta — header pills row:
+  - Planned dates / Actual dates (shown only if set)
+  - Variance: Overdue Xd (red) / Start +Xd late (amber) /
+    On Track (green)
+  - Assignee pill (purple) / Send-to pill (green)
+
+WhoToContact — contact panel below WYNTD:
+  - Partner Consultant(s) for task module (handles 2+)
+  - Customer BPO for task module
+  - Customer PM (escalation Stage 1)
+  - Customer SteerCo (escalation Stage 2)
+  - Each entry has mailto: link (PM-reviewed, no auto-send)
+  - Uses normModule for matching (same as getDefaultSendTo)
+  - Receives registryMembers (full team, not filtered)
+
+PMEscalationPath — 4-stage collapsible:
+  Stage 1: Partner Consultant (delivery issues)
+  Stage 2: Customer BPO (24hr no response)
+  Stage 3: Customer PM (48hr unresolved)
+  Stage 4: Customer SteerCo (critical/go-live risk only)
+
+EvidenceSection — live evidence checklist:
+  - Fetches from GET /evidence on task open
+  - Auto-initializes on first load
+  - Progress bar (0-100%)
+  - Auto-source labels: calendar/document/email/onedrive
+  - Manual tick saves via PATCH /evidence/{id}
+  - All-complete banner: "Ready to mark Complete"
+  - Uses axios api client (not raw fetch) for auth
+
+SapActivateRef — collapsed reference pill:
+  Shows phase / workstream / implementation_type on expand
+
+### Deferred
+Step 7 — right panel consolidation (duplicate buttons remain):
+  Generate Official Document appears in Agent Assist AND
+  Document Workflows. Draft Review Email same.
+  Target: one panel with DOCUMENTS / COMMUNICATIONS /
+  MEETINGS (conditional on task name) / AGENT / SEND DOC TO
+
+### Agent Changes
+- "Open Prepare Agent" relabelled to "Ask Phase Agent"
+- No auto-fire on task open
+- Agent auto-brief useEffect: removed
+- All agent calls are PM-initiated only
+
+---
+
+## CR Intelligence Layer (Designed 18 Jun 2026 — Not Yet Built)
+
+### Component 1 — SOW Baseline
+No new table required. Baseline data already exists:
+- projects table: SOW uploaded via POST /api/v1/projects/{id}/sow,
+  Opus extraction runs at upload (module list, WRICEF counts, dates)
+- project_commercial: WRICEF budget baseline, integration count,
+  contract value — PM enters on Commercial screen
+- project_wricef: live WRICEF count for diff against baseline
+- Existing WRICEF_OVER_BUDGET alert in Alert Agent IS the scope
+  drift signal — connect to CR pre-fill, not just notification
+
+### Component 2 — SCOPE_DRIFT Detection
+Extend Alert Agent + n8n hourly workflow with SCOPE_DRIFT check:
+- WRICEF count drift: project_wricef rows vs project_commercial budget
+- Session note out-of-scope: Meeting Intelligence NLP extraction
+- Document review new integration: Document Review Agent scan
+- Task in module not in SOW: Task Assignment Engine module check
+On detection: fire SCOPE_DRIFT alert → pre-fill CR form with evidence
+
+### Component 3 — CR Auto Pre-Fill (20 of 28 fields)
+Change Impact Agent fills on + New CR or SCOPE_DRIFT alert open:
+Auto-filled (20): title, cr_type, priority, raised_by, date_raised,
+  impact_area, description, impact, impact_on_scope,
+  impact_on_schedule, impact_on_budget, impact_on_effort,
+  impact_on_resources, dependencies_affected, risks_introduced,
+  ccb_required, ccb_members, ccb_meeting_date (today+7),
+  crf_generated, status (Draft)
+PM-only (8): benefits, ccb_decision, ccb_decision_date, ccb_notes,
+  crf_sent_at, crf_signed_at, ccb_meeting_date (override),
+  final description edits
+
+---
+
+## RAID Register — Architecture Notes (18 Jun 2026)
+
+### Actual Schema (corrected from earlier docs)
+- Active risk table: risks (NOT project_raid_items)
+- Active frontend page: RAIDRegister.jsx (Raid.jsx = 1-line stub)
+- Risk save was broken: probability/impact CHECK only allowed
+  low/medium/high but form sends 5-point values — fixed m10bc
+
+### New Columns on risks table (migration m10bc)
+- risk_category: Scope/Schedule/Budget/Process/People/
+  Data/Functionality/Technical
+- risk_owner: text nullable — day-to-day risk manager
+  (distinct from response_owner = escalation decision maker)
+- risk_status: Open/In Progress/Escalated/Mitigated/Closed
+- probability expanded: Rare/Unlikely/Possible/Likely/Certain
+- impact expanded: Insignificant/Minor/Moderate/Major/Severe
+
+### New Tables (Phase 2 — shipped 18 Jun 2026)
+project_raid_issues:
+  id, project_id, issue_id (ISS-001...), issue_type,
+  linked_risk_id, linked_assumption_id, raised_by,
+  raised_at, title, description, business_owner,
+  response_plan, responsible, due_date, next_check,
+  status (Open/In Progress/Resolved/Closed), remarks,
+  created_at, updated_at — RLS enabled
+
+project_raid_decisions:
+  id, project_id, decision_id (DEC-001...), assumption,
+  description, impact_areas, importance, impact_if_false,
+  business_owner, assumption_status (True/At Risk/Issue),
+  decision_made, decision_by, decision_timeline,
+  decision_status (NA/In Progress/Implemented),
+  additional_details, created_at, updated_at — RLS enabled
+
+New backend router: raid_registers.py (10 routes)
+New frontend module: raidExtras.js
+
+---
+
+## AI-Driven RAID Intelligence Layer (Designed 18 Jun 2026 — Not Yet Built)
+
+### Engine 1 — Evidence Scanner (n8n hourly extension)
+New RAID Evaluator added to existing Octiss hourly workflow.
+Reads intelligence_config from project before every check.
+
+Auto-creates Issues when:
+- Task overdue > task_overdue_issue_days (default 3)
+- Task overdue > task_overdue_critical_days → escalate (default 7)
+- FSD stuck "Sent to Consultant" > fsd_no_response_days (default 7)
+- CR Approved but no new tasks > cr_task_update_warning_days (default 5)
+- Meeting action item unresolved past due date
+- WRICEF count exceeds SOW budget without CR raised
+
+Auto-creates/updates Risks when:
+- Task overdue in critical path module
+- 2+ tasks overdue in same workstream
+- Go-live < 90 days + Realize phase < 70% complete
+- Health score drops for health_decline_snapshots consecutive runs
+- PI ≥ 16 risk open > risk_pi16_escalation_days without response plan
+
+Auto-suggests Decisions when:
+- WRICEF object in scope with no owner assigned
+- Two conflicting session notes reference same object
+- Phase end date passed, next phase tasks not started
+
+### Engine 2 — Downstream Impact Mapper
+Trigger: any task status change to overdue OR hourly sweep
+Logic:
+1. Find task delayed > downstream_cascade_days (default 2)
+2. Find all tasks in same phase with
+   planned_start > delayed task planned_end
+3. Mark those tasks status="At Risk"
+4. Auto-create or update Risk:
+   - Title: "Downstream impact — N tasks at risk due to [Task] delay"
+   - Condition: "[Task] is N days overdue"
+   - Dependence: "N downstream tasks depend on [Task] completion"
+   - Impact: "Phase X completion delayed — go-live impact TBD"
+   - risk_category: Schedule
+   - PI Score: calculated from delay severity
+5. If any impacted task is a Phase Gate task:
+   - risk impact = Severe (5)
+   - WORKCOM escalation badge fires immediately
+
+### Engine 3 — RAID Intelligence Feed Panel
+Location: Right panel on RAID Register screen (new component)
+Feed format per signal:
+  🔴/🟡 Severity | Source | Signal description
+  [Log as Issue] [Log as Risk / Raise CR] [Dismiss]
+Rules:
+- Dismissed signals suppressed for 48hrs (not re-shown)
+- Critical/Severe signals: Acknowledge only (cannot dismiss)
+- Clicking action button pre-fills the relevant form
+- Feed refreshes on every page load + after each save
+
+DB additions needed:
+- auto_generated BOOLEAN on risks + project_raid_issues
+- evidence_source TEXT on risks + project_raid_issues
+- evidence_item_id UUID on risks + project_raid_issues
+
+---
+
+## Configurable Escalation Thresholds (Designed 18 Jun 2026 — Not Yet Built)
+
+### Storage
+New column on projects table:
+  intelligence_config JSONB DEFAULT '{
+    "task_overdue_issue_days": 3,
+    "task_overdue_critical_days": 7,
+    "fsd_no_response_days": 7,
+    "meeting_action_overdue_days": 5,
+    "cr_task_update_warning_days": 5,
+    "risk_pi16_escalation_days": 7,
+    "downstream_cascade_days": 2,
+    "health_decline_snapshots": 2
+  }'
+
+### UI Location
+Project Settings → new section: "Intelligence & Escalation Thresholds"
+Number input per threshold with description and default shown.
+"Reset to Defaults" button at section bottom.
+
+### Rule
+ALL n8n RAID Evaluator checks, Downstream Impact Mapper,
+and Alert Agent escalation timing MUST read intelligence_config
+from the project record. Never use hardcoded day values.
+
+---
+
+*End of Document - Octiss SUD v2.8 - 18 June 2026 (WRICEF Intelligence Layer + Document Filing Service)*
 *Supersedes: Octiss_SUD_v2.4.md*
-*Read alongside: Octiss_Master_Handoff_v1.8.md*
+*Read alongside: Octiss_Master_Handoff_v2.0.md*

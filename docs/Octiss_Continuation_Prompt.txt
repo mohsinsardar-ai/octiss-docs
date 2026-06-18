@@ -1,0 +1,276 @@
+You are Claude continuing work with Mohsin Sardar on Octiss —
+an AI-powered SAP PMO Intelligence Platform by EM Intelligence Labs.
+
+STRICT RULES - NEVER VIOLATE:
+- Never mention real client or project names
+- Use only: Project Alpha, Partner, PMgr, Customer, Consultant
+- SI Firm is permanently renamed to Partner
+- Product: Octiss | Company: EM Intelligence Labs | Owner: Mohsin Sardar
+- Single-user principle: PM is the ONLY user who logs into Octiss
+- WhatsApp is NOT part of Octiss - Outlook only
+- UI/UX design is deferred - build functionality first
+- Read docs/Octiss_Agent_Architecture.md before building any agent feature
+
+==========================================================================
+CURRENT BUILD STATE (18 June 2026 — E2E Session)
+==========================================================================
+Frontend latest commit: 4198981 (Vercel HEALTHY)
+Backend latest commit: c3ebeb6 (Railway HEALTHY)
+Frontend repo: mohsinsardar-ai/em-intelligence-labs-dashboard
+Backend repo: mohsinsardar-ai/sap-pmo-agent
+Database: Supabase Singapore - qrxfprybbpqugptakeke
+
+COMMIT HISTORY (18 June session):
+FE e9d73ba / BE 02ed469 — CR fixes: status lifecycle, AI impact 7 fields, raised-by email
+FE 8075e65 / BE a1a64c7 — CRF Octiss branded template rebuild
+BE 14d94ed — CRF role column fix + status lifecycle force rebuild
+FE 3b934a6 / BE 1dd8792 — RAID Phase 1: risk save fix + 3 new fields
+FE 4198981 / BE c3ebeb6 — RAID Phase 2: Issues/Decisions/Actions/Agentic
+
+==========================================================================
+E2E RULE (STRICT — NEVER VIOLATE)
+==========================================================================
+- Every feature must be FULLY BUILT before its screen is E2E tested
+- "Post E2E" list = genuinely deferred scope only (UI/UX, beta prep)
+- Features built but unverified = caught during E2E of relevant screen
+- Features designed but not built = build BEFORE E2E of that screen
+- E2E purpose: surface connection gaps in live UI flow, not defer builds
+- Fix all Critical issues on current screen before moving to next screen
+
+==========================================================================
+E2E TESTING STATUS (18 June 2026)
+==========================================================================
+SCREEN 1  — LOGIN:           ✅ GREEN
+SCREEN 2  — COMMAND CENTER:  ✅ GREEN
+SCREEN 3  — SETTINGS:        ✅ GREEN
+SCREEN 4  — TASK SCREEN:     ✅ GREEN
+SCREEN 5  — WRICEF REGISTER: ✅ GREEN
+SCREEN 6  — CHANGE REQUESTS: ✅ GREEN (5 medium items carried forward)
+SCREEN 7  — RAID REGISTER:   🔴 NOT TESTED (rebuild just shipped — retest first)
+
+E2E SCREENS NOT YET TESTED (continue from Screen 7 retest):
+- Screen 7  — RAID Register (retest after Phase 1+2 rebuild)
+- Screen 8  — Q-Gate
+- Screen 9  — Documents
+- Screen 10 — Data Migration
+- Screen 11 — Commercial
+- Screen 12 — Training
+- Screen 13 — Notifications (WC-2)
+- Screen 14 — Health Dashboard (WC-5)
+- Screen 15 — Team Members (E-10)
+- Screen 16 — Calendar / Inbox
+- Screen 17 — BF Conversion Screen (BF Test Project)
+
+==========================================================================
+ALL FIXES SHIPPED (17-18 June 2026)
+==========================================================================
+
+TASK DETAIL PAGE — FULL REDESIGN (5 commits):
+- e26957a: Header pills, WhoToContact, PMEscalationPath,
+  EvidenceSection, SapActivateRef, agent auto-brief removed
+- e7b1145: 5-tab layout (Overview/Team & Escalation/
+  Task Checklist/Documents/Notes), URL sync, collapsible sections
+- d1228cd: Tab renames, right panel Overview-only,
+  actual date pills, Review Document CTA
+- da45af1: Right panel cleanup, Escalation Ladder to
+  Team & Escalation tab, Document Return Loop to Documents tab
+- c816a00: Editable header pills — planned/actual dates
+  and assignee clickable with auto-save
+
+EVIDENCE INTELLIGENCE LAYER (BE eacac03):
+- task_evidence, project_storage_config, project_email_config tables
+- OneDriveProvider + MS365EmailProvider (full Graph API)
+- GDriveProvider + DropboxProvider + GmailProvider (stubs)
+- 4 evidence endpoints on projects.py
+- n8n Evidence Intelligence (Hourly) workflow published
+
+TASK DESCRIPTIONS — GF COMPLETE:
+- 246 GF tasks rewritten with senior PM quality content
+- Format: markdown sections, role placeholders only
+- Script: scripts/generate_task_descriptions.py (gitignored)
+- BF descriptions: PENDING (create BF project first)
+
+WRICEF INTELLIGENCE LAYER:
+- wricef_session_notes table (RLS enabled)
+- project_meetings.wricef_id column added
+- FSD Agent extended: reads session notes before generating
+- Meeting Intelligence Agent: extract_session_requirements()
+- Session Intelligence block in FsdPanel
+- Summary bar (W/R/I/C/E/F counts + FSD Progress + Session Notes)
+- Sessions column with per-row badge
+- FSD lifecycle: Not Started → Generated → Sent to Consultant
+  → FSD Received → Under Review → Approved & Filed
+- Create FSD Template button (renamed from Generate FSD)
+- FSD file download working (WRICEF-XXX_Title format)
+- Stage labels: Upload Consultant FSD / PM Review
+- WRICEF table sorted W → R → I → C → E → F
+
+DOCUMENT FILING SERVICE (BE b551e2d):
+- app/services/document_filing_service.py
+- Provider-abstracted: OneDrive/GDrive/Dropbox
+- 20-folder project structure auto-created at project creation
+- Folder structure: 01-Prepare / 02-Explore / 03-Realize /
+  04-Deploy / 05-Run / Project Management
+- FSD filing wired to generate_fsd endpoint
+- CRF filing wired to change_requests endpoint
+- BaseStorageProvider: create_folder, upload_file,
+  create_folder_structure methods added
+- DB columns: fsd_storage_path, fsd_storage_provider,
+  storage_path on status_reports
+
+AGENT ARCHITECTURE DOCUMENT (v1.1):
+- docs/Octiss_Agent_Architecture.md in both repos
+- 17 agents fully documented with triggers, purpose,
+  inputs, outputs, does-not rules
+- Digital Twin architecture: Teams + Google Meet (Phase 1),
+  Zoom stub (Phase 2)
+- OpenAI Whisper large-v3 for transcription
+- Meeting Intelligence: two-level (MOM + WRICEF requirements)
+- Evidence-based document review (auto-triggered on upload)
+- Agent interaction map
+- Pending build backlog maintained
+
+n8n WORKFLOWS — ALL ACTIVE:
+- Octiss — Proactive Alerts (Hourly) — stray node removed
+- Octiss — Evidence Intelligence (Hourly) — NEW, published
+- Daily Briefing, Weekly Report, RAID Check,
+  OneDrive Sync, Backlog Summary, Hypercare Summary
+
+SECURITY:
+- RLS enabled on all 95 public tables
+- 5 previously exposed tables fixed
+- Function search_path hardened
+- Leaked password protection: not applicable (email provider)
+
+==========================================================================
+CARRIED FORWARD — MEDIUM ITEMS (fix in post-E2E sweep)
+==========================================================================
+- CRF-2: Steering Committee checkbox not auto-ticked when ccb_required=true
+- CRF-3: Authorizing Signature shows "Pending CCB" instead of CCB member names
+- CRF-4: Review & Approval table empty — CCB members not populating
+- CRF-5: Project Reference too verbose — needs PRJ-ALPHA-2026 format
+- CR-G1: Raised By email placeholder on new CRs
+- RAID-Edit: Issues/Decisions PUT endpoints exist on backend but
+  inline edit not wired on row UI — follow-up item
+- B-7: OneDrive storage verify — test on Screen 9 Documents E2E
+- B-11: MOM auto-generation verify — test on Screen 16 Calendar E2E
+- T-60: Send via Outlook → Send via Email (cosmetic)
+- CF-16d: Q-Gate card layout fix
+- CF-16e: Q-Gate intelligence layer
+- E-11: Task-assignment email notification
+- E-12: FSD to task complete sync
+
+==========================================================================
+POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
+==========================================================================
+1. RAID Intelligence Layer:
+   - Engine 1: Evidence Scanner (extend n8n hourly — 6 new RAID checks)
+   - Engine 2: Downstream Impact Mapper (task delay → risk cascade)
+   - Engine 3: RAID Intelligence Feed panel (frontend right panel)
+   - Configurable Escalation Thresholds in Project Settings
+   - intelligence_config JSONB column on projects table
+   - auto_generated + evidence_source columns on RAID tables
+
+2. CR Intelligence Layer:
+   - SOW baseline: uses projects + project_commercial (no new table)
+   - SCOPE_DRIFT alert type in n8n hourly workflow
+   - CR pre-fill from evidence (20 of 28 fields auto-fillable)
+   - Evidence panel in CR detail
+
+3. Digital Twin / Voice Copilot (full build):
+   - OpenAI Whisper large-v3 integration
+   - Microsoft Teams bot (Phase 1)
+   - Google Meet bot (Phase 1)
+   - Supabase Storage audio bucket (48hr TTL)
+   - MOM review panel in Notifications
+   - MOM tab in Calendar event
+   - project_meetings transcript columns (DB migration)
+   - meeting_wricef_coverage table (DB migration)
+
+4. BF Test Project creation + BF description batch run
+   (Batch API + prompt caching)
+
+5. Beta Prep: User Manual, Welcome Pack, Feedback Form
+
+6. UI/UX design pass (absolute last step before launch)
+
+==========================================================================
+AGENT ARCHITECTURE — READ BEFORE BUILDING ANY AGENT
+==========================================================================
+File: docs/Octiss_Agent_Architecture.md
+Version: v1.1 (18 June 2026)
+Location: Both repos — backend and frontend docs/ folder
+Rule: Never create a new agent without reading this first.
+      If existing agent can be extended, extend it.
+      Never duplicate agent responsibility.
+
+17 agents total:
+GROUP 1 — Phase Agents (5): Prepare, Explore, Realize,
+  Deploy, Run — task guidance on demand only
+GROUP 2 — Document Agents (3): FSD Agent, Change Impact
+  Agent, Document Review Agent
+GROUP 3 — Communication Agents (3): Escalation Agent,
+  Status Report Agent, Stakeholder Communication Agent
+GROUP 4 — Intelligence Agents (3): RAID Agent, Alert Agent,
+  Health Score Agent
+GROUP 5 — Meeting Agent (1): Meeting Intelligence Agent
+  (two-level: MOM + WRICEF requirements extraction)
+GROUP 6 — Setup Agent (1): Project Plan Agent
+GROUP 7 — Voice Agent (1): Voice PMO Copilot
+  (Digital Twin passive + Interactive on-demand)
+
+==========================================================================
+LOCKED DECISIONS (all sessions)
+==========================================================================
+- Task assignment: DETERMINISTIC — workstream+module rules
+- Escalation: DRAFT-ONLY — PM always reviews before sending
+- Document generation: file-based template matching
+- assigned_to FK: team_members.id NOT auth.users
+- Agent: opt-in only — Ask Phase Agent button, no auto-fire
+- Evidence: auto-detected where possible, manual tick otherwise
+- Storage: provider-abstracted (OneDrive now, GDrive/Dropbox later)
+- Email: provider-abstracted (MS365 now, Gmail later)
+- No auto-send anywhere — PM-reviewed mailto only
+- Description format: markdown ## headers, ** bold key terms
+- normModule: strips all non-alphanumeric, full alias map
+- FSD lifecycle: Not Started → Generated → Sent to Consultant
+  → FSD Received → Under Review → Approved & Filed
+- Document filing: auto on generation, best-effort,
+  never blocks document creation
+- Project folders: created at project creation (Option A)
+- Voice/Transcription: OpenAI Whisper large-v3
+- Meeting platforms Phase 1: Teams + Google Meet
+- Meeting platforms Phase 2: Zoom (stub now)
+- Audio retention: 48hr TTL, max 7 days, deleted on PM approval
+- Bootstrap rule: no new paid services until 3-5 customers
+
+==========================================================================
+PRODUCTION URLS
+==========================================================================
+Frontend:  https://octiss-production.vercel.app
+Backend:   https://sap-pmo-agent-production-3f52.up.railway.app
+Database:  Supabase Singapore - qrxfprybbpqugptakeke
+n8n:       https://n8n-production-c148.up.railway.app
+Login:     tester1@octiss.com
+
+FILE LOCATIONS:
+Backend:     D:\Mohsin Personal\OneDrive\Automation\SAP PMO Agent\sap-pmo-agent
+Frontend:    D:\Mohsin Personal\OneDrive\Automation\EM Intelligence Labs Dashboard
+Templates:   D:\Mohsin Personal\OneDrive\EM Intelligence Lab\OCTISS OFFICIAL TEMPLATES\
+Credentials: D:\Mohsin Personal\OneDrive\EM Intelligence Lab\Octiss Production\production_credentials.txt
+Agent Arch:  docs/Octiss_Agent_Architecture.md (both repos)
+Tracker:     D:\Mohsin Personal\OneDrive\EM Intelligence Lab\EM_Intelligence_Labs_Cost_Revenue_Tracker.xlsx
+
+==========================================================================
+NEXT SESSION START INSTRUCTIONS
+==========================================================================
+1. Read all 3 docs completely before responding
+2. Read docs/Octiss_Agent_Architecture.md before any agent work
+3. Latest commits: FE 4198981 / BE c3ebeb6
+4. Primary test project: Project Alpha b2e3f098-e637-4e7b-9369-5de84ad354b7
+5. Confirm with: "Session loaded. FE 4198981 / BE c3ebeb6.
+   Ready to retest Screen 7 — RAID Register."
+6. First action: retest RAID Register — create a Risk, Issue,
+   Decision, and Action. Verify all 4 save correctly.
+7. Fix all Critical issues on Screen 7 before moving to Screen 8
+8. E2E rule: build fully before testing, fix Criticals before advancing
