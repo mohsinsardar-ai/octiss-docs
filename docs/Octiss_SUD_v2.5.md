@@ -25,6 +25,7 @@
 | v2.7 | 17 Jun 2026 | Task Detail full redesign complete (5 commits, c816a00). 5-tab layout: Overview (collapsible sections) / Team & Escalation (contacts + escalation ladder + TRACK) / Task Checklist (evidence checkboxes) / Documents (return loop) / Notes (PM notes only). Editable header pills: planned/actual dates + assignee with auto-save. Right panel Overview-only. Review Document CTA replaces Ask Phase Agent. n8n Evidence Intelligence (Hourly) workflow published. Latest FE c816a00 / BE eacac03. |
 | v2.8 | 18 Jun 2026 | WRICEF Intelligence Layer complete: wricef_session_notes table, FSD Agent reads session notes, Meeting Intelligence extract_requirements(), Session Intelligence block in FsdPanel, summary bar, sessions badge, FSD lifecycle 6 stages, Create FSD Template rename, filename fix (WRICEF-XXX format), stage labels fixed (Upload Consultant FSD / PM Review), WRICEF sorted W-R-I-C-E-F. Document Filing Service: provider-abstracted auto-filing, 20-folder project structure, OneDrive/GDrive/Dropbox providers. Agent Architecture v1.1: Digital Twin Teams+GoogleMeet Phase 1, Whisper large-v3, evidence-based document review, MOM approval flow. Security: all 95 tables RLS enabled. Latest FE 42bb2d2 / BE cd9fcac. |
 | v2.9 | 18 Jun 2026 | E2E Session. Screen 6 CR GREEN: 7-stage lifecycle, AI Suggest 7 fields (Agent 7 endpoint), CRF Octiss-branded 7-page .docx (role_type fix, org format match). Screen 7 RAID rebuilt: risk save fix (CHECK constraint m10bc), risk_category/risk_owner/risk_status added, Issues register (project_raid_issues), Decisions register (project_raid_decisions), Actions enhanced, agentic pre-fill on all 4 tabs. CR Intelligence Layer designed (SOW baseline = existing tables, SCOPE_DRIFT alert, 20/28 auto-fill). AI-Driven RAID Intelligence Layer designed: Engine 1 Evidence Scanner, Engine 2 Downstream Impact Mapper, Engine 3 Intelligence Feed Panel. Configurable Escalation Thresholds designed (intelligence_config JSONB). Latest FE 4198981 / BE c3ebeb6. |
+| v3.0 | 20 Jun 2026 | E2E Session 2. Screens 8-13 GREEN. Q-Gate: category grouping (m10bf), evidence intelligence, AI Review button, mandatory-only sign-off gate. Documents: 34-doc pre-loaded register (project_document_register, NOT project_documents=RAG), document_seed.py, m10bg. Data Migration: full rebuild (m10bh), AI suggest objects, cutover readiness 0-100, RAID auto-linkage, 6 objects seeded. Commercial: full intelligence rebuild (commercial_intel.py), auto health GREEN/AMBER/RED, WRICEF protection tracker, revenue exposure, payment milestones, CR revenue tracker, T&M burn, status report integration, no new tables. Training: Train-the-Trainer wave model (m10bj), Wave 1 Partner→BPO + Wave 2 BPO→EndUser, AI suggest groups, readiness scoring 0-100, two gates, RAID auto-link, status report integration, training_intel.py, Actions panel (no chat). Notifications: all alert types firing (WRICEF/Task/Phase/Training). Global: agent panels → Actions panels rule, table discipline enforced, DD-MMM-YYYY date standard. FE 911fc8c / BE 6c1ad8a. |
 
 ---
 
@@ -998,6 +999,22 @@ DB additions needed:
 ---
 
 ## Configurable Escalation Thresholds (Designed 18 Jun 2026 — Not Yet Built)
+### Decision — PM Has Final Say (18 Jun 2026)
+This is a deliberate product decision, not just a config option:
+
+- The PM knows their project, customer, and team better than 
+  any default value
+- System defaults are starting points only — PM can change 
+  any threshold at any time during the project
+- The system NEVER overrides PM-set thresholds, even if the 
+  default would have fired earlier
+- Per-project: each project has its own intelligence_config — 
+  thresholds set on Project Alpha do not affect other projects
+- Rationale: a 2-day overdue threshold may be right for a 
+  critical Realize phase task but wrong for a low-priority 
+  Prepare task. The PM decides what warrants action.
+- UI principle: show the default clearly so PM understands 
+  what they're changing. Never hide or auto-reset thresholds.
 
 ### Storage
 New column on projects table:
@@ -1021,6 +1038,134 @@ Number input per threshold with description and default shown.
 ALL n8n RAID Evaluator checks, Downstream Impact Mapper,
 and Alert Agent escalation timing MUST read intelligence_config
 from the project record. Never use hardcoded day values.
+
+---
+
+## Screen Intelligence Designs (19-20 Jun 2026)
+
+### Q-Gate Evidence Intelligence
+- 8 categories auto-evaluated vs live data:
+  Roles & Responsibilities → team_members count (≥5=green)
+  Steering Committee → team_members WHERE role ILIKE steering
+  Risk Management → risks count (≥1=green)
+  Issue Management → project_raid_issues count
+  Scope & Change Handling → project_change_requests count
+  WBS & Schedule → project_tasks count (≥50=green, ≥10=yellow)
+  Budget Monitoring → project_commercial contract_value not null
+  Progress Reporting → project_status_reports count
+- Evidence badge per item: 🟢 Auto-verified / 🟡 Needs review /
+  🔵 Upload doc / ⚪ Manual
+- Post-E2E: QG-G2 — AI Review should auto-suggest status
+  (set Green for auto-verified, PM confirms not manually ticks)
+- POST E2E: QG-G1 — tighten ILIKE patterns to reduce
+  General bucket from 55 items
+
+### Documents Register Architecture
+- Active table: project_document_register
+- NEVER use project_documents — that is the RAG/Knowledge table
+  (knowledge.py ingests into project_document_chunks)
+- 34 required docs seeded per project (greenfield_rise):
+  Prepare(8): Charter/Governance/RACI/Schedule/Kickoff/
+    Comms/Risk Mgmt/PM Plan
+  Explore(8): BPML/SDD/Workshop Agenda/MOM/FSD/
+    Data Migration Strategy/Integration Design/Test Strategy
+  Realize(8): Config Workbook/Unit Test/SIT Plan/SIT Results/
+    UAT Plan/Cutover Strategy/Training Materials/CRF
+  Deploy(6): UAT Sign-off/Go-Live Checklist/Cutover Plan/
+    Hypercare Plan/Production Support/Go-Live Approval
+  Run(4): Hypercare Report/Closure Report/Lessons Learned/KT Doc
+- Phase 2 (post-E2E): Upload + OneDrive + Agent 8 + auto-hooks
+
+### Data Migration Intelligence
+- Active table: project_data_migration (extended)
+- Source of truth: existing run columns kept + new per-env cols
+- AI Suggest: deterministic module→objects mapping
+  FICO: Customer Master/Vendor Master/GL Account Master/
+    GL Balances/Cost Center/Profit Center/Asset/Bank
+  MM: Material Master/Open POs/Purchase Info/Source Lists/Stock
+  SD: Customer Master/Open Sales Orders/Pricing/CMIR
+  HCM: Employee Master/Org Structure/Pay Scale
+- Readiness scoring: Mock1(+20)/Mock2(+25)/Dress(+30)/
+  QAS(+15)/Trend(+10)/Threshold breach(-15)/Go-live penalty
+- RAID auto-link: sub-threshold → project_raid_issues Technical
+- Field labels needed (DM-G4): Pass Rate% / Records Loaded /
+  Error Count — auto-calc Records and Errors from Pass Rate
+
+### Commercial Intelligence Architecture
+- Shared engine: app/services/commercial_intel.py
+- Health calculation: WRICEF variance + CR protection +
+  burn rate → GREEN/AMBER/RED (no manual input ever)
+- WRICEF protection source: project_wricef.is_in_sow_count +
+  cr_approved flags (per-object, not synthetic count)
+- Revenue exposure: contract_value ÷ wricef_in_sow ×
+  unprotected_count
+- Payment Milestones: JSONB on project_commercial
+- Burn entries: JSONB on project_commercial
+- Health snapshots: JSONB on project_commercial (12-week trend)
+- CR financial impact: project_change_requests.financial_impact
+- Status Report: _get_commercial_summary in
+  status_report_service.py
+- Gap COM-G2: health_snapshots populated but frontend
+  Commercial Trend section not rendering
+
+### Training Intelligence Architecture
+- Active table: project_training (extended, not new)
+- Train-the-Trainer model:
+  Wave 1 (training_tier='bpo', trained_by='partner', wave=1)
+    Partner Consultant trains BPOs/Power Users in Realize
+  Wave 2 (training_tier='end_user', trained_by='bpo', wave=2)
+    BPOs train End Users in Deploy
+    prerequisite_group_id → Wave 1 group for same module
+    bpo_signed_off=true required before Wave 2 can progress
+- Readiness formula:
+  Materials created: 20pts
+  Sessions scheduled vs planned: 20pts
+  Sessions completed: 30pts
+  Attendance rate ≥80%: 20pts
+  Sign-off count: 10pts
+- Two gates:
+  Gate 1 (Realize exit): all Wave 1 groups ≥80%
+  Gate 2 (Deploy exit): all Wave 2 groups ≥80%
+- RAID auto-link: go-live <60d AND overall <50% →
+  People risk auto-created (risks table)
+- Training Actions panel replaces chat:
+  Groups at risk / Sessions overdue /
+  Users not trained / Days to go-live
+  Request Materials (Outlook mailto) /
+  Schedule Sessions (modal) /
+  View in Status Report
+- "Generate Training Materials" removed — wrong owner.
+  Consultant/Trainer generates materials, not PM.
+
+### Agent Panel UX Rule (Global Product Principle)
+Established: 20 Jun 2026
+
+Rule: ALL "Ask the agent" chat panels across ALL screens
+MUST be replaced with context-aware Actions panels.
+
+Rationale: Agents are invisible workers, not chatbots.
+They fire automatically and surface results.
+PM never needs to type a question to an agent.
+
+Actions panel shows:
+- What the agent has already detected/done
+- Specific actionable next steps
+- Buttons that pre-fill forms or draft emails
+- Nothing is sent automatically — PM reviews all outputs
+
+Exception: Voice PMO Copilot (explicitly conversational)
+
+Status:
+✅ Implemented: Commercial, Training
+🔲 Remaining: Data Migration, Documents, WRICEF, any others
+
+### Notification Alert Grouping (Post-E2E)
+Current: one card per alert (20 overdue tasks = 20 cards)
+Required: one collapsed card per alert TYPE:
+  "20 tasks overdue in Prepare phase [Expand] [Bulk Action]"
+Individual cards only for: CRITICAL alerts + unique alerts
+Training alerts: deduplicate (NOT-G1)
+Same-type grouping: collapse with count (NOT-G2)
 
 ---
 

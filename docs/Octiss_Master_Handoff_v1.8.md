@@ -56,6 +56,187 @@ Octiss is an AI-powered SAP PMO Intelligence Platform. It guides SAP Project Man
 
 ## 3. Current Build State (16 June 2026 — E2E session)
 
+### 20 June 2026 — E2E Session 2: Screens 8-13 + Intelligence Rebuilds
+
+| Item | Value |
+|---|---|
+| Frontend latest commit | 911fc8c |
+| Backend latest commit | 6c1ad8a |
+| Vercel | HEALTHY |
+| Railway | HEALTHY |
+
+SCREENS COMPLETED THIS SESSION:
+
+SCREEN 8 — Q-Gate: ✅ GREEN
+- Category grouping: 16 real categories replacing "General"
+  (ILIKE pattern mapping from question_text)
+- MANDATORY/OPTIONAL badges per category
+- Evidence Intelligence Layer: AI Review button
+  8 categories auto-evaluated vs live project data
+  Evidence badges: 🟢 Auto-verified / 🟡 Needs review /
+  🔵 Upload doc / ⚪ Manual
+- Sign-off gate: mandatory items only (not all items)
+- Migration m10bf: category/category_number/is_mandatory columns
+- Phase workspace: now shows actual tasks + progress
+- FE 5833f82 / BE 61e17dd
+- Gaps: QG-G1 (55 in General), QG-G2 (auto-suggest status),
+  QG-G3 (sign-off text)
+
+SCREEN 9 — Documents: ✅ GREEN
+- 34 required documents pre-loaded for Project Alpha
+- Built on project_document_register (NOT project_documents
+  which is the RAG/Knowledge table — important distinction)
+- Auto-seed on first GET (any project never empty)
+- Phase filter (defaults to current phase — gap DOC-G1)
+- 5-status pills: Not Generated/Draft/Sent for Review/
+  Approved/Filed
+- Source badges: Required/Auto-generated/Uploaded/Manual
+- Right panel: Send for Review + Mark Approved
+- Migration m10bg: doc_id/document_type/source/is_required/
+  storage_*/file_url/review_*/due_date
+- document_seed.py: 34 docs per phase for greenfield_rise
+- Phase 2 deferred: Upload/OneDrive/Agent 8/auto-register hooks
+- FE c9339e8 / BE 7010b30
+
+SCREEN 10 — Data Migration: ✅ GREEN
+- Built on project_data_migration (extended additively)
+- Migration m10bh: per-env pass rates (SBX/DEV/QAS/PRD),
+  Mock 1/2/Dress Rehearsal tracking, cutover_readiness_score,
+  agent_assessment, pass_rate_threshold (95 default),
+  object_category, 8-state status, RAID linkage columns
+- AI Suggest Objects: module-derived standard objects
+  (FICO/MM/SD/HCM mappings, deterministic)
+- Cutover Readiness Score: 0-100 with exact weighting
+  (Mock1 +20, Mock2 +25, Dress +30, QAS +15, Trend +10,
+  threshold breach -15, days-to-go-live penalty)
+- RAID auto-linkage: sub-threshold pass rate →
+  auto-creates project_raid_issues Technical issue
+- 6 sample objects seeded for Project Alpha
+- Color-graded cells: ≥99% green / 95-98% amber / <95% red
+- Right panel: env pass rates + records + errors + date
+- Gap DM-G4: 3 unlabelled fields need labels + auto-calc
+- FE e28adea / BE a1c92ab
+
+SCREEN 11 — Commercial: ✅ GREEN
+- Renamed: "Commercial Intelligence"
+- NO new tables — all extended:
+  project_commercial: +contract_value, currency,
+  payment_milestones/burn_entries/health_snapshots (JSONB),
+  wricef_protected/unprotected, unprotected_wricef_ids,
+  avg_revenue_per_wricef, unprotected_revenue,
+  projected_total_days, burn_overrun_risk,
+  health_calculated_at
+  project_change_requests: +financial_impact, revenue_protected
+  project_wricef: existing is_in_sow_count/cr_approved
+  used as protection source of truth (no synthetic count)
+- Auto commercial health (GREEN/AMBER/RED) — no manual selector
+  shared deterministic engine: commercial_intel.py
+- WRICEF Protection Tracker: per-object, CR linkage,
+  revenue-at-risk, Raise CR deep-link
+- Revenue exposure: avg_revenue_per_wricef × unprotected
+- Payment Milestones (JSONB): add/mark-paid/delete
+- CR Revenue Tracker: financial_impact per CR
+- T&M Budget Burn: hidden for fixed price, projection card,
+  weekly log modal
+- Status Report integration: _get_commercial_summary
+- Agent chat panel: REMOVED — replaced with context actions
+- Demo data: $1.6M contract, 16-WRICEF SOW, T&M 85% burn,
+  4 payment milestones, 1 unprotected WRICEF ($100k exposure)
+- Gap COM-G2: Commercial Trend section not rendering
+- FE b74d152 / BE 5723920
+
+SCREEN 12 — Training: ✅ GREEN
+- Train-the-Trainer model implemented:
+  Wave 1: Partner trains BPOs/Power Users (Realize phase)
+  Wave 2: BPOs train End Users (Deploy phase)
+  Wave 2 blocked until Wave 1 BPO signed off per module
+- Built on project_training (extended — not project_training_groups)
+- Migration m10bj: signed_off_users, trainer, sessions_planned/
+  completed, target_completion_date, readiness_score,
+  materials_required/sessions (JSONB), sign_off_document_url,
+  training_tier, trained_by, wave, bpo_name,
+  prerequisite_group_id, bpo_signed_off
+- AI Suggest: generates Wave 1 + Wave 2 pairs per module
+  with real BPO names from team_members
+- Readiness scoring: materials(20) + scheduled(20) +
+  completed(30) + attendance(20) + sign-off(10)
+- Two gates: Gate 1 Realize (Partner→BPO) +
+  Gate 2 Deploy (BPO→End User)
+- RAID auto-linkage: go-live <60d + readiness <50%
+  → auto-creates People risk
+- Status Report integration: both wave gates in report
+- Training Actions panel (right): no chat box
+  Context-aware: Groups at risk / Sessions overdue /
+  Users not trained / Days to go-live
+- "Generate Training Materials" REMOVED (wrong owner —
+  Consultant generates, not PM)
+- "Request Training Materials" → Outlook mailto draft
+- "Schedule Training Sessions" → session modal + calendar link
+- Agent chat panel: REMOVED — replaced with Training Actions
+- Seeds: Finance(RED 0%), Procurement(AMBER 57%),
+  Project Super Users(GREEN 100%)
+- FE c6daaef / BE 6c1ad8a + FE 911fc8c (fixes)
+
+SCREEN 13 — Notifications: ✅ GREEN
+- Proactive Intelligence feed working correctly
+- Alert types firing: WRICEF Scope (CRITICAL),
+  Task Overdue (HIGH), Phase Gate at Risk (HIGH),
+  Training at Risk (MEDIUM)
+- Alert actions: Raise CR Now / Open WRICEF Register /
+  Open Task / Draft Update Email / View Details /
+  Open Phase View / Check Q-Gate
+- 1 CRITICAL + 20 HIGH + 13 MEDIUM alerts for Project Alpha
+- Noted / Mark Resolved on every alert
+- Gaps: NOT-G1 (duplicate training alerts),
+  NOT-G2 (alert fatigue — need grouped/collapsed cards)
+
+GLOBAL DECISIONS MADE THIS SESSION:
+
+AGENT PANEL UX RULE (critical product principle):
+Agents are invisible workers, not chatbots.
+They fire automatically, produce outputs, surface results.
+PM never needs to ask an agent a question.
+Exception: Voice PMO Copilot (explicitly conversational).
+"Ask the agent" chat panels MUST be replaced with
+context-aware Actions panels showing what agent already
+did and what PM can act on next.
+Implemented on: Commercial, Training
+Remaining: Data Migration, Documents, WRICEF
+
+TABLE DISCIPLINE RULE (established and enforced):
+Before creating ANY new table, check if existing
+table can serve the purpose. Extend existing tables
+additively. Only create new if nothing fits.
+Applied successfully on: Documents (project_document_register
+NOT project_documents which is RAG), RAID (risks not
+project_raid_items), Training (project_training not
+project_training_groups), Commercial (no new tables at all).
+
+DATE FORMAT STANDARD:
+All dates display as DD-MMM-YYYY (e.g. 19-Jun-2026)
+Global utility: src/utils/dateFormat.js (title-case month)
+Re-export: src/utils/dateUtils.js
+Applied to: 10 files swept, date pickers show DD-MMM-YYYY
+Remaining: Meeting/MeetingPack/Phase/PmoGovernance inline inputs
+Post-E2E: shared DateInput component needed
+
+NEW TABLES CREATED THIS SESSION:
+None — all existing tables extended.
+Active table corrections:
+- Risks live in: risks (not project_raid_items)
+- Active RAID page: RAIDRegister.jsx (Raid.jsx = stub)
+- Documents live in: project_document_register
+  (project_documents = RAG/Knowledge table — never touch)
+- Training lives in: project_training
+  (not project_training_groups — never existed)
+
+NEW SERVICES CREATED:
+- app/services/commercial_intel.py (Commercial engine)
+- app/services/training_intel.py (Training engine)
+- app/services/document_seed.py (34-doc seeder)
+- src/utils/dateUtils.js (date format re-export)
+- src/api/raidExtras.js (Issues/Decisions API)
+
 ### 18 June 2026 — E2E Session: Screens 6-7 + AI Intelligence Design
 
 | Item | Value |
