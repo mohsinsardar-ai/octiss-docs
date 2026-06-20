@@ -56,6 +56,25 @@ Octiss is an AI-powered SAP PMO Intelligence Platform. It guides SAP Project Man
 
 ## 3. Current Build State (16 June 2026 — E2E session)
 
+### 20 June 2026 — Storage Intelligence Layer (Item 4b)
+
+Built Storage Intelligence Layer extending document_filing_service.py:
+- Component 1: StorageIntelligenceService.create_project_folders() —
+  9-folder structure per project in OneDrive (FSDs / CRs / SteerCo /
+  Status Reports / Training / Data Migration / Q-Gate / Documents / Meeting Notes).
+  Wired into project creation — best-effort asyncio.create_task.
+- Component 2: Filing Intelligence — STORAGE_FOLDER_MAP routes each doc_type
+  to the correct subfolder automatically.
+- Component 3: B-7 Verification — HTTP-200 check after filing, flags
+  onedrive_verified + onedrive_verified_at on the document register.
+
+Schema: projects.onedrive_root_url, project_document_register.onedrive_verified
++ onedrive_verified_at.
+Migration: m10bl_storage_intelligence.sql
+BE commit: 3cce2ac (Railway healthy, clean deploy)
+Note: Two storage subsystems exist (document_filing_service.py +
+onedrive_storage.py) — future consolidation pass needed.
+
 ### 20 June 2026 — Intelligence Sprint (post E2E Session 3, same day)
 
 **RAID Intelligence Layer — ALL 3 ENGINES COMPLETE:**

@@ -15,12 +15,13 @@ STRICT RULES - NEVER VIOLATE:
 CURRENT BUILD STATE (Intelligence Sprint — 20 June 2026)
 ==========================================================================
 Frontend latest commit: 40c10b0 (Vercel HEALTHY)
-Backend latest commit: eceb402 (Railway HEALTHY)
+Backend latest commit: 3cce2ac (Railway HEALTHY)
 Frontend repo: mohsinsardar-ai/em-intelligence-labs-dashboard
 Backend repo: mohsinsardar-ai/sap-pmo-agent
 Database: Supabase Singapore - qrxfprybbpqugptakeke
 
 INTELLIGENCE SPRINT COMMITS (20 June, post E2E Session 3):
+BE 3cce2ac — Storage Intelligence Layer (Item 4b) — folders/routing/B-7 verify (m10bl)
 FE 55ca111 — RAID Engine 3 (Intelligence Feed Panel)
 FE 40c10b0 / BE 7ba57c1 — CR Intelligence Layer
 BE eceb402 — CR prefill fix (wricef_refs defensive)
@@ -50,6 +51,9 @@ Tables modified 20 Jun 2026:
 - risks: added impact_map JSONB (Engine 2 downstream impact)
 - project_wricef: added cr_ref TEXT
 - projects: intelligence_config JSONB (PM-configurable alert thresholds)
+- projects: onedrive_root_url TEXT (m10bl — Storage Intelligence)
+- project_document_register: onedrive_verified BOOL (m10bl)
+- project_document_register: onedrive_verified_at TIMESTAMPTZ (m10bl)
 - Dockerfile: added Node.js 20 + pptxgenjs (for SteerCo PPTX)
 - generate_steerco.js: added to backend root (7-slide SteerCo PPTX generator)
 Bug fixed: project_change_requests.wricef_refs did NOT exist — caused silent
@@ -279,18 +283,16 @@ POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
    - Document Review Agent (Agent 8) trigger
    - Auto-register hooks: FSD/CRF/Status/Q-Gate → Documents
 
-4b. Storage Intelligence Layer: (NEXT — starting now)
-   - Auto folder creation at project creation (OneDrive, provider-abstracted)
-   - Filing intelligence — route each doc type to correct subfolder:
-     /[Project Name]/Prepare/FSDs/
-     /[Project Name]/Prepare/CRs/
-     /[Project Name]/SteerCo/
-     /[Project Name]/Status Reports/
-     /[Project Name]/Training/
-     /[Project Name]/Data Migration/
-     /[Project Name]/Q-Gate/
-   - B-7 verification hook — confirm document landed before marking filed
-   - Provider-abstracted (OneDrive now, GDrive/Dropbox later)
+4b. Storage Intelligence Layer: ✅ COMPLETE
+   - Auto folder creation at project creation (9 folders per project)
+   - Filing intelligence — doc-type routing to correct subfolder
+   - B-7 verification (onedrive_verified flag)
+   - BE commit: 3cce2ac / Migration: m10bl
+   - Extended document_filing_service.py: StorageIntelligenceService,
+     STORAGE_FOLDER_MAP, create_project_folders(), verify_document_filing()
+   - 9 flat folders: FSDs / Change Requests / SteerCo / Status Reports /
+     Training / Data Migration / Q-Gate / Documents / Meeting Notes
+   - Provider-abstracted (OneDrive now, GDrive/Dropbox later); best-effort
 
 5. Global UX — Agent Panels → Actions Panels (UX-G1)
 
@@ -418,13 +420,12 @@ NEXT SESSION START INSTRUCTIONS
 ==========================================================================
 1. Read all docs before responding
 2. Read docs/Octiss_Agent_Architecture.md before any agent work
-3. Latest commits: FE 40c10b0 / BE eceb402
+3. Latest commits: FE 40c10b0 / BE 3cce2ac
 4. Primary test project: Project Alpha
    ID: b2e3f098-e637-4e7b-9369-5de84ad354b7
-5. NOTE: risks table has 4 test risks (RISK-001 to RISK-004) created during
-   Engine 2 testing — RISK-002/003/004 can be deleted if needed
-6. Next build: Storage Intelligence Layer (Item 4b)
-7. After Storage: Digital Twin / Voice Copilot (Item 7)
-8. After Voice: post-E2E gap sweep (all MEDIUM items)
-9. After gap sweep: Screen 17 BF Conversion
-10. E2E rule still applies: build fully before testing, fix Criticals before advancing
+5. NOTE: risks table has test risks RISK-001 to RISK-004
+   RISK-002/003/004 were created during Engine 2 testing — can be deleted
+6. Next build: Digital Twin / Voice Copilot (Item 7)
+7. After Voice: post-E2E gap sweep (all MEDIUM items)
+8. After gap sweep: Screen 17 BF Conversion
+9. E2E rule still applies: build fully before testing, fix Criticals before advancing
