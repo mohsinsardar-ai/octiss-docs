@@ -54,6 +54,18 @@ FE: f51f82f → faf670d → cb49315 → e4e288c → 17ba954 →
 BE: 4e2091d → 6498445 → da1fd46 → 51f88f3 → c3559cb → 5aa639b
 Migrations: m10bn, m10bo, m10bp, m10bq
 
+### Comprehensive Remaining Backlog
+See Continuation Prompt for full 36-item backlog.
+Key categories:
+- Screen 17 BF Conversion (next build)
+- SOW Extraction Engine Path A
+- Teams/Meet/Zoom bots (Azure/Marketplace approval needed)
+- Multilingual: 8 languages, RTL Arabic/Urdu (post-beta)
+- Industry modules: IS-Utilities/SuccessFactors/PPDS (post-revenue)
+- Paddle billing live integration
+- Beta Prep: User Manual, Welcome Pack, Feedback Form
+- Open E2E: CF-50, CF-55, CF-42, CF-43
+
 ---
 
 ## 1. What Is Octiss
