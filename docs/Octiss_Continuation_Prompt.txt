@@ -12,20 +12,23 @@ STRICT RULES - NEVER VIOLATE:
 - Read docs/Octiss_Agent_Architecture.md before building any agent feature
 
 ==========================================================================
-CURRENT BUILD STATE (20 June 2026 — E2E Session 3)
+CURRENT BUILD STATE (Intelligence Sprint — 20 June 2026)
 ==========================================================================
-Frontend latest commit: e77cc95 (Vercel HEALTHY)
-Backend latest commit: 6a7a992 (Railway HEALTHY)
-  NOTE: Session 3 follow-on work (SteerCo .pptx, Team Members, Calendar,
-  RAID Engine 1) landed AFTER these hashes — confirm exact commits from git log.
+Frontend latest commit: 40c10b0 (Vercel HEALTHY)
+Backend latest commit: eceb402 (Railway HEALTHY)
 Frontend repo: mohsinsardar-ai/em-intelligence-labs-dashboard
 Backend repo: mohsinsardar-ai/sap-pmo-agent
 Database: Supabase Singapore - qrxfprybbpqugptakeke
 
-COMMIT HISTORY (20 June — Session 3, Screens 14-16 + RAID Engine 1):
+INTELLIGENCE SPRINT COMMITS (20 June, post E2E Session 3):
+FE 55ca111 — RAID Engine 3 (Intelligence Feed Panel)
+FE 40c10b0 / BE 7ba57c1 — CR Intelligence Layer
+BE eceb402 — CR prefill fix (wricef_refs defensive)
+BE ae82154 — RAID Engine 1+2 (synced from remote)
+
+E2E SESSION 3 COMMITS (20 June — Screens 14-16):
 FE e77cc95 / BE 6a7a992 — Health Dashboard: 8-dimension engine, overall score,
                           trend, phase progress, top actions, SteerCo pack
-Session 3 follow-on (hashes to confirm from git log):
 BE — SteerCo Pack switched to 7-slide PowerPoint (.pptx) via Node.js/pptxgenjs:
      generate_steerco.js added to backend root, project_health.py steerco-pack
      endpoint replaced (docx → pptx), Dockerfile updated (Node.js 20 + pptxgenjs)
@@ -39,6 +42,19 @@ BE — RAID Intelligence Layer Engine 1: alert_service.py +5 checks
 
 PRIOR SESSION (19-20 June — Session 2, Screens 8-13): see Master Handoff changelog
 FE 911fc8c / BE 6c1ad8a — Training (last Session 2 commit)
+
+==========================================================================
+SCHEMA CHANGES (20 June 2026 — Intelligence Sprint)
+==========================================================================
+Tables modified 20 Jun 2026:
+- risks: added impact_map JSONB (Engine 2 downstream impact)
+- project_wricef: added cr_ref TEXT
+- projects: intelligence_config JSONB (PM-configurable alert thresholds)
+- Dockerfile: added Node.js 20 + pptxgenjs (for SteerCo PPTX)
+- generate_steerco.js: added to backend root (7-slide SteerCo PPTX generator)
+Bug fixed: project_change_requests.wricef_refs did NOT exist — caused silent
+failures in RAID_WRICEF_UNPROTECTED + CR_SCOPE_DRIFT. Fixed with _safe_rows()
+defensive helper in alert_service.py (BE eceb402).
 
 ==========================================================================
 E2E RULE (STRICT — NEVER VIOLATE)
@@ -172,6 +188,8 @@ MEDIUM — CR (Change Requests):
 MEDIUM — RAID:
 - RAID-G2/G3/G4: Risk Area/Owner/Category dropdowns not auto-populated
 - RAID-Edit: Issues/Decisions inline edit not wired (PUT endpoints exist)
+- RAID-UX1: Risk modal too tall — no scroll to Save without zooming out
+- RAID-UX2: Risk rows not clickable for inline edit
 
 MEDIUM — Q-Gate:
 - QG-G1: 55 items still in General — tighten ILIKE patterns
@@ -207,7 +225,8 @@ MEDIUM — Team Members:
 - TM-G1: After editing a member the view jumps/scrolls to top
 
 MEDIUM — Calendar:
-- CAL-G1: Date format mm/dd/yyyy (part of the DATE-G1 shared-DateInput sweep)
+- CAL-G1: Meeting Pack date field shows mm/dd/yyyy format
+  (part of the DATE-G1 shared-DateInput sweep)
 
 GLOBAL UX GAP:
 - UX-G1: All "Ask the agent" chat panels across all screens must be
@@ -236,30 +255,22 @@ CARRIED FORWARD FROM PREVIOUS SESSION:
 ==========================================================================
 POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
 ==========================================================================
-1. RAID Intelligence Layer:
-   - Engine 1: Evidence Scanner — ✅ DONE (20 Jun 2026, Session 3)
-     alert_service.py extended with 5 checks: RAID_RISK_NO_MITIGATION,
-     RAID_ISSUE_STALE, RAID_DECISION_STALE, RAID_WRICEF_UNPROTECTED,
-     RAID_MILESTONE_BLOCKER. PM-configurable thresholds via intelligence_config
-     JSONB on projects table. Alerts firing live on Project Alpha.
-   - Engine 2: Downstream Impact Mapper — NEXT
-     Extend RAID Agent in raid_registers.py
-     Task delayed → find downstream tasks → auto-create Risk
-     Phase Gate task impacted → Severity=Severe → WORKCOM fires
-   - Engine 3: RAID Intelligence Feed Panel — NEXT
-     Frontend Actions panel on the RAID screen
-     Per signal: Log as Issue | Log as Risk | Dismiss
-     Critical signals: Acknowledge only (cannot dismiss)
-   - Configurable Escalation Thresholds (Project Settings) — ✅ thresholds live
-     via intelligence_config JSONB on projects table (Engine 1)
-     PM has final say — system never overrides PM choice
-   - auto_generated + evidence_source columns on RAID tables (pending)
+1. RAID Intelligence Layer: ✅ COMPLETE
+   - Engine 1: Evidence Scanner (5 checks) — alert_service.py — LIVE
+   - Engine 2: Downstream Impact Mapper — raid_registers.py + risks.py — LIVE
+   - Engine 3: Intelligence Feed Panel — RAIDRegister.jsx — LIVE
+   - intelligence_config JSONB thresholds — PM-configurable
+   - impact_map JSONB column added to risks table
+   - cr_ref TEXT column added to project_wricef table
 
-2. CR Intelligence Layer:
-   - SOW baseline: projects + project_commercial (no new table)
-   - SCOPE_DRIFT alert in n8n hourly workflow
-   - CR pre-fill from evidence (20 of 28 fields auto-fillable)
-   - Evidence panel in CR detail
+2. CR Intelligence Layer: ✅ COMPLETE
+   - Component 1: SOW Baseline Reader (reads project_commercial)
+   - Component 2: CR_SCOPE_DRIFT alert in alert_service.py
+   - Component 3: POST /change-requests/prefill endpoint
+   - Frontend: Detect Scope Drift button on Change Requests screen
+   - Pre-fills: title, cr_type, financial_impact, affected_wricef,
+     justification, impact_assessment
+   - PM always reviews before submitting — no auto-submit
 
 3. Post-E2E Gap Sweep (all MEDIUM items above)
 
@@ -268,7 +279,7 @@ POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
    - Document Review Agent (Agent 8) trigger
    - Auto-register hooks: FSD/CRF/Status/Q-Gate → Documents
 
-4b. Storage Intelligence Layer:
+4b. Storage Intelligence Layer: (NEXT — starting now)
    - Auto folder creation at project creation (OneDrive, provider-abstracted)
    - Filing intelligence — route each doc type to correct subfolder:
      /[Project Name]/Prepare/FSDs/
@@ -405,15 +416,15 @@ Tracker:     D:\Mohsin Personal\OneDrive\EM Intelligence Lab\EM_Intelligence_Lab
 ==========================================================================
 NEXT SESSION START INSTRUCTIONS
 ==========================================================================
-1. Read all 4 docs completely before responding
+1. Read all docs before responding
 2. Read docs/Octiss_Agent_Architecture.md before any agent work
-3. Latest commits: FE e77cc95 / BE 6a7a992 (+ Session 3 follow-on — confirm from git log)
-4. Primary test project: Project Alpha b2e3f098-e637-4e7b-9369-5de84ad354b7
-5. Confirm with: "Session loaded. All 16 testable screens GREEN.
-   Ready to build RAID Intelligence Engine 2 — Downstream Impact Mapper."
-6. First action: Engine 2 — Downstream Impact Mapper (extend RAID Agent in raid_registers.py)
-7. Then Engine 3 — RAID Intelligence Feed Panel (frontend Actions panel on RAID screen)
-8. Then CR Intelligence Layer
-9. Then post-E2E gap sweep (all MEDIUM items above)
-10. Then Screen 17 BF Conversion (create BF Test Project first)
-11. E2E rule still applies: build fully before testing, fix Criticals before advancing
+3. Latest commits: FE 40c10b0 / BE eceb402
+4. Primary test project: Project Alpha
+   ID: b2e3f098-e637-4e7b-9369-5de84ad354b7
+5. NOTE: risks table has 4 test risks (RISK-001 to RISK-004) created during
+   Engine 2 testing — RISK-002/003/004 can be deleted if needed
+6. Next build: Storage Intelligence Layer (Item 4b)
+7. After Storage: Digital Twin / Voice Copilot (Item 7)
+8. After Voice: post-E2E gap sweep (all MEDIUM items)
+9. After gap sweep: Screen 17 BF Conversion
+10. E2E rule still applies: build fully before testing, fix Criticals before advancing

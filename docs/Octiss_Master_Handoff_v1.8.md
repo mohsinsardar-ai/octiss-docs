@@ -56,14 +56,50 @@ Octiss is an AI-powered SAP PMO Intelligence Platform. It guides SAP Project Man
 
 ## 3. Current Build State (16 June 2026 — E2E session)
 
-### 20 June 2026 — Intelligence Sprint (same day as E2E Session 3)
+### 20 June 2026 — Intelligence Sprint (post E2E Session 3, same day)
 
-Built RAID Intelligence Layer (Engines 1/2/3), CR Intelligence Layer (Scope Drift
-alert + Pre-fill endpoint + Detect Scope Drift button), formally documented 6
-additional intelligence layers (Items 4b, 10-14) for future build.
+**RAID Intelligence Layer — ALL 3 ENGINES COMPLETE:**
+- Engine 1 (Evidence Scanner): 5 new alert checks in alert_service.py —
+  RAID_RISK_NO_MITIGATION, RAID_ISSUE_STALE, RAID_DECISION_STALE,
+  RAID_WRICEF_UNPROTECTED, RAID_MILESTONE_BLOCKER.
+  PM-configurable thresholds via intelligence_config JSONB.
+- Engine 2 (Downstream Impact Mapper): New endpoint in raid_registers.py —
+  POST /{project_id}/risks/{risk_id}/impact-map. Auto-triggers on risk
+  create/update via risks.py. Stores downstream tasks, WRICEF, milestones
+  in risks.impact_map JSONB.
+- Engine 3 (Intelligence Feed Panel): RAIDRegister.jsx — replaced the
+  "Open RAID Agent" chat button with a RAID Intelligence panel showing RAID_
+  alerts + downstream impact maps per risk. No chat input — agents work invisibly.
 
-FE commits: 55ca111 (Engine 3), 40c10b0 (CR Intelligence)
-BE commits: ae82154 (Engine 1+2), 7ba57c1 (CR Intelligence), eceb402 (CR prefill fix)
+**CR Intelligence Layer — COMPLETE:**
+- CR_SCOPE_DRIFT alert added to alert_service.py (Engine 1 extension).
+- POST /change-requests/prefill endpoint in change_requests.py — reads SOW
+  baseline, WRICEF count, impact_map, tasks; returns a pre-filled CR
+  (title, type, financial_impact, justification).
+- "Detect Scope Drift" button on the Change Requests screen opens the New CR
+  form pre-populated — PM reviews before submit.
+  Tested on Project Alpha: detected 1 unprotected WRICEF (Custom Fiori App),
+  pre-filled a Scope CR with ~$100k financial impact.
+
+**Schema changes:**
+- risks.impact_map JSONB (new column)
+- project_wricef.cr_ref TEXT (new column)
+
+**Bug fixed:**
+- project_change_requests.wricef_refs did not exist — caused silent failures in
+  RAID_WRICEF_UNPROTECTED + CR_SCOPE_DRIFT alerts. Fixed with a _safe_rows()
+  defensive helper in alert_service.py.
+
+**Additional intelligence layers formally documented for future build:**
+Items 4b (Storage), 10 (WRICEF), 11 (Notification), 12 (Phase),
+13 (Stakeholder), 14 (Contract) — see Continuation Prompt build queue.
+
+**Commits:**
+- FE 55ca111 — RAID Engine 3
+- FE 40c10b0 — CR Intelligence frontend
+- BE 7ba57c1 — CR Intelligence backend
+- BE eceb402 — CR prefill defensive fix
+- BE ae82154 — Engine 1+2 (remote sync point)
 
 ### 20 June 2026 — E2E Session 3: Screens 14-16 GREEN + RAID Engine 1
 
