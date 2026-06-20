@@ -12,23 +12,33 @@ STRICT RULES - NEVER VIOLATE:
 - Read docs/Octiss_Agent_Architecture.md before building any agent feature
 
 ==========================================================================
-CURRENT BUILD STATE (20 June 2026 — E2E Session 2)
+CURRENT BUILD STATE (20 June 2026 — E2E Session 3)
 ==========================================================================
-Frontend latest commit: 911fc8c (Vercel HEALTHY)
-Backend latest commit: 6c1ad8a (Railway HEALTHY)
+Frontend latest commit: e77cc95 (Vercel HEALTHY)
+Backend latest commit: 6a7a992 (Railway HEALTHY)
+  NOTE: Session 3 follow-on work (SteerCo .pptx, Team Members, Calendar,
+  RAID Engine 1) landed AFTER these hashes — confirm exact commits from git log.
 Frontend repo: mohsinsardar-ai/em-intelligence-labs-dashboard
 Backend repo: mohsinsardar-ai/sap-pmo-agent
 Database: Supabase Singapore - qrxfprybbpqugptakeke
 
-COMMIT HISTORY (19-20 June session):
-FE 5833f82 / BE 61e17dd — Q-Gate: category grouping + evidence intelligence
-FE a817bc3 / BE 8b2fa1b — Global date format DD-MMM-YYYY + ACT-001 IDs
-FE e28adea / BE a1c92ab — Data Migration: full intelligence rebuild
-FE c9339e8 / BE 7010b30 — Documents: core register + 34 pre-loaded docs
-FE 1a160b8              — Date picker DD-MMM-YYYY display all forms
-FE b74d152 / BE 5723920 — Commercial: full intelligence rebuild
-FE c6daaef / BE 6c1ad8a — Training: full intelligence rebuild
-FE 911fc8c              — Training fixes: Request Materials + Schedule Sessions
+COMMIT HISTORY (20 June — Session 3, Screens 14-16 + RAID Engine 1):
+FE e77cc95 / BE 6a7a992 — Health Dashboard: 8-dimension engine, overall score,
+                          trend, phase progress, top actions, SteerCo pack
+Session 3 follow-on (hashes to confirm from git log):
+BE — SteerCo Pack switched to 7-slide PowerPoint (.pptx) via Node.js/pptxgenjs:
+     generate_steerco.js added to backend root, project_health.py steerco-pack
+     endpoint replaced (docx → pptx), Dockerfile updated (Node.js 20 + pptxgenjs)
+FE/BE — Screen 15 Team Members: edit/add/delete working
+FE/BE — Screen 16 Calendar/Inbox: Month/Week/Day views, Schedule Session modal,
+        Meeting Pack (Generate Pack)
+BE — RAID Intelligence Layer Engine 1: alert_service.py +5 checks
+     (RAID_RISK_NO_MITIGATION, RAID_ISSUE_STALE, RAID_DECISION_STALE,
+     RAID_WRICEF_UNPROTECTED, RAID_MILESTONE_BLOCKER); PM-configurable
+     thresholds via intelligence_config JSONB on projects; firing live on Alpha
+
+PRIOR SESSION (19-20 June — Session 2, Screens 8-13): see Master Handoff changelog
+FE 911fc8c / BE 6c1ad8a — Training (last Session 2 commit)
 
 ==========================================================================
 E2E RULE (STRICT — NEVER VIOLATE)
@@ -41,7 +51,7 @@ E2E RULE (STRICT — NEVER VIOLATE)
 - Fix all Critical issues on current screen before moving to next screen
 
 ==========================================================================
-E2E TESTING STATUS (20 June 2026)
+E2E TESTING STATUS (20 June 2026 — Session 3)
 ==========================================================================
 SCREEN 1  — LOGIN:           ✅ GREEN
 SCREEN 2  — COMMAND CENTER:  ✅ GREEN
@@ -56,11 +66,13 @@ SCREEN 10 — DATA MIGRATION:  ✅ GREEN
 SCREEN 11 — COMMERCIAL:      ✅ GREEN
 SCREEN 12 — TRAINING:        ✅ GREEN
 SCREEN 13 — NOTIFICATIONS:   ✅ GREEN
-SCREEN 14 — HEALTH DASHBOARD: 🔲 NOT STARTED
-SCREEN 15 — TEAM MEMBERS:    🔲 NOT STARTED
-SCREEN 16 — CALENDAR/INBOX:  🔲 NOT STARTED
+SCREEN 14 — HEALTH DASHBOARD: ✅ GREEN (SteerCo pack now 7-slide .pptx)
+SCREEN 15 — TEAM MEMBERS:    ✅ GREEN (gap TM-G1: edit scrolls to top)
+SCREEN 16 — CALENDAR/INBOX:  ✅ GREEN (gap CAL-G1: date format mm/dd/yyyy)
 SCREEN 17 — BF CONVERSION:   🔲 NOT STARTED
              (needs BF Test Project created first)
+
+>>> ALL 16 TESTABLE SCREENS ARE GREEN. Screen 17 pending BF Test Project. <<<
 
 ==========================================================================
 ALL FIXES SHIPPED (17-18 June 2026)
@@ -191,6 +203,12 @@ MEDIUM — Notifications:
 - NOT-G2: Alert fatigue — group same-type alerts into collapsed cards
   (20 overdue tasks = 1 card, not 20 cards)
 
+MEDIUM — Team Members:
+- TM-G1: After editing a member the view jumps/scrolls to top
+
+MEDIUM — Calendar:
+- CAL-G1: Date format mm/dd/yyyy (part of the DATE-G1 shared-DateInput sweep)
+
 GLOBAL UX GAP:
 - UX-G1: All "Ask the agent" chat panels across all screens must be
   replaced with context-aware Actions panels showing what the agent
@@ -219,23 +237,23 @@ CARRIED FORWARD FROM PREVIOUS SESSION:
 POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
 ==========================================================================
 1. RAID Intelligence Layer:
-   - Engine 1: Evidence Scanner (extend n8n hourly — 6 new checks)
-     Auto-creates Issues: task overdue, FSD no response,
-     CR not actioned, meeting action overdue, scope creep
-     Auto-creates Risks: workstream overdue, go-live at risk,
-     health declining, PI≥16 not escalated
-     Auto-suggests Decisions: WRICEF no owner, conflicting
-     session notes, phase transition needed
-   - Engine 2: Downstream Impact Mapper
+   - Engine 1: Evidence Scanner — ✅ DONE (20 Jun 2026, Session 3)
+     alert_service.py extended with 5 checks: RAID_RISK_NO_MITIGATION,
+     RAID_ISSUE_STALE, RAID_DECISION_STALE, RAID_WRICEF_UNPROTECTED,
+     RAID_MILESTONE_BLOCKER. PM-configurable thresholds via intelligence_config
+     JSONB on projects table. Alerts firing live on Project Alpha.
+   - Engine 2: Downstream Impact Mapper — NEXT
+     Extend RAID Agent in raid_registers.py
      Task delayed → find downstream tasks → auto-create Risk
      Phase Gate task impacted → Severity=Severe → WORKCOM fires
-   - Engine 3: RAID Intelligence Feed Panel (frontend right panel)
+   - Engine 3: RAID Intelligence Feed Panel — NEXT
+     Frontend Actions panel on the RAID screen
      Per signal: Log as Issue | Log as Risk | Dismiss
      Critical signals: Acknowledge only (cannot dismiss)
-   - Configurable Escalation Thresholds (Project Settings)
-     intelligence_config JSONB on projects table
+   - Configurable Escalation Thresholds (Project Settings) — ✅ thresholds live
+     via intelligence_config JSONB on projects table (Engine 1)
      PM has final say — system never overrides PM choice
-   - auto_generated + evidence_source columns on RAID tables
+   - auto_generated + evidence_source columns on RAID tables (pending)
 
 2. CR Intelligence Layer:
    - SOW baseline: projects + project_commercial (no new table)
@@ -350,11 +368,13 @@ NEXT SESSION START INSTRUCTIONS
 ==========================================================================
 1. Read all 4 docs completely before responding
 2. Read docs/Octiss_Agent_Architecture.md before any agent work
-3. Latest commits: FE 911fc8c / BE 6c1ad8a
+3. Latest commits: FE e77cc95 / BE 6a7a992 (+ Session 3 follow-on — confirm from git log)
 4. Primary test project: Project Alpha b2e3f098-e637-4e7b-9369-5de84ad354b7
-5. Confirm with: "Session loaded. FE 911fc8c / BE 6c1ad8a.
-   Ready to continue E2E from Screen 14 — Health Dashboard."
-6. First action: navigate to Health Dashboard on Project Alpha
-7. Fix all Critical issues before moving to next screen
-8. E2E rule: build fully before testing, fix Criticals before advancing
-9. After Screen 17: run post-E2E gap sweep, then post-E2E build queue
+5. Confirm with: "Session loaded. All 16 testable screens GREEN.
+   Ready to build RAID Intelligence Engine 2 — Downstream Impact Mapper."
+6. First action: Engine 2 — Downstream Impact Mapper (extend RAID Agent in raid_registers.py)
+7. Then Engine 3 — RAID Intelligence Feed Panel (frontend Actions panel on RAID screen)
+8. Then CR Intelligence Layer
+9. Then post-E2E gap sweep (all MEDIUM items above)
+10. Then Screen 17 BF Conversion (create BF Test Project first)
+11. E2E rule still applies: build fully before testing, fix Criticals before advancing

@@ -56,6 +56,55 @@ Octiss is an AI-powered SAP PMO Intelligence Platform. It guides SAP Project Man
 
 ## 3. Current Build State (16 June 2026 — E2E session)
 
+### 20 June 2026 — E2E Session 3: Screens 14-16 GREEN + RAID Engine 1
+
+| Item | Value |
+|---|---|
+| Frontend latest commit | e77cc95 (+ Session 3 follow-on — confirm git log) |
+| Backend latest commit | 6a7a992 (+ Session 3 follow-on — confirm git log) |
+| Vercel | HEALTHY |
+| Railway | HEALTHY |
+
+**ALL 16 TESTABLE SCREENS ARE GREEN.** Screen 17 (BF Conversion) pending a BF Test Project.
+
+SCREEN 14 — Health Dashboard: ✅ GREEN
+- 8-dimension health engine (Customer / Scope / Schedule / RAID / Commercial /
+  Training / Migration / Document) → weighted overall score, trend, phase
+  progress, top actions. Extends project_health_snapshots (m10bk).
+- SteerCo Pack: now generates a **7-slide PowerPoint (.pptx)** via
+  **Node.js / pptxgenjs** (CHANGED from python-docx). generate_steerco.js added
+  to the backend root; project_health.py steerco-pack endpoint replaced;
+  Dockerfile updated with Node.js 20 + pptxgenjs.
+- FE e77cc95 / BE 6a7a992 (base) + Session 3 pptx follow-on
+
+SCREEN 15 — Team Members: ✅ GREEN
+- Edit / add / delete all working
+- Gap TM-G1: after editing a member the view scrolls to top
+
+SCREEN 16 — Calendar / Inbox: ✅ GREEN
+- Month / Week / Day views
+- Schedule Session modal
+- Meeting Pack (Generate Pack) working
+- Gap CAL-G1: date format mm/dd/yyyy
+
+POST-E2E BUILD — RAID INTELLIGENCE LAYER, ENGINE 1: ✅ DEPLOYED
+- alert_service.py extended with 5 new checks: RAID_RISK_NO_MITIGATION,
+  RAID_ISSUE_STALE, RAID_DECISION_STALE, RAID_WRICEF_UNPROTECTED,
+  RAID_MILESTONE_BLOCKER
+- PM-configurable thresholds via intelligence_config JSONB on the projects table
+- Alerts firing live on Project Alpha
+
+NEXT SESSION QUEUE:
+1. Engine 2 — Downstream Impact Mapper (extend RAID Agent in raid_registers.py)
+2. Engine 3 — RAID Intelligence Feed Panel (frontend Actions panel on RAID screen)
+3. CR Intelligence Layer
+4. Post-E2E gap sweep (Medium items)
+5. Screen 17 BF Conversion (create BF Test Project first)
+
+KEY CHANGE THIS SESSION: SteerCo pack generation moved from python-docx (.docx)
+to Node.js / pptxgenjs (.pptx, 7 slides). The backend now requires a Node.js 20
+runtime (see Dockerfile).
+
 ### 20 June 2026 — E2E Session 2: Screens 8-13 + Intelligence Rebuilds
 
 | Item | Value |
