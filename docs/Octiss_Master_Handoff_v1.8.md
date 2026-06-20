@@ -1,5 +1,5 @@
 # Octiss - Master Handoff Document
-**Version:** v2.0 | **Date:** 18 June 2026
+**Version:** v2.0 | **Date:** 21 June 2026
 **Purpose:** Single reference for any new Claude or Codex session
 **Supersedes:** Octiss_Master_Handoff_v1.7.md
 
@@ -28,6 +28,31 @@
    Build all functionality first. E2E verify everything.
    UI/UX polish is the final step before beta.
 ```
+
+---
+
+## Session: 20-21 June 2026 — Gap Sweep + Intelligence Sprint
+
+### What Was Built
+- All 17 screens GREEN (Screen 17 Voice Copilot added)
+- Post-E2E gap sweep: 20+ gaps closed across all screens
+- Documents Phase 2: real upload + B-7 verification
+- Audio 48hr TTL: n8n cleanup job live
+- 4 new migrations: m10bn, m10bo, m10bp, m10bq
+
+### Key Architectural Decisions
+- Q-Gate taxonomy: kept SAP Activate PM-quality categories (not overwritten with delivery categories)
+- DB taxonomies respected throughout gap sweep — never re-mapped to brief labels when DB CHECK constraints existed
+- Audio cleanup: dedicated X-Cleanup-Key (not merged with X-N8N-Key) for least-privilege on destructive delete
+- B-7 verification reuses onedrive_verified columns for Supabase storage (flagged: may need storage_verified if OneDrive + Supabase coexist on same doc)
+- Translation: not scoped — post-beta backlog (GCC market)
+
+### Commit Summary
+FE: f51f82f → faf670d → cb49315 → e4e288c → 17ba954 →
+    8df3b99 → cd3e168 → a088933 → 7712484 → fcec20c →
+    e31b3a3 → b416172 → 5170ad2 → d8885ac → 12e1cae
+BE: 4e2091d → 6498445 → da1fd46 → 51f88f3 → c3559cb → 5aa639b
+Migrations: m10bn, m10bo, m10bp, m10bq
 
 ---
 

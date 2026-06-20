@@ -427,6 +427,26 @@ Make decisions without PM confirmation.
 
 ---
 
+#### Agent 17 — Implementation status (as built, 20-21 Jun 2026) — TWO components
+
+**Component A — Interactive Q&A (pre-existing):**
+- File: `app/routers/voice.py`
+- Endpoints: `POST /api/v1/voice/query`, `GET /api/v1/voice/history`, `GET /api/v1/voice/usage`
+- Purpose: PM asks a question by voice/text → answer + citations
+- Usage metering: 60 queries/month (Project tier)
+
+**Component B — Meeting MOM Lifecycle (built this session):**
+- File: `app/routers/meetings.py` (lines ~2284-2478)
+- Endpoints: 7 × `/api/v1/meetings/voice/*`
+- Purpose: Upload recording → Whisper transcription → MOM generation → PM review → approve
+- Table: `project_meetings` (extended via m10bq)
+- Coverage: `meeting_wricef_coverage` (table)
+- Audio TTL: 48hr via `audio_retained_until` column
+- Cleanup: `POST /api/v1/meetings/voice/cleanup-audio` (n8n scheduled, `X-Cleanup-Key` auth)
+- voice_status lifecycle: pending → audio_uploaded → transcribed → mom_generated → approved
+
+---
+
 ## GROUP 8 — TRACKING AGENTS (added 19-20 Jun 2026)
 
 These two agents are wired in the backend (chat slugs) but were not
@@ -475,6 +495,35 @@ numbering. Agents without documented numbers in this file:
   this file is the Meeting Intelligence Agent)
 Action needed: Reconcile all agent numbers and ensure every backend
 slug has a matching doc entry.
+
+---
+
+## NEW THIS SESSION (20-21 Jun 2026) — Document & Audio Infrastructure
+
+### Document Intelligence — auto-register hooks
+- `register_generated_document()` in `app/services/document_seed.py`
+- Called by: FSD (`wricef_inventory.py`), Status Report (`reports_intel.py`),
+  SteerCo (`project_health.py`), CRF (`change_requests.py`)
+- Purpose: auto-registers generated docs to `project_document_register`
+- Pattern: best-effort upsert by (project_id, document_name) — never breaks generation
+
+### Document Upload (new)
+- File: `app/routers/new_agents.py`
+- Endpoints: `POST /api/v1/projects/{project_id}/document-register/{doc_id}/upload`
+  and `POST /api/v1/projects/{project_id}/document-register/{doc_id}/verify-filing`
+- Storage: Supabase bucket `project-documents` (private, 100MB)
+- B-7 verification: lists the storage path, stamps `onedrive_verified` + `onedrive_verified_at`
+- Note: reuses the `onedrive_verified` columns for Supabase storage (flagged: may need a
+  dedicated `storage_verified` if OneDrive + Supabase ever coexist on the same doc)
+
+### Audio Cleanup (new)
+- File: `app/routers/meetings.py`
+- Endpoints: `POST` + `DELETE /api/v1/meetings/voice/cleanup-audio`
+- Auth: `X-Cleanup-Key` header (dedicated, NOT `X-N8N-Key` — least-privilege for a destructive delete)
+- Trigger: n8n "Octiss — Audio Cleanup (6hr)" workflow
+- Logic: deletes from the `meeting-audio` bucket where
+  `audio_retained_until < NOW()` AND `audio_deleted_at IS NULL` AND `voice_status='approved'`;
+  then stamps `audio_deleted_at` and nulls `audio_path`. Idempotent.
 
 ---
 
