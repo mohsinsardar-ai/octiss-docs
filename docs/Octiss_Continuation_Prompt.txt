@@ -268,6 +268,19 @@ POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
    - Document Review Agent (Agent 8) trigger
    - Auto-register hooks: FSD/CRF/Status/Q-Gate → Documents
 
+4b. Storage Intelligence Layer:
+   - Auto folder creation at project creation (OneDrive, provider-abstracted)
+   - Filing intelligence — route each doc type to correct subfolder:
+     /[Project Name]/Prepare/FSDs/
+     /[Project Name]/Prepare/CRs/
+     /[Project Name]/SteerCo/
+     /[Project Name]/Status Reports/
+     /[Project Name]/Training/
+     /[Project Name]/Data Migration/
+     /[Project Name]/Q-Gate/
+   - B-7 verification hook — confirm document landed before marking filed
+   - Provider-abstracted (OneDrive now, GDrive/Dropbox later)
+
 5. Global UX — Agent Panels → Actions Panels (UX-G1)
 
 6. Global Date Format — Shared DateInput component (DATE-G1)
@@ -286,7 +299,33 @@ POST E2E BUILD QUEUE (in order — after all 17 screens GREEN)
 
 9. Beta Prep: User Manual, Welcome Pack, Feedback Form
 
-10. UI/UX design pass (absolute last step)
+10. WRICEF Intelligence Layer (not yet started):
+   - Auto-detect WRICEF items from meeting transcripts
+   - Auto-suggest FSD generation when WRICEF reaches Under Review
+   - FSD completion velocity tracking
+   - WRICEF risk scoring (unprotected + overdue FSD = compounded risk)
+
+11. Notification Intelligence (not yet started):
+   - Alert fatigue grouping (same-type alerts grouped, NOT-G1/NOT-G2)
+   - Duplicate alert suppression
+   - Smart notification scheduling
+
+12. Phase Intelligence (not yet started):
+   - Auto-detect current phase from task completion %
+   - Phase readiness score (separate from Q-Gate)
+   - Auto-lock previous phase when gate passes
+
+13. Stakeholder Intelligence (not yet started):
+   - Influence scoring from CR sign-off velocity
+   - Communication responsiveness tracking
+   - Auto-suggest comm frequency based on behaviour
+
+14. Contract Intelligence (not yet started):
+   - SOW clause extraction
+   - Auto-flag when project activities breach SOW terms
+   - Payment milestone auto-tracking against delivery
+
+15. UI/UX design pass (absolute last step)
 
 ==========================================================================
 AGENT ARCHITECTURE — READ BEFORE BUILDING ANY AGENT
